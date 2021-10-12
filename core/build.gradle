@@ -1,0 +1,58 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+project.ext.lwjglVersion = "3.3.0-SNAPSHOT"
+
+group 'com.husker.minui'
+version '1.0'
+
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+sourceSets {
+    main {
+        resources {srcDirs "src/main/resources"}
+    }
+}
+
+jar {
+    manifest {attributes 'Main-Class': 'com.husker.minui.MainKt'}
+    from {configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }}
+}
+
+dependencies {
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31'
+
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+    implementation "org.lwjgl:lwjgl:$lwjglVersion"
+    implementation "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+    implementation "org.lwjgl:lwjgl-opengl:$lwjglVersion"
+    implementation "org.lwjgl:lwjgl-stb:$lwjglVersion"
+
+    for (platform in [
+            "natives-linux",
+            "natives-linux-arm32",
+            "natives-linux-arm64",
+            "natives-macos",
+            "natives-macos-arm64",
+            "natives-windows",
+            "natives-windows-arm64"
+    ]) {
+        runtimeOnly "org.lwjgl:lwjgl:$lwjglVersion:$platform"
+        runtimeOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion:$platform"
+        runtimeOnly "org.lwjgl:lwjgl-opengl:$lwjglVersion:$platform"
+        runtimeOnly "org.lwjgl:lwjgl-stb:$lwjglVersion:$platform"
+    }
+
+    implementation 'org.locationtech.jts:jts-core:1.18.2'
+
+    //compile 'org.slf4j:slf4j-simple:1.7.29'
+    //compile 'io.github.microutils:kotlin-logging-jvm:2.0.10'
+    //implementation "org.joml:joml:${jomlVersion}"
+}
+

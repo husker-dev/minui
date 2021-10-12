@@ -1,0 +1,4 @@
+rootProject.name = 'minui'
+include 'core'
+include 'native'
+
