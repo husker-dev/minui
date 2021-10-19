@@ -5,16 +5,12 @@ import com.husker.minui.core.Resources
 import com.husker.minui.core.utils.BufferUtils
 import org.lwjgl.BufferUtils.createByteBuffer
 import org.lwjgl.opengl.GL30.*
-import org.lwjgl.stb.STBImage.stbi_load
-import org.lwjgl.stb.STBImage.stbi_load_from_memory
+import org.lwjgl.stb.STBImage.*
 import org.lwjgl.system.MemoryStack.stackPush
 import java.io.File
 import java.io.InputStream
-import java.lang.reflect.Method
 import java.net.URL
-import java.nio.Buffer
 import java.nio.ByteBuffer
-import java.nio.channels.Channels
 
 
 open class Image: MinUIObject {
@@ -25,8 +21,10 @@ open class Image: MinUIObject {
         fun fromURL(url: URL): Image = Image(url)
         fun fromFile(file: File): Image = Image(file.absolutePath)
         fun fromFile(path: String): Image = Image(path)
-        fun fromResourceFile(path: String): Image = Image(path)
+        fun fromResourceFile(path: String): Image = if(path.startsWith("/")) Image(path) else Image("/$path")
         fun fromInputStream(inputStream: InputStream): Image = Image(inputStream)
+        fun fromBytes(bytes: ByteArray): Image = Image(bytes)
+        fun fromByteBuffer(buffer: ByteBuffer): Image = Image(buffer)
     }
 
     private var _width = 0
@@ -45,9 +43,9 @@ open class Image: MinUIObject {
     val textId: Int?
         get() = _textId
 
-    private lateinit var _data: ByteBuffer
-    val data: ByteBuffer
-        get() = _data
+    var data: ByteBuffer
+        get() = Resources.readTextureBytes(textId!!, width, height)
+        set(value) = Resources.writeTextureBytes(textId!!, width, height, value)
 
     private var _linearFiltering = true
     var linearFiltering: Boolean
@@ -63,21 +61,45 @@ open class Image: MinUIObject {
              */
         }
 
+    constructor(path: String): super(){
+       if(path.startsWith("/"))
+           loadFromByteArray(Image::class.java.getResourceAsStream(path)!!.readBytes())
+       else
+           loadFromFile(path)
+    }
+
+    constructor(inputStream: InputStream): this(inputStream.readBytes())
+
+    constructor(bytes: ByteArray): super(){
+        loadFromByteArray(bytes)
+    }
+
+    constructor(buffer: ByteBuffer): super(){
+        if(buffer.isDirect)
+            loadFromDirectByteBuffer(buffer)
+        else
+            loadFromByteArray(buffer.array())
+    }
+
+    constructor(url: URL): this(url.openStream())
+
+    constructor(width: Int, height: Int){
+        this._width = width
+        this._height = height
+        this._components = 4
+        Resources.invokeSync{ _textId = createEmptyTexture() }
+    }
+
     private fun applyData(loadedData: ByteBuffer, width: Int, height: Int, components: Int){
-        this._data = loadedData
         this._width = width
         this._height = height
         this._components = components
 
-        Resources.invokeSync{
-            val id = createEmptyTexture()
+        var id = 0
+        Resources.invokeSync{ id = createEmptyTexture() }
+        Resources.writeTextureBytes(id, width, height, loadedData)
 
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, loadedData)
-            glFlush()
-
-            _textId = id
-        }
+        _textId = id
     }
 
     private fun createEmptyTexture(): Int{
@@ -101,57 +123,32 @@ open class Image: MinUIObject {
             val components = stack.mallocInt(1)
             val data = stbi_load(path, w, h, components, 4)!!
             applyData(data, w[0], h[0], components[0])
+            stbi_image_free(data)
         }
     }
 
-    private fun loadFromInputStream(inputStream: InputStream){
+    private fun loadFromByteArray(array: ByteArray){
+        val directBuffer = ByteBuffer.allocateDirect(array.size)
+        directBuffer.put(array)
+        BufferUtils.flipBuffer(directBuffer)
+
+        loadFromDirectByteBuffer(directBuffer)
+    }
+
+    private fun loadFromDirectByteBuffer(buffer: ByteBuffer){
         stackPush().use { stack ->
             val w = stack.mallocInt(1)
             val h = stack.mallocInt(1)
             val components = stack.mallocInt(1)
-
-            var buffer: ByteBuffer
-            inputStream.use { source ->
-                Channels.newChannel(source).use { rbc ->
-                    buffer = createByteBuffer(1024 * 8)
-                    while (rbc.read(buffer) != -1) {
-                        if (buffer.remaining() == 0)
-                            buffer = resizeBuffer(buffer, buffer.capacity() * 3 / 2) // 50%
-                    }
-                }
-            }
-            BufferUtils.flipBuffer(buffer)
-
             val data = stbi_load_from_memory(buffer, w, h, components, 4)!!
             applyData(data, w[0], h[0], components[0])
+            stbi_image_free(data)
         }
     }
 
-    constructor(path: String): super(){
-       if(path.startsWith("/"))
-           loadFromInputStream(Image::class.java.getResourceAsStream(path)!!)
-       else
-           loadFromFile(path)
+    override fun toString(): String {
+        return "Image(width=$_width, height=$_height, components=$_components, textId=$_textId)"
     }
 
-    constructor(inputStream: InputStream): super(){
-        loadFromInputStream(inputStream)
-    }
 
-    constructor(url: URL): this(url.openStream())
-
-    constructor(width: Int, height: Int){
-        this._data = ByteBuffer.allocateDirect(4 * width * height)
-        this._width = width
-        this._height = height
-        this._components = 4
-        Resources.invokeSync{ _textId = createEmptyTexture() }
-    }
-
-    private fun resizeBuffer(buffer: ByteBuffer, newCapacity: Int): ByteBuffer {
-        val newBuffer = createByteBuffer(newCapacity)
-        BufferUtils.flipBuffer(buffer)
-        newBuffer.put(buffer)
-        return newBuffer
-    }
 }

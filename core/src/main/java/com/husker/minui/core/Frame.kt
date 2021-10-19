@@ -1,18 +1,16 @@
 package com.husker.minui.core
 
 import com.husker.minui.core.exceptions.GLFWContextException
-import com.husker.minui.core.listeners.ClosingEvent
+import com.husker.minui.core.listeners.*
 import com.husker.minui.layouts.Container
 import com.husker.minui.layouts.Pane
-import com.husker.minui.core.listeners.KeyActionsReceiver
-import com.husker.minui.core.listeners.KeyEvent
 import com.husker.minui.core.utils.ConcurrentArrayList
 import com.husker.minui.geometry.Dimension
 import com.husker.minui.geometry.Point
 import com.husker.minui.graphics.Color
 import com.husker.minui.graphics.Graphics
 import com.husker.minui.graphics.Image
-import com.husker.minui.natives.PlatformLibrary
+import com.husker.minui.natives.platform.PlatformLibrary
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWImage
@@ -22,7 +20,7 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryUtil.NULL
 
 
-open class Frame(): MinUIObject(), KeyActionsReceiver, Drawable, Sizable, Positionable {
+open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawable, Sizable, Positionable {
     val backend = FrameBackend()
 
     var background = Color.White
@@ -172,11 +170,9 @@ open class Frame(): MinUIObject(), KeyActionsReceiver, Drawable, Sizable, Positi
     val display: Display
         get() = Display(glfwGetWindowMonitor(backend.window))
 
-    var clipboard: String
-        get() = glfwGetClipboardString(backend.window).orEmpty()
-        set(value) = glfwSetClipboardString(backend.window, value)
+    val mousePosition: Point
+        get() = Mouse.getPositionInFrame(this)
 
-    private var _showed = false
     private val graphics = Graphics()
 
     private var _keyPressedListeners = ConcurrentArrayList<(event: KeyEvent) -> Unit>()
@@ -188,6 +184,11 @@ open class Frame(): MinUIObject(), KeyActionsReceiver, Drawable, Sizable, Positi
     private var _frameClosedListeners = ConcurrentArrayList<() -> Unit>()
     private var _frameResizedListeners = ConcurrentArrayList<() -> Unit>()
     private var _frameMovedListeners = ConcurrentArrayList<() -> Unit>()
+
+    private var _mouseMovedListeners = ConcurrentArrayList<() -> Unit>()
+    private var _mousePressedListeners = ConcurrentArrayList<(MouseEvent) -> Unit>()
+    private var _mouseReleasedListeners = ConcurrentArrayList<(MouseEvent) -> Unit>()
+    private var _mouseClickedListeners = ConcurrentArrayList<(MouseEvent) -> Unit>()
 
     private fun init(){
         // 1. Unbind resource's context from its thread
@@ -234,9 +235,8 @@ open class Frame(): MinUIObject(), KeyActionsReceiver, Drawable, Sizable, Positi
     }
 
     fun close(){
-        if(!_showed)
+        if(!_visible)
             return
-        _showed = false
         glfwSetWindowShouldClose(backend.window, true)
     }
 
@@ -311,7 +311,7 @@ open class Frame(): MinUIObject(), KeyActionsReceiver, Drawable, Sizable, Positi
         root.draw(gr)
     }
 
-    override fun addKeyPressListener(listener: (event: KeyEvent) -> Unit) {
+    override fun addKeyPressedListener(listener: (event: KeyEvent) -> Unit) {
         _keyPressedListeners.add(listener)
     }
 
@@ -343,9 +343,25 @@ open class Frame(): MinUIObject(), KeyActionsReceiver, Drawable, Sizable, Positi
         _frameMovedListeners.add(listener)
     }
 
+    override fun addMousePressedListener(listener: (event: MouseEvent) -> Unit) {
+        _mousePressedListeners.add(listener)
+    }
+
+    override fun addMouseReleasedListener(listener: (event: MouseEvent) -> Unit) {
+        _mouseReleasedListeners.add(listener)
+    }
+
+    override fun addMouseClickedListener(listener: (event: MouseEvent) -> Unit) {
+        _mouseClickedListeners.add(listener)
+    }
+
     inner class FrameBackend{
         var window = -1L
         var initialized = false
+
+        var lastMousePressedEvent: MouseEvent? = null
+        var lastMouseReleaseEvent: MouseEvent? = null
+        var lastMouseClickedEvent: MouseEvent? = null
 
         fun destroy(){
             MinUI.frames.remove(this@Frame)
@@ -386,6 +402,39 @@ open class Frame(): MinUIObject(), KeyActionsReceiver, Drawable, Sizable, Positi
                 _keyPressedListeners.iterate { it.invoke(KeyEvent(key, scancode, KeyEvent.Action.Press, mods)) }
             if(action == GLFW_REPEAT || action == GLFW_PRESS || action == GLFW_KEY_UNKNOWN)
                 _keyTypedListeners.iterate { it.invoke(KeyEvent(key, scancode, KeyEvent.Action.Type, mods)) }
+        }
+
+        fun onMouseMove(x: Double, y: Double){
+            _mouseMovedListeners.iterate { it.invoke() }
+        }
+
+        fun onMouseAction(button: Int, action: Int, mods: Int){
+            if(action == GLFW_PRESS) {
+                lastMousePressedEvent = MouseEvent(button, MouseEvent.Action.Press, mods, 1, mousePosition)
+                _mousePressedListeners.iterate { it.invoke(lastMousePressedEvent!!) }
+            }
+            if(action == GLFW_RELEASE){
+                if(lastMousePressedEvent != null &&
+                    lastMousePressedEvent!!.position == mousePosition
+                ){
+                    if(lastMouseClickedEvent != null &&
+                        lastMouseClickedEvent!!.position == mousePosition &&
+                        System.currentTimeMillis() - lastMouseClickedEvent!!.time < 400
+                    ){
+                        // Not first click
+                        lastMouseClickedEvent = MouseEvent(button, MouseEvent.Action.Click, mods, lastMouseClickedEvent!!.clickCount + 1, mousePosition)
+                        _mouseClickedListeners.iterate { it.invoke(lastMouseClickedEvent!!) }
+                    }else {
+                        // First click
+                        lastMouseClickedEvent = MouseEvent(button, MouseEvent.Action.Click, mods, 1, mousePosition)
+                        _mouseClickedListeners.iterate { it.invoke(lastMouseClickedEvent!!) }
+                    }
+                }
+                // Release
+                lastMouseReleaseEvent = MouseEvent(button, MouseEvent.Action.Release, mods, 1, mousePosition)
+                _mouseReleasedListeners.iterate { it.invoke(lastMouseReleaseEvent!!) }
+            }
+
         }
     }
 }

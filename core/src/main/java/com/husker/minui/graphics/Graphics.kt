@@ -84,8 +84,6 @@ class Graphics {
     fun drawImage(image: Image, x: Double, y: Double, width: Double, height: Double, color: Color){
         if(image.textId != null)
             drawImage(image.textId!!, x, y, width, height, color)
-        else
-            println("ne ok")
     }
 
     fun drawImage(texId: Int, x: Double, y: Double, width: Double, height: Double){

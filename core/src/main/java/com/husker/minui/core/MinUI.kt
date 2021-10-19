@@ -7,6 +7,7 @@ import com.husker.minui.core.utils.Trigger
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL.*
+import org.lwjgl.system.Configuration
 
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.concurrent.thread
@@ -26,6 +27,8 @@ object MinUI {
     val frames = ConcurrentArrayList<Frame>()
 
     init {
+        Configuration.DISABLE_CHECKS.set(true)
+
         val initializeTrigger = Trigger()
 
         mainThread = thread(name = "MinUI Main") {
@@ -72,8 +75,8 @@ object MinUI {
         }
 
         //  Check for active threads.
-        //  If there is only one active thread, and it's main MinUI, then shutdown them
-        thread(name = "MinUI Thread Checker"){
+        //  If there are only MinUI threads, then shutdown them
+        thread(name = "MinUI Background"){
             while(isActive) {
                 val allThreads = Thread.getAllStackTraces().keys
                     .toTypedArray()
@@ -113,7 +116,18 @@ object MinUI {
             }
 
             glfwSetKeyCallback(window) { _, key, scancode, action, mods ->
+                makeCurrent(window)
                 onKeyAction(key, scancode, action, mods)
+            }
+
+            glfwSetCursorPosCallback(window){ _, x, y ->
+                makeCurrent(window)
+                onMouseMove(x, y)
+            }
+
+            glfwSetMouseButtonCallback(window){ _, button, action, mods ->
+                makeCurrent(window)
+                onMouseAction(button, action, mods)
             }
         }
     }

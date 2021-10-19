@@ -3,8 +3,9 @@ package com.husker.minui.core
 import com.husker.minui.core.utils.Trigger
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL.*
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil.*
+import java.nio.ByteBuffer
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -42,6 +43,10 @@ object Resources {
     }
 
     fun invokeSync(runnable: Runnable){
+        if(Thread.currentThread() == thread){
+            runnable.run()
+            return
+        }
         val trigger = Trigger()
         invoke {
             runnable.run()
@@ -61,6 +66,32 @@ object Resources {
             trigger.ready()
         }
         trigger.waitForReady()
+    }
+
+    fun readTextureBytes(texId: Int, width: Int, height: Int): ByteBuffer{
+        val buffer = ByteBuffer.allocateDirect(width * height * 4)
+        invokeSync{
+            glBindTexture(GL_TEXTURE_2D, texId)
+
+            val fb = glGenFramebuffers()
+            glBindFramebuffer(GL_FRAMEBUFFER, fb)
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texId, 0)
+
+            glReadBuffer(GL_COLOR_ATTACHMENT0)
+            glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+
+            glDeleteFramebuffers(fb)
+        }
+        return buffer
+    }
+
+    fun writeTextureBytes(texId: Int, width: Int, height: Int, buffer: ByteBuffer){
+        invokeSync{
+            glBindTexture(GL_TEXTURE_2D, texId)
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+            glFlush()
+        }
     }
 
     private fun requestContext(){

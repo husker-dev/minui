@@ -15,6 +15,8 @@ data class KeyEvent(
         Other
     }
 
+    val time = System.currentTimeMillis()
+
     val isShiftDown: Boolean
         get() = mods and GLFW_MOD_SHIFT == GLFW_MOD_SHIFT
 
@@ -32,17 +34,5 @@ data class KeyEvent(
 
     val isNumLocked: Boolean
         get() = mods and GLFW_MOD_NUM_LOCK == GLFW_MOD_NUM_LOCK
-
-    override fun toString(): String {
-        val modsText = arrayListOf<String>()
-        if(isShiftDown) modsText.add("shift")
-        if(isCtrlDown) modsText.add("ctrl")
-        if(isAltDown) modsText.add("alt")
-        if(isSuperKeysDown) modsText.add("super")
-        if(isCapsLocked) modsText.add("capslock")
-        if(isNumLocked) modsText.add("numlock")
-        return "KeyEvent(keyCode=$keyCode, scancode=$scancode, action=$action, mods=$modsText)"
-    }
-
 
 }

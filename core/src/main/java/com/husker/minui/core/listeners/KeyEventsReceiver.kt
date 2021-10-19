@@ -1,8 +1,8 @@
 package com.husker.minui.core.listeners
 
-interface KeyActionsReceiver {
+interface KeyEventsReceiver {
 
-    fun addKeyPressListener(listener: (event: KeyEvent) -> Unit)
+    fun addKeyPressedListener(listener: (event: KeyEvent) -> Unit)
     fun addKeyReleasedListener(listener: (event: KeyEvent) -> Unit)
     fun addKeyTypedListener(listener: (event: KeyEvent) -> Unit)
 }
