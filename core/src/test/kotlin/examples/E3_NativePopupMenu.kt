@@ -4,9 +4,11 @@ import com.husker.minui.core.Frame
 import com.husker.minui.core.Mouse
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.graphics.Color
+import com.husker.minui.natives.LibraryUtils
 
 fun main(){
     val frame = Frame("Native popup menu example")
+    frame.vsync = false
     frame.visible = true
 
     val popup = NativePopupMenu {
@@ -26,12 +28,12 @@ fun main(){
             button("Русский заголовок") { frame.title = "Русский заголовок" }
         }
         separator()
-        button("Hide window"){ frame.close() }
+        button("Hide window"){ frame.state = Frame.FrameState.Minimized }
         separator()
         button("Quit"){ frame.close() }
     }
 
     frame.addMousePressedListener {
-        popup.showAsync(Mouse.position)
+        popup.showAsync(Mouse.position, frame)
     }
 }

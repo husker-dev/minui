@@ -87,10 +87,13 @@ extern "C"{
         GlobalFree(data);
     }
 
-    JNIEXPORT jint JNICALL Java_com_husker_minui_natives_platform_Win_nGetLCID(JNIEnv *env, jobject, jbyteArray localeBytes) {
+    JNIEXPORT jbyteArray JNICALL Java_com_husker_minui_natives_platform_Win_nGetLCID(JNIEnv *env, jobject, jbyteArray localeBytes) {
         LCID lcid = 0;
         GetLocaleInfoEx((LPCWSTR) env->GetByteArrayElements(localeBytes, nullptr), LOCALE_RETURN_NUMBER | LOCALE_ILANGUAGE, (LPWSTR)&lcid, sizeof(lcid));
-        return (jint) lcid;
+
+        auto jkeys = env->NewByteArray(sizeof(lcid));
+        env->SetByteArrayRegion(jkeys, 0, sizeof(lcid), reinterpret_cast<const jbyte *>(lcid));
+        return jkeys;
     }
 
 }

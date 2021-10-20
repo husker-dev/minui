@@ -44,7 +44,7 @@ abstract class PlatformLibrary(fileName: String) {
     abstract fun setClipboardData(key: String, bytes: ByteArray)
     abstract fun setClipboardData(type: DataType, obj: Any)
 
-    abstract fun showNativePopup(popup: NativePopupMenu, x: Int, y: Int)
+    abstract fun showNativePopup(popup: NativePopupMenu, x: Int, y: Int, frame: Frame?)
 
     abstract fun getMousePosition(): Point
     abstract fun screenPointToClient(point: Point, frame: Frame): Point

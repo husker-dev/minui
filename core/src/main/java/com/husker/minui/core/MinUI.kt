@@ -120,14 +120,23 @@ object MinUI {
                 onKeyAction(key, scancode, action, mods)
             }
 
-            glfwSetCursorPosCallback(window){ _, x, y ->
+            glfwSetCursorPosCallback(window){ _, _, _ ->
                 makeCurrent(window)
-                onMouseMove(x, y)
+                onMouseMove()
             }
 
             glfwSetMouseButtonCallback(window){ _, button, action, mods ->
                 makeCurrent(window)
                 onMouseAction(button, action, mods)
+            }
+
+            glfwSetWindowMaximizeCallback(window){ _, maximized ->
+                makeCurrent(window)
+                onMaximize(maximized)
+            }
+            glfwSetWindowIconifyCallback(window){ _, iconified ->
+                makeCurrent(window)
+                onIconify(iconified)
             }
         }
     }

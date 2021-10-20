@@ -13,7 +13,7 @@ object EmptyLibrary: PlatformLibrary("") {
     override fun getClipboardData(type: DataType): Any? = null
     override fun setClipboardData(key: String, bytes: ByteArray) {}
     override fun setClipboardData(type: DataType, obj: Any) {}
-    override fun showNativePopup(popup: NativePopupMenu, x: Int, y: Int) {}
+    override fun showNativePopup(popup: NativePopupMenu, x: Int, y: Int, frame: Frame?) {}
 
     override fun getMousePosition(): Point = Point(0.0, 0.0)
     override fun screenPointToClient(point: Point, frame: Frame): Point = Point(-1.0, -1.0)

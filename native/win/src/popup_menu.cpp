@@ -1,6 +1,12 @@
 #include <jni.h>
 #include <windows.h>
 
+UINT showPopup(HMENU hmenu, int x, int y, HWND hwnd){
+    UINT result = TrackPopupMenu(hmenu, TPM_VERTICAL | TPM_RETURNCMD, x, y, 0, hwnd, nullptr);
+    DestroyMenu((HMENU) hmenu);
+    return result;
+}
+
 extern "C"{
 
     JNIEXPORT jlong JNICALL Java_com_husker_minui_natives_platform_Win_nCreatePopupMenu(JNIEnv *env, jobject) {
@@ -22,7 +28,7 @@ extern "C"{
     }
 
     JNIEXPORT jint JNICALL Java_com_husker_minui_natives_platform_Win_nShowPopup(JNIEnv *env, jobject, jlong hmenu, jint x, jint y) {
-        // Create  invisible window to do not block the main one
+        // Create invisible window to do not block the main one
         WNDCLASS wc = { };
         wc.lpfnWndProc   = DefWindowProc;
         wc.hInstance     = GetModuleHandle(nullptr);
@@ -33,15 +39,14 @@ extern "C"{
                 0, reinterpret_cast<LPCSTR>(L"TMP"), reinterpret_cast<LPCSTR>(L"TMP"),
                 WS_POPUP | WS_EX_NOACTIVATE,
                 0, 0, 0, 0, nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
-
-        //_AllowDarkModeForWindow(hwnd, true);
         ShowWindow(hwnd, SW_SHOW);
 
-        UINT result = TrackPopupMenu((HMENU) hmenu, TPM_VERTICAL | TPM_RETURNCMD, x, y, 0, reinterpret_cast<HWND>(hwnd), nullptr);
-        DestroyMenu((HMENU) hmenu);
+        jint result = (jint) showPopup((HMENU) hmenu, x, y, (HWND) hwnd);
         DestroyWindow(hwnd);
-        return (jint) result;
+        return result;
     }
 
-
+    JNIEXPORT jint JNICALL Java_com_husker_minui_natives_platform_Win_nShowPopupWnd(JNIEnv *env, jobject, jlong hmenu, jint x, jint y, jlong hwnd) {
+         return (jint) showPopup((HMENU) hmenu, x, y, (HWND) hwnd);
+    }
 }

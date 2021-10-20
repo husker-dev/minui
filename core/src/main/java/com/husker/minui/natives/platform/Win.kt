@@ -1,6 +1,7 @@
 package com.husker.minui.natives.platform
 
 import com.husker.minui.core.Frame
+import com.husker.minui.core.MinUI
 import com.husker.minui.core.clipboard.DataType
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.geometry.Point
@@ -11,6 +12,14 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 object Win: PlatformLibrary("win.dll") {
+
+    val Frame.hwnd: Long
+        get() = GLFWNativeWin32.glfwGetWin32Window(backend.window)
+
+    val ByteArray.wideText: ByteArray
+        get() = nMultiByteToWideText(this, String(this, StandardCharsets.UTF_8).length)
+    val ByteArray.utf8Text: ByteArray
+        get() = nWideTextToMultiByte(this)
 
     external fun nGetWindowExStyle(hwnd: Long): Long
     external fun nSetWindowExStyle(hwnd: Long, exStyle: Long)
@@ -25,11 +34,12 @@ object Win: PlatformLibrary("win.dll") {
     external fun nAddPopupSeparator(hmenu: Long)
     external fun nAddPopupSubMenu(hmenu: Long, wideText: ByteArray, subMenu: Long)
     external fun nShowPopup(hmenu: Long, x: Int, y: Int): Int
+    external fun nShowPopupWnd(hmenu: Long, x: Int, y: Int, hwnd: Long): Int
 
     external fun nGetMousePosition(): IntArray
     external fun nScreenToClient(hwnd: Long, x: Int, y: Int): IntArray
 
-    external fun nGetLCID(localeBytes: ByteArray): Int
+    external fun nGetLCID(localeBytes: ByteArray): ByteArray
 
     external fun nWideTextToMultiByte(bytes: ByteArray): ByteArray
     external fun nMultiByteToWideText(bytes: ByteArray, chars: Int): ByteArray
@@ -41,15 +51,15 @@ object Win: PlatformLibrary("win.dll") {
     private val cachedExStyles = hashMapOf<Frame, Long>()
 
     override fun setTaskbarIconEnabled(frame: Frame, enabled: Boolean) {
-        if((enabled && frame !in cachedExStyles) || (!enabled && frame in cachedExStyles))
+        if ((enabled && frame !in cachedExStyles) || (!enabled && frame in cachedExStyles))
             return
 
-        val hwnd = GLFWNativeWin32.glfwGetWin32Window(frame.backend.window)
-        if(enabled){
+        val hwnd = frame.hwnd
+        if (enabled) {
             nSetWindowExStyle(hwnd, cachedExStyles.remove(frame)!!) // Reset to default
             frame.visible = false   // TODO: Update window by changing visibility is not the best solution
             frame.visible = true
-        }else{
+        } else {
             cachedExStyles[frame] = nGetWindowExStyle(hwnd)
             nSetWindowExStyle(hwnd, WS_EX_NOACTIVATE)
         }
@@ -58,26 +68,26 @@ object Win: PlatformLibrary("win.dll") {
     // FileGroupDescriptorW
     override fun getClipboardDataType(): DataType {
         val types = nGetClipboardKeys()
-        return if("FileNameW" in types || "FileGroupDescriptorW" in types)  DataType.File
-        else if("PNG" in types || "CF_BITMAP" in types)                     DataType.Image
-        else if("CF_UNICODETEXT" in types || "CF_TEXT" in types)            DataType.Text
+        return if ("FileNameW" in types || "FileGroupDescriptorW" in types) DataType.File
+        else if ("PNG" in types || "CF_BITMAP" in types) DataType.Image
+        else if ("CF_UNICODETEXT" in types || "CF_TEXT" in types) DataType.Text
         else DataType.Other
     }
 
     override fun getClipboardData(type: DataType): Any? {
-        if(getClipboardDataType() != type)
+        if (getClipboardDataType() != type)
             return null
-        return when(type){
+        return when (type) {
             DataType.File -> {
-                val field = if(
+                val field = if (
                     "FileNameW" !in nGetClipboardKeys() ||
-                    nWideTextToMultiByte(nGetClipboardData("FileNameW")).toString() == "FileGroupDescriptorW"
+                    nGetClipboardData("FileNameW").utf8Text.toString() == "FileGroupDescriptorW"
                 ) "FileGroupDescriptorW" else "FileNameW"
-                File(nWideTextToMultiByte(nGetClipboardData(field)).toString(StandardCharsets.UTF_8))
+                File(nGetClipboardData(field).utf8Text.toString())
             }
             DataType.Text -> {
-                if("CF_UNICODETEXT" in nGetClipboardKeys())
-                    nWideTextToMultiByte(nGetClipboardData("CF_UNICODETEXT")).toString(StandardCharsets.UTF_8)
+                if ("CF_UNICODETEXT" in nGetClipboardKeys())
+                    nGetClipboardData("CF_UNICODETEXT").utf8Text.toString(StandardCharsets.UTF_8)
                 else
                     nGetClipboardData("CF_TEXT").toString(StandardCharsets.US_ASCII)
             }
@@ -91,20 +101,23 @@ object Win: PlatformLibrary("win.dll") {
     }
 
     override fun setClipboardData(type: DataType, obj: Any) {
-        when(type){
+        when (type) {
             DataType.File -> {
-                if(obj !is File) throw UnsupportedOperationException("Object is not a File")
+                if (obj !is File) throw UnsupportedOperationException("Object is not a File")
                 val path = obj.path
                 nEmptyClipboard()
                 nSetClipboardData("CF_HDROP", path.toByteArray(StandardCharsets.US_ASCII))
             }
             DataType.Text -> {
-                if(obj !is String) throw UnsupportedOperationException("Object is not a String")
+                if (obj !is String) throw UnsupportedOperationException("Object is not a String")
                 nEmptyClipboard()
                 nSetClipboardData("CF_TEXT", obj.toByteArray(StandardCharsets.US_ASCII))
                 nSetClipboardData("CF_OEMTEXT", obj.toByteArray(StandardCharsets.US_ASCII))
-                nSetClipboardData("CF_UNICODETEXT", nMultiByteToWideText(obj.toByteArray(StandardCharsets.UTF_8), obj.length))
-                nSetClipboardData("CF_LOCALE", getLCID())
+                nSetClipboardData(
+                    "CF_UNICODETEXT",
+                    obj.toByteArray().wideText
+                )
+                nSetClipboardData("CF_LOCALE", getLCID(Locale.getDefault()))
             }
             DataType.Image -> TODO()
             DataType.Other -> {
@@ -113,24 +126,37 @@ object Win: PlatformLibrary("win.dll") {
         }
     }
 
-    override fun showNativePopup(popup: NativePopupMenu, x: Int, y: Int) {
+    override fun showNativePopup(popup: NativePopupMenu, x: Int, y: Int, frame: Frame?) {
         val indices = arrayListOf<NativePopupMenu.PopupElement>()
 
-        val result = nShowPopup(createPopup(popup, indices), x, y)
-        if(result != 0 && indices[result - 1] is NativePopupMenu.ButtonElement)
+        val hmenu = createPopup(popup, indices)
+        var result = 0
+        if (frame != null)
+            MinUI.invokeLaterSync { result = nShowPopupWnd(hmenu, x, y, frame.hwnd) }
+        else
+            result = nShowPopup(hmenu, x, y)
+        if (result != 0 && indices[result - 1] is NativePopupMenu.ButtonElement)
             (indices[result - 1] as NativePopupMenu.ButtonElement).action?.invoke()
     }
 
-    private fun createPopup(popup: NativePopupMenu, indices: ArrayList<NativePopupMenu.PopupElement>): Long{
+    private fun createPopup(popup: NativePopupMenu, indices: ArrayList<NativePopupMenu.PopupElement>): Long {
         val hmenu = nCreatePopupMenu()
-        popup.elements.forEach{ element ->
+        popup.elements.forEach { element ->
             indices.add(element)
-            if(element is NativePopupMenu.ButtonElement)
-                nAddPopupString(hmenu, indices.size, nMultiByteToWideText(element.text.toByteArray(), element.text.length))
-            if(element is NativePopupMenu.Separator)
+            if (element is NativePopupMenu.ButtonElement)
+                nAddPopupString(
+                    hmenu,
+                    indices.size,
+                    element.text.toByteArray().wideText
+                )
+            if (element is NativePopupMenu.Separator)
                 nAddPopupSeparator(hmenu)
-            if(element is NativePopupMenu.SubMenu)
-                nAddPopupSubMenu(hmenu, nMultiByteToWideText(element.text.toByteArray(), element.text.length), createPopup(element.menu, indices))
+            if (element is NativePopupMenu.SubMenu)
+                nAddPopupSubMenu(
+                    hmenu,
+                    element.text.toByteArray().wideText,
+                    createPopup(element.menu, indices)
+                )
         }
         return hmenu
     }
@@ -141,17 +167,14 @@ object Win: PlatformLibrary("win.dll") {
     }
 
     override fun screenPointToClient(point: Point, frame: Frame): Point {
-        val relativePoint = nScreenToClient(GLFWNativeWin32.glfwGetWin32Window(frame.backend.window), point.x.toInt(), point.y.toInt())
+        val relativePoint = nScreenToClient(frame.hwnd, point.x.toInt(), point.y.toInt())
         return Point(relativePoint[0].toDouble(), relativePoint[1].toDouble())
     }
 
-    fun getLCID(): ByteArray {
-        val localeString = Locale.getDefault().toString()
-        return byteArrayOf(nGetLCID(nMultiByteToWideText(localeString.toByteArray(), localeString.length)).toByte())
-    }
+    fun getLCID(locale: Locale): ByteArray = nGetLCID(locale.toString().toByteArray().wideText)
 
     override fun getClipboardData(key: String): ByteArray? {
-        return if(key in nGetClipboardKeys())
+        return if (key in nGetClipboardKeys())
             nGetClipboardData(key)
         else null
     }

@@ -2,19 +2,20 @@ package com.husker.minui.core
 
 import com.husker.minui.core.exceptions.GLFWContextException
 import com.husker.minui.core.listeners.*
-import com.husker.minui.layouts.Container
-import com.husker.minui.layouts.Pane
 import com.husker.minui.core.utils.ConcurrentArrayList
 import com.husker.minui.geometry.Dimension
 import com.husker.minui.geometry.Point
 import com.husker.minui.graphics.Color
 import com.husker.minui.graphics.Graphics
 import com.husker.minui.graphics.Image
+import com.husker.minui.layouts.Container
+import com.husker.minui.layouts.Pane
 import com.husker.minui.natives.platform.PlatformLibrary
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWImage
-import org.lwjgl.opengl.ARBImaging.*
+import org.lwjgl.opengl.ARBImaging.GL_FUNC_ADD
+import org.lwjgl.opengl.ARBImaging.glBlendEquation
 import org.lwjgl.opengl.GL.createCapabilities
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryUtil.NULL
@@ -23,7 +24,45 @@ import org.lwjgl.system.MemoryUtil.NULL
 open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawable, Sizable, Positionable {
     val backend = FrameBackend()
 
+    enum class FrameState{
+        Default,
+        Minimized,
+        Maximized,
+        Fullscreen,
+        WindowedFullscreen
+    }
+
     var background = Color.White
+
+    private var _state = FrameState.Default
+    var state: FrameState
+        get() = _state
+        set(value) {
+            if(backend.initialized){
+                MinUI.invokeLaterSync {
+                    when (value) {
+                        FrameState.Default -> {
+                            if(_state == FrameState.Fullscreen || _state == FrameState.WindowedFullscreen)
+                                glfwSetWindowMonitor(backend.window, NULL, y.toInt(), x.toInt(), width.toInt(), height.toInt(), 0)
+                            glfwRestoreWindow(backend.window)
+                        }
+                        FrameState.Minimized -> {
+                            if(_state == FrameState.Fullscreen || _state == FrameState.WindowedFullscreen)
+                                glfwSetWindowMonitor(backend.window, NULL, y.toInt(), x.toInt(), width.toInt(), height.toInt(), 0)
+                            glfwIconifyWindow(backend.window)
+                        }
+                        FrameState.Maximized -> {
+                            if(_state == FrameState.Fullscreen || _state == FrameState.WindowedFullscreen)
+                                glfwSetWindowMonitor(backend.window, NULL, y.toInt(), x.toInt(), width.toInt(), height.toInt(), 0)
+                            glfwMaximizeWindow(backend.window)
+                        }
+                        FrameState.Fullscreen -> glfwSetWindowMonitor(backend.window, preferredDisplay.id, 0, 0, width.toInt(), height.toInt(), preferredDisplay.refreshRate)
+                        FrameState.WindowedFullscreen -> glfwSetWindowMonitor(backend.window, preferredDisplay.id, 0, 0, preferredDisplay.width, preferredDisplay.height, preferredDisplay.refreshRate)
+                    }
+                }
+            }
+            _state = value
+        }
 
     private var _root: Container = Pane()
     var root: Container
@@ -138,15 +177,11 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         get() = _visible
 
     private var _fullscreenDisplay: Display? = null
-    var fullscreenDisplay: Display?
+    var preferredDisplay: Display
         set(value) {
             _fullscreenDisplay = value
-            if(backend.initialized) {
-                if (value != null) MinUI.invokeLaterSync { glfwSetWindowMonitor(backend.window, value.id, 0, 0, width.toInt(), height.toInt(), value.refreshRate) }
-                else MinUI.invokeLaterSync { glfwSetWindowMonitor(backend.window, NULL, 0, 0, width.toInt(), height.toInt(), 60) }
-            }
         }
-        get() = _fullscreenDisplay
+        get() = if(_fullscreenDisplay == null) Display.default else _fullscreenDisplay!!
 
     private var _showTaskbarIcon: Boolean = true
     var showTaskbarIcon: Boolean
@@ -168,7 +203,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         get() = _vsync
 
     val display: Display
-        get() = Display(glfwGetWindowMonitor(backend.window))
+        get() = if(backend.initialized) Display(glfwGetWindowMonitor(backend.window)) else Display.default
 
     val mousePosition: Point
         get() = Mouse.getPositionInFrame(this)
@@ -190,6 +225,10 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
     private var _mouseReleasedListeners = ConcurrentArrayList<(MouseEvent) -> Unit>()
     private var _mouseClickedListeners = ConcurrentArrayList<(MouseEvent) -> Unit>()
 
+    private var _frameMinimizedListeners = ConcurrentArrayList<() -> Unit>()
+    private var _frameMaximizedListeners = ConcurrentArrayList<() -> Unit>()
+    private var _frameRestoredListeners = ConcurrentArrayList<() -> Unit>()
+
     private fun init(){
         // 1. Unbind resource's context from its thread
         // 2. Invoke UI-related methods in main thread
@@ -200,7 +239,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
                 glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE)
                 glfwWindowHint(GLFW_RESIZABLE, if(resizable) GLFW_TRUE else GLFW_FALSE)
 
-                backend.window = glfwCreateWindow(_width.toInt(), _height.toInt(), _title, if(fullscreenDisplay != null) fullscreenDisplay!!.id else NULL, Resources.window)
+                backend.window = glfwCreateWindow(width.toInt(), height.toInt(), _title, NULL, Resources.window)
                 glfwSetInputMode(backend.window, GLFW_LOCK_KEY_MODS, GLFW_TRUE)
 
                 if(backend.window == NULL)
@@ -210,6 +249,8 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
                 backend.initialized = true
 
                 // Update some window properties
+
+                state = state
                 icon = icon
                 undecorated = undecorated
                 alwaysOnTop = alwaysOnTop
@@ -355,6 +396,18 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         _mouseClickedListeners.add(listener)
     }
 
+    fun addFrameMaximizedListener(listener: () -> Unit) {
+        _frameMaximizedListeners.add(listener)
+    }
+
+    fun addFrameMinimizedListener(listener: () -> Unit) {
+        _frameMinimizedListeners.add(listener)
+    }
+
+    fun addFrameRestoredListener(listener: () -> Unit) {
+        _frameRestoredListeners.add(listener)
+    }
+
     inner class FrameBackend{
         var window = -1L
         var initialized = false
@@ -391,8 +444,27 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         fun onMove(x: Int, y: Int){
             _x = x.toDouble()
             _y = y.toDouble()
-
             _frameMovedListeners.iterate { it.invoke() }
+        }
+
+        fun onMaximize(maximized: Boolean){
+            if(maximized) {
+                _state = FrameState.Maximized
+                _frameMaximizedListeners.iterate { it.invoke() }
+            }else {
+                _state = FrameState.Default
+                _frameRestoredListeners.iterate { it.invoke() }
+            }
+        }
+
+        fun onIconify(iconified: Boolean){
+            if(iconified) {
+                _state = FrameState.Minimized
+                _frameMinimizedListeners.iterate { it.invoke() }
+            }else {
+                _state = FrameState.Default
+                _frameRestoredListeners.iterate { it.invoke() }
+            }
         }
 
         fun onKeyAction(key: Int, scancode: Int, action: Int, mods: Int){
@@ -404,7 +476,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
                 _keyTypedListeners.iterate { it.invoke(KeyEvent(key, scancode, KeyEvent.Action.Type, mods)) }
         }
 
-        fun onMouseMove(x: Double, y: Double){
+        fun onMouseMove() {
             _mouseMovedListeners.iterate { it.invoke() }
         }
 
