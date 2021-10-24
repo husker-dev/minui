@@ -4,7 +4,6 @@ import com.husker.minui.core.Frame
 import com.husker.minui.core.Mouse
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.graphics.Color
-import com.husker.minui.natives.LibraryUtils
 
 fun main(){
     val frame = Frame("Native popup menu example")
@@ -34,6 +33,6 @@ fun main(){
     }
 
     frame.addMousePressedListener {
-        popup.showAsync(Mouse.position, frame)
+        popup.showAsync(Mouse.location, frame)
     }
 }

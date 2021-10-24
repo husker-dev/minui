@@ -1,6 +1,7 @@
 package com.husker.minui.natives.platform
 
 import com.husker.minui.core.Frame
+import com.husker.minui.core.OS
 import com.husker.minui.core.clipboard.DataType
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.geometry.Point
@@ -9,24 +10,13 @@ import com.husker.minui.natives.LibraryUtils
 abstract class PlatformLibrary(fileName: String) {
 
     companion object{
-        val instance = when(getOS()){
-                "windows" -> Win
+        val instance = when(OS.get()){
+                OS.Windows -> Win
                 else -> EmptyLibrary
             }
 
         fun isSupported(): Boolean{
             return instance !is EmptyLibrary
-        }
-
-        private fun getOS(): String{
-            val os = System.getProperty("os.name").lowercase()
-            return when {
-                os.contains("win") -> "windows"
-                os.contains("nix") || os.contains("nux") || os.contains("aix") -> "linux"
-                os.contains("mac") -> "macos"
-                os.contains("sunos") -> "sunos"
-                else -> "unknown"
-            }
         }
     }
 

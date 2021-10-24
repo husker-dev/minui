@@ -1,10 +1,10 @@
 package com.husker.minui.core
 
-import com.husker.minui.core.exceptions.GLFWContextException
 import com.husker.minui.core.listeners.*
 import com.husker.minui.core.utils.ConcurrentArrayList
 import com.husker.minui.geometry.Dimension
 import com.husker.minui.geometry.Point
+import com.husker.minui.geometry.Rectangle
 import com.husker.minui.graphics.Color
 import com.husker.minui.graphics.Graphics
 import com.husker.minui.graphics.Image
@@ -18,13 +18,15 @@ import org.lwjgl.opengl.ARBImaging.GL_FUNC_ADD
 import org.lwjgl.opengl.ARBImaging.glBlendEquation
 import org.lwjgl.opengl.GL.createCapabilities
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.system.MemoryStack
+import org.lwjgl.system.MemoryStack.stackPush
 import org.lwjgl.system.MemoryUtil.NULL
 
 
 open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawable, Sizable, Positionable {
     val backend = FrameBackend()
 
-    enum class FrameState{
+    enum class FrameState {
         Default,
         Minimized,
         Maximized,
@@ -38,21 +40,21 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
     var state: FrameState
         get() = _state
         set(value) {
-            if(backend.initialized){
+            if (backend.initialized) {
                 MinUI.invokeLaterSync {
                     when (value) {
                         FrameState.Default -> {
-                            if(_state == FrameState.Fullscreen || _state == FrameState.WindowedFullscreen)
+                            if (_state == FrameState.Fullscreen || _state == FrameState.WindowedFullscreen)
                                 glfwSetWindowMonitor(backend.window, NULL, y.toInt(), x.toInt(), width.toInt(), height.toInt(), 0)
                             glfwRestoreWindow(backend.window)
                         }
                         FrameState.Minimized -> {
-                            if(_state == FrameState.Fullscreen || _state == FrameState.WindowedFullscreen)
+                            if (_state == FrameState.Fullscreen || _state == FrameState.WindowedFullscreen)
                                 glfwSetWindowMonitor(backend.window, NULL, y.toInt(), x.toInt(), width.toInt(), height.toInt(), 0)
                             glfwIconifyWindow(backend.window)
                         }
                         FrameState.Maximized -> {
-                            if(_state == FrameState.Fullscreen || _state == FrameState.WindowedFullscreen)
+                            if (_state == FrameState.Fullscreen || _state == FrameState.WindowedFullscreen)
                                 glfwSetWindowMonitor(backend.window, NULL, y.toInt(), x.toInt(), width.toInt(), height.toInt(), 0)
                             glfwMaximizeWindow(backend.window)
                         }
@@ -79,7 +81,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
     var title: String
         set(value) {
             _title = value
-            if(backend.initialized) MinUI.invokeLater { glfwSetWindowTitle(backend.window, _title) }
+            if (backend.initialized) MinUI.invokeLater { glfwSetWindowTitle(backend.window, _title) }
         }
         get() = _title
 
@@ -88,7 +90,13 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         set(value) {
             _width = value
             root.width = value
-            if(backend.initialized) MinUI.invokeLater { glfwSetWindowSize(backend.window, width.toInt(), height.toInt()) }
+            if (backend.initialized) MinUI.invokeLater {
+                glfwSetWindowSize(
+                    backend.window,
+                    width.toInt(),
+                    height.toInt()
+                )
+            }
         }
         get() = _width
 
@@ -97,7 +105,13 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         set(value) {
             _height = value
             root.height = value
-            if(backend.initialized) MinUI.invokeLater { glfwSetWindowSize(backend.window, width.toInt(), height.toInt()) }
+            if (backend.initialized) MinUI.invokeLater {
+                glfwSetWindowSize(
+                    backend.window,
+                    width.toInt(),
+                    height.toInt()
+                )
+            }
         }
         get() = _height
 
@@ -112,7 +126,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
     override var x: Double
         set(value) {
             _x = value
-            if(backend.initialized) MinUI.invokeLater { glfwSetWindowPos(backend.window, x.toInt(), y.toInt()) }
+            if (backend.initialized) MinUI.invokeLater { glfwSetWindowPos(backend.window, x.toInt(), y.toInt()) }
         }
         get() = _x
 
@@ -120,7 +134,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
     override var y: Double
         set(value) {
             _y = value
-            if(backend.initialized) MinUI.invokeLater { glfwSetWindowPos(backend.window, x.toInt(), y.toInt()) }
+            if (backend.initialized) MinUI.invokeLater { glfwSetWindowPos(backend.window, x.toInt(), y.toInt()) }
         }
         get() = _y
 
@@ -131,11 +145,18 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         }
         get() = Point(x, y)
 
+    var bounds: Rectangle
+        set(value) {
+            position = Point(value.x, value.y)
+            size = Dimension(value.width, value.height)
+        }
+        get() = Rectangle(x, y, width, height)
+
     private var _icon: Image? = null
     var icon: Image?
         set(value) {
             _icon = value
-            if(backend.initialized) setWindowIcon(value)
+            if (backend.initialized) setWindowIcon(value)
         }
         get() = _icon
 
@@ -143,7 +164,9 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
     var undecorated: Boolean
         set(value) {
             _undecorated = value
-            if(backend.initialized) MinUI.invokeLaterSync { glfwSetWindowAttrib(backend.window, GLFW_DECORATED, if(value) GLFW_FALSE else GLFW_TRUE) }
+            if (backend.initialized) MinUI.invokeLaterSync {
+                glfwSetWindowAttrib(backend.window, GLFW_DECORATED, if (value) GLFW_FALSE else GLFW_TRUE)
+            }
         }
         get() = _undecorated
 
@@ -151,7 +174,13 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
     var alwaysOnTop: Boolean
         set(value) {
             _alwaysOnTop = value
-            if(backend.initialized) MinUI.invokeLaterSync { glfwSetWindowAttrib(backend.window, GLFW_FLOATING, if(value) GLFW_TRUE else GLFW_FALSE) }
+            if (backend.initialized) MinUI.invokeLaterSync {
+                glfwSetWindowAttrib(
+                    backend.window,
+                    GLFW_FLOATING,
+                    if (value) GLFW_TRUE else GLFW_FALSE
+                )
+            }
         }
         get() = _alwaysOnTop
 
@@ -159,7 +188,13 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
     var resizable: Boolean
         set(value) {
             _resizable = value
-            if(backend.initialized) MinUI.invokeLaterSync { glfwSetWindowAttrib(backend.window, GLFW_RESIZABLE, if(value) GLFW_TRUE else GLFW_FALSE) }
+            if (backend.initialized) MinUI.invokeLaterSync {
+                glfwSetWindowAttrib(
+                    backend.window,
+                    GLFW_RESIZABLE,
+                    if (value) GLFW_TRUE else GLFW_FALSE
+                )
+            }
         }
         get() = _resizable
 
@@ -167,9 +202,9 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
     var visible: Boolean
         set(value) {
             _visible = value
-            if(!backend.initialized) init()
+            if (!backend.initialized) init()
             MinUI.invokeLaterSync {
-                if(value) glfwShowWindow(backend.window)
+                if (value) glfwShowWindow(backend.window)
                 else glfwHideWindow(backend.window)
             }
             _frameVisibleListeners.iterate { it.invoke(value) }
@@ -181,13 +216,13 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         set(value) {
             _fullscreenDisplay = value
         }
-        get() = if(_fullscreenDisplay == null) Display.default else _fullscreenDisplay!!
+        get() = if (_fullscreenDisplay == null) Display.default else _fullscreenDisplay!!
 
     private var _showTaskbarIcon: Boolean = true
     var showTaskbarIcon: Boolean
         set(value) {
             _showTaskbarIcon = value
-            if(backend.initialized) PlatformLibrary.instance.setTaskbarIconEnabled(this@Frame, value)
+            if (backend.initialized) PlatformLibrary.instance.setTaskbarIconEnabled(this@Frame, value)
         }
         get() = _showTaskbarIcon
 
@@ -195,15 +230,15 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
     var vsync: Boolean
         set(value) {
             _vsync = value
-            if(backend.initialized) MinUI.invokeLaterSync {
+            if (backend.initialized) MinUI.invokeLaterSync {
                 MinUI.makeCurrent(backend.window)
-                glfwSwapInterval(if(value) GLFW_TRUE else GLFW_FALSE)
+                glfwSwapInterval(if (value) GLFW_TRUE else GLFW_FALSE)
             }
         }
         get() = _vsync
 
     val display: Display
-        get() = if(backend.initialized) Display(glfwGetWindowMonitor(backend.window)) else Display.default
+        get() = if (backend.initialized) Display.ofFrame(this) else Display.default
 
     val mousePosition: Point
         get() = Mouse.getPositionInFrame(this)
@@ -237,7 +272,10 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
                 glfwDefaultWindowHints()
                 glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)
                 glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE)
+                glfwWindowHint(GLFW_DECORATED, if(undecorated) GLFW_FALSE else GLFW_TRUE)
                 glfwWindowHint(GLFW_RESIZABLE, if(resizable) GLFW_TRUE else GLFW_FALSE)
+                glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE)
+                glfwWindowHint(GLFW_WIN32_KEYBOARD_MENU, GLFW_TRUE)
 
                 backend.window = glfwCreateWindow(width.toInt(), height.toInt(), _title, NULL, Resources.window)
                 glfwSetInputMode(backend.window, GLFW_LOCK_KEY_MODS, GLFW_TRUE)
@@ -292,8 +330,8 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         glfwSetWindowPos(backend.window, actualX.toInt(), actualY.toInt())
         glfwSwapInterval(GLFW_FALSE)
 
-        initGLProperties()
-        draw()
+        backend.initGLProperties()
+        backend.drawGL()
 
         glfwMakeContextCurrent(0)
     }
@@ -311,41 +349,8 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         glfwSetWindowIcon(backend.window, imageBf)
     }
 
-    private fun initGLProperties(){
-        glEnable(GL_DEPTH_TEST)
-        glEnable(GL_TEXTURE_2D)
-
-        glEnable(GL_BLEND)
-        glBlendEquation(GL_FUNC_ADD)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-        glEnable(GL_ALPHA_TEST)
-        glAlphaFunc(GL_GREATER, 0f)
-
-        glDepthFunc(GL_LEQUAL)
-
-        glMatrixMode(GL_PROJECTION)
-    }
-
     fun requestFocus(){
         MinUI.invokeLaterSync { glfwRestoreWindow(backend.window) }
-    }
-
-    fun draw(){
-        if(glfwGetCurrentContext() != backend.window)
-            throw GLFWContextException("Can't repaint without GLFW context")
-
-        glLoadIdentity()
-        glOrtho(0.0, width, height, 0.0, 0.0, 1.0)
-
-        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-        glClearColor(background.red.toFloat(), background.green.toFloat(), background.blue.toFloat(), background.alpha.toFloat())
-
-        graphics.renderingWidth = width
-        graphics.renderingHeight = height
-        draw(graphics)
-
-        glfwSwapBuffers(backend.window)
     }
 
     override fun draw(gr: Graphics){
@@ -416,11 +421,54 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         var lastMouseReleaseEvent: MouseEvent? = null
         var lastMouseClickedEvent: MouseEvent? = null
 
+        var lastDisplayId = 0L
+        var dpi = 0.0
+
         fun destroy(){
             MinUI.frames.remove(this@Frame)
             glfwFreeCallbacks(window)
             glfwDestroyWindow(window)
             _frameClosedListeners.iterate { it.invoke() }
+        }
+
+        fun updateDPI(){
+            /*
+            if(lastDisplayId != display.id){
+                lastDisplayId = display.id
+                dpi = display.contentScale.width
+            }
+
+             */
+        }
+
+        fun initGLProperties(){
+            glEnable(GL_DEPTH_TEST)
+            glEnable(GL_TEXTURE_2D)
+
+            glEnable(GL_BLEND)
+            glBlendEquation(GL_FUNC_ADD)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+            glEnable(GL_ALPHA_TEST)
+            glAlphaFunc(GL_GREATER, 0f)
+
+            glDepthFunc(GL_LEQUAL)
+
+            glMatrixMode(GL_PROJECTION)
+        }
+
+        fun drawGL(){
+            glLoadIdentity()
+            glOrtho(0.0, width, height, 0.0, 0.0, 1.0)
+
+            glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+            glClearColor(background.red.toFloat(), background.green.toFloat(), background.blue.toFloat(), background.alpha.toFloat())
+
+            graphics.renderingWidth = width
+            graphics.renderingHeight = height
+            draw(graphics)
+
+            glfwSwapBuffers(backend.window)
         }
 
         fun onClosing(): Boolean{
@@ -436,15 +484,20 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
             root.height = _height
 
             _frameResizedListeners.iterate { it.invoke() }
+            updateDPI()
 
             glViewport(0, 0, width, height)
-            draw()
+            drawGL()
         }
 
         fun onMove(x: Int, y: Int){
-            _x = x.toDouble()
-            _y = y.toDouble()
+            // If window is not in main display, then set 'dpi' to main display's
+            val delta = if(Point(x.toDouble(), y.toDouble()) in Display.default.bounds) 1.0 else Display.default.contentScale.width
+
+            _x = x.toDouble() / delta
+            _y = y.toDouble() / delta
             _frameMovedListeners.iterate { it.invoke() }
+            updateDPI()
         }
 
         fun onMaximize(maximized: Boolean){
@@ -506,7 +559,6 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
                 lastMouseReleaseEvent = MouseEvent(button, MouseEvent.Action.Release, mods, 1, mousePosition)
                 _mouseReleasedListeners.iterate { it.invoke(lastMouseReleaseEvent!!) }
             }
-
         }
     }
 }

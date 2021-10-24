@@ -5,12 +5,12 @@ import com.husker.minui.natives.platform.PlatformLibrary
 
 object Mouse {
 
-    val position: Point
+    val location: Point
         get() = if(PlatformLibrary.isSupported()) PlatformLibrary.instance.getMousePosition()
                 else Point(-1.0, -1.0)
 
     fun getPositionInFrame(frame: Frame): Point{
-        return if(PlatformLibrary.isSupported()) PlatformLibrary.instance.screenPointToClient(position, frame)
+        return if(PlatformLibrary.isSupported()) PlatformLibrary.instance.screenPointToClient(location, frame)
         else Point(-1.0, -1.0)
     }
 }

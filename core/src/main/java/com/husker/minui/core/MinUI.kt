@@ -3,11 +3,13 @@ package com.husker.minui.core
 import com.husker.minui.core.exceptions.GLFWContextException
 import com.husker.minui.core.utils.ConcurrentArrayList
 import com.husker.minui.core.utils.Trigger
+import com.husker.minui.geometry.Dimension
 
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL.*
 import org.lwjgl.system.Configuration
+import java.nio.IntBuffer
 
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.concurrent.thread
@@ -51,7 +53,7 @@ object MinUI {
 
                     try {
                         makeCurrent(frame.backend.window)
-                        frame.draw()
+                        frame.backend.drawGL()
                         with(frame.backend) {
                             if (glfwWindowShouldClose(window)) {
                                 if (onClosing()) destroy()
@@ -151,17 +153,18 @@ object MinUI {
         mainQueue.offer(invokable)
     }
 
-    fun invokeLaterSync(invokable: () -> Unit) {
-        if(Thread.currentThread() == mainThread){
-            invokable.invoke()
-            return
-        }
+    fun <T> invokeLaterSync(invokable: () -> T): T? {
+        if(Thread.currentThread() == mainThread)
+            return invokable.invoke()
+
         val trigger = Trigger()
+        var result: T? = null
         invokeLater {
-            invokable.invoke()
+            result = invokable.invoke()
             trigger.ready()
         }
         trigger.waitForReady()
+        return result
     }
 
     fun shutdown(){

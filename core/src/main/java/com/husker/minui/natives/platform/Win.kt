@@ -6,6 +6,7 @@ import com.husker.minui.core.clipboard.DataType
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.geometry.Point
 import com.husker.minui.graphics.Image
+import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWNativeWin32
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -113,10 +114,7 @@ object Win: PlatformLibrary("win.dll") {
                 nEmptyClipboard()
                 nSetClipboardData("CF_TEXT", obj.toByteArray(StandardCharsets.US_ASCII))
                 nSetClipboardData("CF_OEMTEXT", obj.toByteArray(StandardCharsets.US_ASCII))
-                nSetClipboardData(
-                    "CF_UNICODETEXT",
-                    obj.toByteArray().wideText
-                )
+                nSetClipboardData("CF_UNICODETEXT", obj.toByteArray().wideText)
                 nSetClipboardData("CF_LOCALE", getLCID(Locale.getDefault()))
             }
             DataType.Image -> TODO()
@@ -144,19 +142,11 @@ object Win: PlatformLibrary("win.dll") {
         popup.elements.forEach { element ->
             indices.add(element)
             if (element is NativePopupMenu.ButtonElement)
-                nAddPopupString(
-                    hmenu,
-                    indices.size,
-                    element.text.toByteArray().wideText
-                )
+                nAddPopupString(hmenu, indices.size, element.text.toByteArray().wideText)
             if (element is NativePopupMenu.Separator)
                 nAddPopupSeparator(hmenu)
             if (element is NativePopupMenu.SubMenu)
-                nAddPopupSubMenu(
-                    hmenu,
-                    element.text.toByteArray().wideText,
-                    createPopup(element.menu, indices)
-                )
+                nAddPopupSubMenu(hmenu, element.text.toByteArray().wideText, createPopup(element.menu, indices))
         }
         return hmenu
     }

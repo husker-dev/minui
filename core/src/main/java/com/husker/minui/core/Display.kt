@@ -3,34 +3,37 @@ package com.husker.minui.core
 import com.husker.minui.core.utils.ConcurrentArrayList
 import com.husker.minui.geometry.Dimension
 import com.husker.minui.geometry.Point
+import com.husker.minui.geometry.Rectangle
 import org.lwjgl.glfw.GLFW.*
-import java.nio.FloatBuffer
-import java.nio.IntBuffer
+import org.lwjgl.system.MemoryStack.stackPush
+
 
 class Display(val id: Long): MinUIObject() {
 
     companion object{
         val default: Display
-            get() = Display(glfwGetPrimaryMonitor())
+            get() = MinUI.invokeLaterSync { Display(glfwGetPrimaryMonitor()) }!!
 
         val displays: Array<Display>
-            get() {
+            get() = MinUI.invokeLaterSync {
                 val monitorsArray = glfwGetMonitors()!!
                 val monitors = arrayListOf<Display>()
                 for(i in 0 until monitorsArray.limit())
                     monitors.add(Display(monitorsArray[i]))
-                return monitors.toTypedArray()
-            }
+                monitors.toTypedArray()
+            }!!
 
         private val connectListeners = ConcurrentArrayList<(id: Display) -> Unit>()
         private val disconnectListeners = ConcurrentArrayList<(id: Display) -> Unit>()
 
         init{
-            glfwSetMonitorCallback { monitorId, event ->
-                if(event == GLFW_CONNECTED)
-                    connectListeners.iterate { it.invoke(Display(monitorId)) }
-                if(event == GLFW_DISCONNECTED)
-                    disconnectListeners.iterate { it.invoke(Display(monitorId)) }
+            MinUI.invokeLaterSync {
+                glfwSetMonitorCallback { monitorId, event ->
+                    if(event == GLFW_CONNECTED)
+                        connectListeners.iterate { it.invoke(Display(monitorId)) }
+                    if(event == GLFW_DISCONNECTED)
+                        disconnectListeners.iterate { it.invoke(Display(monitorId)) }
+                }
             }
         }
 
@@ -41,9 +44,30 @@ class Display(val id: Long): MinUIObject() {
         fun addDisconnectListener(listener: (id: Display) -> Unit) {
             disconnectListeners.add(listener)
         }
+
+        fun ofPoint(point: Point): Display? {
+            for(display in displays) {
+                if (display.bounds.contains(point))
+                    return display
+            }
+            return null
+        }
+
+        fun ofFrame(frame: Frame): Display = MinUI.invokeLaterSync {
+            if(frame.state == Frame.FrameState.Fullscreen || frame.state == Frame.FrameState.WindowedFullscreen)
+                Display(glfwGetWindowMonitor(frame.backend.window))
+            else {
+                // TODO: Доделать это...
+                val position = frame.position
+                val size = frame.size
+                println(size)
+                ofPoint(Point(position.x + size.width / 2, position.y + size.height / 2))
+            }
+        }!!
+
     }
 
-    private val vidMode = glfwGetVideoMode(id)!!
+    private val vidMode = MinUI.invokeLaterSync { glfwGetVideoMode(id)!! }!!
 
     val width: Int
         get() = vidMode.width()
@@ -55,34 +79,50 @@ class Display(val id: Long): MinUIObject() {
         get() = vidMode.refreshRate()
 
     val name: String
-        get() = glfwGetMonitorName(id).orEmpty()
+        get() = MinUI.invokeLaterSync { glfwGetMonitorName(id) }.orEmpty()
 
     val position: Point
-        get() {
-            val xBuf = IntBuffer.allocate(1)
-            val yBuf = IntBuffer.allocate(1)
-            glfwGetMonitorPos(id, xBuf, yBuf)
-            return Point(xBuf[0].toDouble(), yBuf[0].toDouble())
-        }
+        get() = MinUI.invokeLaterSync {
+            stackPush().use { stack ->
+                val sx = stack.mallocInt(1)
+                val sy = stack.mallocInt(1)
+                glfwGetMonitorPos(id, sx, sy)
+                Point(sx[0].toDouble(), sy[0].toDouble())
+            }
+        }!!
 
-    val contentScale: Point
-        get() {
-            val xBuf = FloatBuffer.allocate(1)
-            val yBuf = FloatBuffer.allocate(1)
-            glfwGetMonitorContentScale(id, xBuf, yBuf)
-            return Point(xBuf[0].toDouble(), yBuf[0].toDouble())
-        }
+    val contentScale: Dimension
+        get() = MinUI.invokeLaterSync {
+            stackPush().use { stack ->
+                val sx = stack.mallocFloat(1)
+                val sy = stack.mallocFloat(1)
+                glfwGetMonitorContentScale(id, sx, sy)
+                Dimension(sx[0].toDouble(), sy[0].toDouble())
+            }
+        }!!
 
     val physicalSize: Dimension
-        get() {
-            val xBuf = IntBuffer.allocate(1)
-            val yBuf = IntBuffer.allocate(1)
-            glfwGetMonitorPhysicalSize(id, xBuf, yBuf)
-            return Dimension(xBuf[0].toDouble(), yBuf[0].toDouble())
-        }
+        get() = MinUI.invokeLaterSync {
+            stackPush().use { stack ->
+                val sx = stack.mallocInt(1)
+                val sy = stack.mallocInt(1)
+                glfwGetMonitorPhysicalSize(id, sx, sy)
+                Dimension(sx[0].toDouble(), sy[0].toDouble())
+            }
+        }!!
 
     val size: Dimension
         get() = Dimension(width.toDouble(), height.toDouble())
+
+    val bounds: Rectangle
+        get() {
+            val pos = position
+            val size = size
+            return Rectangle(pos.x, pos.y, size.width, size.height)
+        }
+
+    val isPrimary: Boolean
+        get() = this == default
 
     fun addConnectListener(listener: () -> Unit) {
         Display.addConnectListener { if(it.id == id) listener.invoke() }

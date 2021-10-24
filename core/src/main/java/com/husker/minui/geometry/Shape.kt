@@ -1,5 +1,9 @@
 package com.husker.minui.geometry
 
-interface Shape {
-    val bounds: Rectangle
+abstract class Shape {
+    abstract val bounds: Rectangle
+
+    abstract fun contains(x: Double, y: Double): Boolean
+    operator fun contains(point: Point): Boolean = contains(point.x, point.y)
 }
+

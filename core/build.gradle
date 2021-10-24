@@ -49,7 +49,7 @@ dependencies {
         runtimeOnly "org.lwjgl:lwjgl-stb:$lwjglVersion:$platform"
     }
 
-    implementation 'org.locationtech.jts:jts-core:1.18.2'
+    //implementation 'org.locationtech.jts:jts-core:1.18.2'
 
     //compile 'org.slf4j:slf4j-simple:1.7.29'
     //compile 'io.github.microutils:kotlin-logging-jvm:2.0.10'
