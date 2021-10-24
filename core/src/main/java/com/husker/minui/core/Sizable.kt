@@ -8,5 +8,5 @@ interface Sizable {
     var height: Double
     var size: Dimension
 
-    fun addOnResizedListener(listener: () -> Unit)
+    fun onResize(listener: () -> Unit)
 }

@@ -84,11 +84,11 @@ abstract class Component: Drawable, Sizable, Positionable {
         return "${this::class.java.canonicalName}(x=$x, y=$y, prefW=$preferredWidth, prefH=$preferredHeight, width=$width, height=$height)"
     }
 
-    override fun addOnResizedListener(listener: () -> Unit) {
+    override fun onResize(listener: () -> Unit) {
         _componentResizedListeners.add(listener)
     }
 
-    override fun addOnMovedListener(listener: () -> Unit) {
+    override fun onMoved(listener: () -> Unit) {
         _componentMovedListeners.add(listener)
     }
 }

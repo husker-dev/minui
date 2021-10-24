@@ -18,8 +18,6 @@ import org.lwjgl.opengl.ARBImaging.GL_FUNC_ADD
 import org.lwjgl.opengl.ARBImaging.glBlendEquation
 import org.lwjgl.opengl.GL.createCapabilities
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.system.MemoryStack
-import org.lwjgl.system.MemoryStack.stackPush
 import org.lwjgl.system.MemoryUtil.NULL
 import kotlin.system.exitProcess
 
@@ -65,8 +63,8 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
                                 glfwSetWindowMonitor(backend.window, NULL, y.toInt(), x.toInt(), width.toInt(), height.toInt(), 0)
                             glfwMaximizeWindow(backend.window)
                         }
-                        FrameState.Fullscreen -> glfwSetWindowMonitor(backend.window, preferredDisplay.id, 0, 0, width.toInt(), height.toInt(), preferredDisplay.refreshRate)
-                        FrameState.WindowedFullscreen -> glfwSetWindowMonitor(backend.window, preferredDisplay.id, 0, 0, preferredDisplay.width, preferredDisplay.height, preferredDisplay.refreshRate)
+                        FrameState.Fullscreen -> glfwSetWindowMonitor(backend.window, fullscreenDisplay.id, 0, 0, width.toInt(), height.toInt(), fullscreenDisplay.refreshRate)
+                        FrameState.WindowedFullscreen -> glfwSetWindowMonitor(backend.window, fullscreenDisplay.id, 0, 0, fullscreenDisplay.width, fullscreenDisplay.height, fullscreenDisplay.refreshRate)
                     }
                 }
             }
@@ -98,11 +96,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
             _width = value
             root.width = value
             if (backend.initialized) MinUI.invokeLater {
-                glfwSetWindowSize(
-                    backend.window,
-                    width.toInt(),
-                    height.toInt()
-                )
+                glfwSetWindowSize(backend.window, width.toInt(), height.toInt())
             }
         }
         get() = _width
@@ -113,11 +107,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
             _height = value
             root.height = value
             if (backend.initialized) MinUI.invokeLater {
-                glfwSetWindowSize(
-                    backend.window,
-                    width.toInt(),
-                    height.toInt()
-                )
+                glfwSetWindowSize(backend.window, width.toInt(), height.toInt())
             }
         }
         get() = _height
@@ -219,7 +209,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         get() = _visible
 
     private var _fullscreenDisplay: Display? = null
-    var preferredDisplay: Display
+    var fullscreenDisplay: Display
         set(value) {
             _fullscreenDisplay = value
         }
@@ -294,7 +284,6 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
                 backend.initialized = true
 
                 // Update some window properties
-
                 state = state
                 icon = icon
                 undecorated = undecorated
@@ -328,8 +317,8 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
 
     private fun prepareWindow(){
         val vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor())!!
-        val actualX = if(x == Double.MIN_VALUE) (vidMode.width() - width) / 2 else x
-        val actualY = if(y == Double.MIN_VALUE) (vidMode.height() - height) / 2 else y
+        val actualX = if(x == Double.MIN_VALUE) (vidMode.width() - width * display.dpi) / 2 else x
+        val actualY = if(y == Double.MIN_VALUE) (vidMode.height() - height * display.dpi) / 2 else y
 
         glfwMakeContextCurrent(backend.window)
         createCapabilities()
@@ -364,59 +353,59 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         root.draw(gr)
     }
 
-    override fun addKeyPressedListener(listener: (event: KeyEvent) -> Unit) {
+    override fun onKeyPress(listener: (event: KeyEvent) -> Unit) {
         _keyPressedListeners.add(listener)
     }
 
-    override fun addKeyReleasedListener(listener: (event: KeyEvent) -> Unit) {
+    override fun onKeyRelease(listener: (event: KeyEvent) -> Unit) {
         _keyReleasedListeners.add(listener)
     }
 
-    override fun addKeyTypedListener(listener: (event: KeyEvent) -> Unit) {
+    override fun onKeyType(listener: (event: KeyEvent) -> Unit) {
         _keyTypedListeners.add(listener)
     }
 
-    fun addVisibleListener(listener: (Boolean) -> Unit) {
+    fun onVisibleChanges(listener: (Boolean) -> Unit) {
         _frameVisibleListeners.add(listener)
     }
 
-    fun addOnClosingListener(listener: (ClosingEvent) -> Unit) {
+    fun onClosing(listener: (ClosingEvent) -> Unit) {
         _frameClosingListeners.add(listener)
     }
 
-    fun addOnCloseListener(listener: () -> Unit) {
+    fun onClose(listener: () -> Unit) {
         _frameClosedListeners.add(listener)
     }
 
-    override fun addOnResizedListener(listener: () -> Unit) {
+    override fun onResize(listener: () -> Unit) {
         _frameResizedListeners.add(listener)
     }
 
-    override fun addOnMovedListener(listener: () -> Unit) {
+    override fun onMoved(listener: () -> Unit) {
         _frameMovedListeners.add(listener)
     }
 
-    override fun addMousePressedListener(listener: (event: MouseEvent) -> Unit) {
+    override fun onMousePress(listener: (event: MouseEvent) -> Unit) {
         _mousePressedListeners.add(listener)
     }
 
-    override fun addMouseReleasedListener(listener: (event: MouseEvent) -> Unit) {
+    override fun onMouseRelease(listener: (event: MouseEvent) -> Unit) {
         _mouseReleasedListeners.add(listener)
     }
 
-    override fun addMouseClickedListener(listener: (event: MouseEvent) -> Unit) {
+    override fun onMouseClick(listener: (event: MouseEvent) -> Unit) {
         _mouseClickedListeners.add(listener)
     }
 
-    fun addFrameMaximizedListener(listener: () -> Unit) {
+    fun onMaximize(listener: () -> Unit) {
         _frameMaximizedListeners.add(listener)
     }
 
-    fun addFrameMinimizedListener(listener: () -> Unit) {
+    fun onMinimize(listener: () -> Unit) {
         _frameMinimizedListeners.add(listener)
     }
 
-    fun addFrameRestoredListener(listener: () -> Unit) {
+    fun onRestore(listener: () -> Unit) {
         _frameRestoredListeners.add(listener)
     }
 
@@ -500,7 +489,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
 
         fun onMove(x: Int, y: Int){
             // If window is not in main display, then set 'dpi' to main display's
-            val delta = if(Point(x.toDouble(), y.toDouble()) in Display.default.bounds) 1.0 else Display.default.contentScale.width
+            val delta = if(Point(x.toDouble(), y.toDouble()) in Display.default.bounds) 1.0 else Display.default.dpi
 
             _x = x.toDouble() / delta
             _y = y.toDouble() / delta

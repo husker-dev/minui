@@ -1,23 +1,26 @@
 package com.husker.minui.natives.platform
 
+import com.husker.minui.core.Display
 import com.husker.minui.core.Frame
 import com.husker.minui.core.MinUI
+import com.husker.minui.core.OS
 import com.husker.minui.core.clipboard.DataType
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.geometry.Point
 import com.husker.minui.graphics.Image
-import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWNativeWin32
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.*
 
-object Win: PlatformLibrary("win.dll") {
+object Win: PlatformLibrary("win/${OS.arch}/win.dll") {
 
     val Frame.hwnd: Long
         get() = GLFWNativeWin32.glfwGetWin32Window(backend.window)
 
-    val ByteArray.wideText: ByteArray
+    val String.wideBytes: ByteArray
+        get() = toByteArray().wideBytes
+    val ByteArray.wideBytes: ByteArray
         get() = nMultiByteToWideText(this, String(this, StandardCharsets.UTF_8).length)
     val ByteArray.utf8Text: ByteArray
         get() = nWideTextToMultiByte(this)
@@ -41,6 +44,9 @@ object Win: PlatformLibrary("win.dll") {
     external fun nScreenToClient(hwnd: Long, x: Int, y: Int): IntArray
 
     external fun nGetLCID(localeBytes: ByteArray): ByteArray
+
+    external fun nMonitorFromWindow(hwnd: Long): Long
+    external fun nGetMonitorName(hwnd: Long): String
 
     external fun nWideTextToMultiByte(bytes: ByteArray): ByteArray
     external fun nMultiByteToWideText(bytes: ByteArray, chars: Int): ByteArray
@@ -114,7 +120,7 @@ object Win: PlatformLibrary("win.dll") {
                 nEmptyClipboard()
                 nSetClipboardData("CF_TEXT", obj.toByteArray(StandardCharsets.US_ASCII))
                 nSetClipboardData("CF_OEMTEXT", obj.toByteArray(StandardCharsets.US_ASCII))
-                nSetClipboardData("CF_UNICODETEXT", obj.toByteArray().wideText)
+                nSetClipboardData("CF_UNICODETEXT", obj.wideBytes)
                 nSetClipboardData("CF_LOCALE", getLCID(Locale.getDefault()))
             }
             DataType.Image -> TODO()
@@ -137,16 +143,26 @@ object Win: PlatformLibrary("win.dll") {
             (indices[result - 1] as NativePopupMenu.ButtonElement).action?.invoke()
     }
 
+    override fun getFrameDisplay(frame: Frame): Display {
+        val hmonitor = nMonitorFromWindow(frame.hwnd)
+        val name = nGetMonitorName(hmonitor)
+        for(display in Display.displays){
+            if(name in GLFWNativeWin32.glfwGetWin32Monitor(display.id)!!)
+                return display
+        }
+        return Display.default
+    }
+
     private fun createPopup(popup: NativePopupMenu, indices: ArrayList<NativePopupMenu.PopupElement>): Long {
         val hmenu = nCreatePopupMenu()
         popup.elements.forEach { element ->
             indices.add(element)
             if (element is NativePopupMenu.ButtonElement)
-                nAddPopupString(hmenu, indices.size, element.text.toByteArray().wideText)
+                nAddPopupString(hmenu, indices.size, element.text.wideBytes)
             if (element is NativePopupMenu.Separator)
                 nAddPopupSeparator(hmenu)
             if (element is NativePopupMenu.SubMenu)
-                nAddPopupSubMenu(hmenu, element.text.toByteArray().wideText, createPopup(element.menu, indices))
+                nAddPopupSubMenu(hmenu, element.text.wideBytes, createPopup(element.menu, indices))
         }
         return hmenu
     }
@@ -161,7 +177,7 @@ object Win: PlatformLibrary("win.dll") {
         return Point(relativePoint[0].toDouble(), relativePoint[1].toDouble())
     }
 
-    fun getLCID(locale: Locale): ByteArray = nGetLCID(locale.toString().toByteArray().wideText)
+    fun getLCID(locale: Locale): ByteArray = nGetLCID(locale.toString().toByteArray().wideBytes)
 
     override fun getClipboardData(key: String): ByteArray? {
         return if (key in nGetClipboardKeys())

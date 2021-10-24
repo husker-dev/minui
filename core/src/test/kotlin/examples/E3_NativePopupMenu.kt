@@ -32,7 +32,7 @@ fun main(){
         button("Quit"){ frame.close() }
     }
 
-    frame.addMousePressedListener {
+    frame.onMousePress {
         popup.showAsync(Mouse.location, frame)
     }
 }

@@ -1,5 +1,6 @@
 package com.husker.minui.natives.platform
 
+import com.husker.minui.core.Display
 import com.husker.minui.core.Frame
 import com.husker.minui.core.OS
 import com.husker.minui.core.clipboard.DataType
@@ -10,14 +11,12 @@ import com.husker.minui.natives.LibraryUtils
 abstract class PlatformLibrary(fileName: String) {
 
     companion object{
-        val instance = when(OS.get()){
+        val instance = when(OS.name){
                 OS.Windows -> Win
                 else -> EmptyLibrary
             }
 
-        fun isSupported(): Boolean{
-            return instance !is EmptyLibrary
-        }
+        fun isSupported(): Boolean = instance !is EmptyLibrary
     }
 
     init {
@@ -35,6 +34,8 @@ abstract class PlatformLibrary(fileName: String) {
     abstract fun setClipboardData(type: DataType, obj: Any)
 
     abstract fun showNativePopup(popup: NativePopupMenu, x: Int, y: Int, frame: Frame?)
+
+    abstract fun getFrameDisplay(frame: Frame): Display
 
     abstract fun getMousePosition(): Point
     abstract fun screenPointToClient(point: Point, frame: Frame): Point

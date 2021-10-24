@@ -8,5 +8,5 @@ interface Positionable {
     var y: Double
     var position: Point
 
-    fun addOnMovedListener(listener: () -> Unit)
+    fun onMoved(listener: () -> Unit)
 }

@@ -1,5 +1,6 @@
 package com.husker.minui.natives.platform
 
+import com.husker.minui.core.Display
 import com.husker.minui.core.Frame
 import com.husker.minui.core.clipboard.DataType
 import com.husker.minui.core.popup.NativePopupMenu
@@ -14,6 +15,7 @@ object EmptyLibrary: PlatformLibrary("") {
     override fun setClipboardData(key: String, bytes: ByteArray) {}
     override fun setClipboardData(type: DataType, obj: Any) {}
     override fun showNativePopup(popup: NativePopupMenu, x: Int, y: Int, frame: Frame?) {}
+    override fun getFrameDisplay(frame: Frame): Display = Display.default
 
     override fun getMousePosition(): Point = Point(0.0, 0.0)
     override fun screenPointToClient(point: Point, frame: Frame): Point = Point(-1.0, -1.0)

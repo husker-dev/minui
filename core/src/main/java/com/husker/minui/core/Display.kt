@@ -4,6 +4,7 @@ import com.husker.minui.core.utils.ConcurrentArrayList
 import com.husker.minui.geometry.Dimension
 import com.husker.minui.geometry.Point
 import com.husker.minui.geometry.Rectangle
+import com.husker.minui.natives.platform.PlatformLibrary
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.system.MemoryStack.stackPush
 
@@ -56,13 +57,9 @@ class Display(val id: Long): MinUIObject() {
         fun ofFrame(frame: Frame): Display = MinUI.invokeLaterSync {
             if(frame.state == Frame.FrameState.Fullscreen || frame.state == Frame.FrameState.WindowedFullscreen)
                 Display(glfwGetWindowMonitor(frame.backend.window))
-            else {
-                // TODO: Доделать это...
-                val position = frame.position
-                val size = frame.size
-                println(size)
-                ofPoint(Point(position.x + size.width / 2, position.y + size.height / 2))
-            }
+            else if(PlatformLibrary.isSupported())
+                PlatformLibrary.instance.getFrameDisplay(frame)
+            else default
         }!!
 
     }
@@ -91,13 +88,12 @@ class Display(val id: Long): MinUIObject() {
             }
         }!!
 
-    val contentScale: Dimension
+    val dpi: Double
         get() = MinUI.invokeLaterSync {
             stackPush().use { stack ->
                 val sx = stack.mallocFloat(1)
-                val sy = stack.mallocFloat(1)
-                glfwGetMonitorContentScale(id, sx, sy)
-                Dimension(sx[0].toDouble(), sy[0].toDouble())
+                glfwGetMonitorContentScale(id, sx, stack.mallocFloat(1))
+                sx[0].toDouble()
             }
         }!!
 
