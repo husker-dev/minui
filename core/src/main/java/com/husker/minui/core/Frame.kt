@@ -21,6 +21,7 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryStack.stackPush
 import org.lwjgl.system.MemoryUtil.NULL
+import kotlin.system.exitProcess
 
 
 open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawable, Sizable, Positionable {
@@ -34,7 +35,13 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         WindowedFullscreen
     }
 
+    enum class CloseOperation{
+        ExitProgram,
+        Nothing
+    }
+
     var background = Color.White
+    var closeOperation = CloseOperation.Nothing
 
     private var _state = FrameState.Default
     var state: FrameState
@@ -429,6 +436,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
             glfwFreeCallbacks(window)
             glfwDestroyWindow(window)
             _frameClosedListeners.iterate { it.invoke() }
+            if(closeOperation == CloseOperation.ExitProgram) exitProcess(0)
         }
 
         fun updateDPI(){

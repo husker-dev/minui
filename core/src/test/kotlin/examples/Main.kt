@@ -1,24 +1,15 @@
 package examples
 
 import com.husker.minui.core.*
-import com.husker.minui.geometry.Dimension
-import com.husker.minui.graphics.*
-import com.husker.minui.layouts.BorderPane
-import com.husker.minui.natives.LibraryUtils
-import com.husker.minui.natives.platform.PlatformLibrary
-import org.lwjgl.glfw.GLFW
-import java.nio.IntBuffer
+import com.husker.minui.core.Frame.*
 
 
 fun main(){
-    LibraryUtils.forceLoad = true
     val frame = Frame("MinUI Application")
     with(frame){
-        root = BorderPane()
-        background = Color.Transparent
-        visible = true
         vsync = false
-
+        closeOperation = CloseOperation.ExitProgram
+        visible = true
     }
 
     while(true){

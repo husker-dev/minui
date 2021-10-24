@@ -51,18 +51,15 @@ object MinUI {
                 frames.iterate { frame ->
                     if(!frame.backend.initialized) return@iterate
 
-                    try {
-                        makeCurrent(frame.backend.window)
-                        frame.backend.drawGL()
-                        with(frame.backend) {
-                            if (glfwWindowShouldClose(window)) {
-                                if (onClosing()) destroy()
-                                else glfwSetWindowShouldClose(window, false)
-                            }
+                    makeCurrent(frame.backend.window)
+                    frame.backend.drawGL()
+                    with(frame.backend) {
+                        if (glfwWindowShouldClose(window)) {
+                            if (onClosing()) destroy()
+                            else glfwSetWindowShouldClose(window, false)
                         }
-                    }catch (e: GLFWContextException){
-                        // TODO: Here is unknown exception
                     }
+
                 }
 
                 glfwPollEvents()
