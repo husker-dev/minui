@@ -2,6 +2,7 @@ package examples
 
 import com.husker.minui.core.Font
 import com.husker.minui.core.Frame
+import com.husker.minui.geometry.Dimension
 import com.husker.minui.natives.LibraryUtils
 
 

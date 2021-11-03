@@ -116,6 +116,32 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         }
         get() = Dimension(width, height)
 
+    private var _minimumSize = Dimension(-1.0, -1.0)
+    var minimumSize: Dimension
+        set(value) {
+            _minimumSize = value
+            if (backend.initialized) MinUI.invokeLater {
+                glfwSetWindowSizeLimits(backend.window,
+                    (_minimumSize.width * display.dpi).toInt(), (_minimumSize.height * display.dpi).toInt(),
+                    (_maximumSize.width * display.dpi).toInt(), (_maximumSize.height * display.dpi).toInt()
+                )
+            }
+        }
+        get() = _minimumSize
+
+    private var _maximumSize = Dimension(-1.0, -1.0)
+    var maximumSize: Dimension
+        set(value) {
+            _maximumSize = value
+            if (backend.initialized) MinUI.invokeLater {
+                glfwSetWindowSizeLimits(backend.window,
+                    (_minimumSize.width * display.dpi).toInt(), (_minimumSize.height * display.dpi).toInt(),
+                    (_maximumSize.width * display.dpi).toInt(), (_maximumSize.height * display.dpi).toInt()
+                )
+            }
+        }
+        get() = _maximumSize
+
     private var _x = Double.MIN_VALUE
     override var x: Double
         set(value) {
@@ -288,6 +314,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
                 resizable = resizable
                 vsync = vsync
                 showTaskbarIcon = showTaskbarIcon
+                minimumSize = minimumSize   // maximumSize is the same
 
                 // Initialize window callbacks
                 MinUI.initializeCallbacks(this@Frame)

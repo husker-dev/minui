@@ -4,7 +4,7 @@ import com.husker.minui.core.Display
 import com.husker.minui.core.Frame
 import com.husker.minui.core.OS
 import com.husker.minui.core.OS.Companion.Windows
-import com.husker.minui.core.clipboard.DataType
+import com.husker.minui.core.clipboard.ClipboardDataType
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.geometry.Point
 import com.husker.minui.natives.impl.UnknownPlatform
@@ -23,12 +23,12 @@ abstract class PlatformLibrary(fileName: String): Library(fileName) {
 
     abstract fun setTaskbarIconEnabled(frame: Frame, enabled: Boolean)
 
-    abstract fun getClipboardDataType(): DataType
+    abstract fun getClipboardDataType(): ClipboardDataType
     abstract fun getClipboardDataKeys(): Array<String>
     abstract fun getClipboardData(key: String): ByteArray?
-    abstract fun getClipboardData(type: DataType): Any?
+    abstract fun getClipboardData(type: ClipboardDataType): Any?
     abstract fun setClipboardData(key: String, bytes: ByteArray)
-    abstract fun setClipboardData(type: DataType, obj: Any)
+    abstract fun setClipboardData(type: ClipboardDataType, obj: Any)
 
     abstract fun showNativePopup(popup: NativePopupMenu, x: Int, y: Int, frame: Frame?)
 

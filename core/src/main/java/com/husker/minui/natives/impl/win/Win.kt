@@ -2,7 +2,7 @@ package com.husker.minui.natives.impl.win
 
 import com.husker.minui.core.Display
 import com.husker.minui.core.Frame
-import com.husker.minui.core.clipboard.DataType
+import com.husker.minui.core.clipboard.ClipboardDataType
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.geometry.Point
 import com.husker.minui.natives.PlatformLibrary
@@ -86,9 +86,9 @@ object Win: PlatformLibrary("minui-win") {
     override fun setTaskbarIconEnabled(frame: Frame, enabled: Boolean) = WinWindow.setTaskbarIconEnabled(frame, enabled)
 
     override fun getClipboardDataType() = WinClipboard.getClipboardDataType()
-    override fun getClipboardData(type: DataType) = WinClipboard.getClipboardData(type)
+    override fun getClipboardData(type: ClipboardDataType) = WinClipboard.getClipboardData(type)
     override fun setClipboardData(key: String, bytes: ByteArray) = WinClipboard.setClipboardData(key, bytes)
-    override fun setClipboardData(type: DataType, obj: Any) = WinClipboard.setClipboardData(type, obj)
+    override fun setClipboardData(type: ClipboardDataType, obj: Any) = WinClipboard.setClipboardData(type, obj)
     override fun getClipboardData(key: String) = WinClipboard.getClipboardData(key)
     override fun getClipboardDataKeys() = WinClipboard.getClipboardDataKeys()
 

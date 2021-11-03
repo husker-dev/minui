@@ -1,6 +1,6 @@
 package com.husker.minui.core.clipboard
 
-enum class DataType{
+enum class ClipboardDataType{
     File,
     Text,
     Image,

@@ -2,7 +2,7 @@ package com.husker.minui.natives.impl
 
 import com.husker.minui.core.Display
 import com.husker.minui.core.Frame
-import com.husker.minui.core.clipboard.DataType
+import com.husker.minui.core.clipboard.ClipboardDataType
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.geometry.Point
 import com.husker.minui.natives.PlatformLibrary
@@ -12,10 +12,10 @@ object UnknownPlatform: PlatformLibrary("") {
     override fun setTaskbarIconEnabled(frame: Frame, enabled: Boolean) {
     }
 
-    override fun getClipboardDataType(): DataType = DataType.Other
-    override fun getClipboardData(type: DataType): Any? = null
+    override fun getClipboardDataType(): ClipboardDataType = ClipboardDataType.Other
+    override fun getClipboardData(type: ClipboardDataType): Any? = null
     override fun setClipboardData(key: String, bytes: ByteArray) {}
-    override fun setClipboardData(type: DataType, obj: Any) {}
+    override fun setClipboardData(type: ClipboardDataType, obj: Any) {}
     override fun showNativePopup(popup: NativePopupMenu, x: Int, y: Int, frame: Frame?) {}
     override fun getFrameDisplay(frame: Frame): Display = Display.default
 
