@@ -1,15 +1,13 @@
 package com.husker.minui.core
 
-import com.husker.minui.core.exceptions.GLFWContextException
 import com.husker.minui.core.utils.ConcurrentArrayList
 import com.husker.minui.core.utils.Trigger
-import com.husker.minui.geometry.Dimension
+import com.husker.minui.natives.impl.BaseLibrary
 
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL.*
 import org.lwjgl.system.Configuration
-import java.nio.IntBuffer
 
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.concurrent.thread
@@ -29,6 +27,7 @@ object MinUI {
     val frames = ConcurrentArrayList<Frame>()
 
     init {
+        BaseLibrary.checkInitialization()
         Configuration.DISABLE_CHECKS.set(true)
 
         val initializeTrigger = Trigger()
@@ -61,14 +60,12 @@ object MinUI {
                     }
 
                 }
-
                 glfwPollEvents()
             }
 
             // Close all not closed windows
             for(frame in frames)
                 frame.backend.destroy()
-
 
             frames.clear()
         }

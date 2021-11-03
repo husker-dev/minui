@@ -1,7 +1,7 @@
 package com.husker.minui.core
 
 import com.husker.minui.geometry.Point
-import com.husker.minui.natives.platform.PlatformLibrary
+import com.husker.minui.natives.PlatformLibrary
 
 object Mouse {
 

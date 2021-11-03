@@ -10,7 +10,7 @@ import com.husker.minui.graphics.Graphics
 import com.husker.minui.graphics.Image
 import com.husker.minui.layouts.Container
 import com.husker.minui.layouts.Pane
-import com.husker.minui.natives.platform.PlatformLibrary
+import com.husker.minui.natives.PlatformLibrary
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWImage
@@ -19,6 +19,7 @@ import org.lwjgl.opengl.ARBImaging.glBlendEquation
 import org.lwjgl.opengl.GL.createCapabilities
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryUtil.NULL
+import java.util.function.Consumer
 import kotlin.system.exitProcess
 
 
@@ -95,9 +96,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         set(value) {
             _width = value
             root.width = value
-            if (backend.initialized) MinUI.invokeLater {
-                glfwSetWindowSize(backend.window, width.toInt(), height.toInt())
-            }
+            if (backend.initialized) MinUI.invokeLater { glfwSetWindowSize(backend.window, width.toInt(), height.toInt()) }
         }
         get() = _width
 
@@ -106,9 +105,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         set(value) {
             _height = value
             root.height = value
-            if (backend.initialized) MinUI.invokeLater {
-                glfwSetWindowSize(backend.window, width.toInt(), height.toInt())
-            }
+            if (backend.initialized) MinUI.invokeLater { glfwSetWindowSize(backend.window, width.toInt(), height.toInt()) }
         }
         get() = _height
 
@@ -204,7 +201,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
                 if (value) glfwShowWindow(backend.window)
                 else glfwHideWindow(backend.window)
             }
-            _frameVisibleListeners.iterate { it.invoke(value) }
+            _frameVisibleListeners.iterate { it.accept(value) }
         }
         get() = _visible
 
@@ -242,24 +239,24 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
 
     private val graphics = Graphics()
 
-    private var _keyPressedListeners = ConcurrentArrayList<(event: KeyEvent) -> Unit>()
-    private var _keyReleasedListeners = ConcurrentArrayList<(event: KeyEvent) -> Unit>()
-    private var _keyTypedListeners = ConcurrentArrayList<(event: KeyEvent) -> Unit>()
+    private var _keyPressedListeners = ConcurrentArrayList<Consumer<KeyEvent>>()
+    private var _keyReleasedListeners = ConcurrentArrayList<Consumer<KeyEvent>>()
+    private var _keyTypedListeners = ConcurrentArrayList<Consumer<KeyEvent>>()
 
-    private var _frameVisibleListeners = ConcurrentArrayList<(Boolean) -> Unit>()
-    private var _frameClosingListeners = ConcurrentArrayList<(ClosingEvent) -> Unit>()
-    private var _frameClosedListeners = ConcurrentArrayList<() -> Unit>()
-    private var _frameResizedListeners = ConcurrentArrayList<() -> Unit>()
-    private var _frameMovedListeners = ConcurrentArrayList<() -> Unit>()
+    private var _frameVisibleListeners = ConcurrentArrayList<Consumer<Boolean>>()
+    private var _frameClosingListeners = ConcurrentArrayList<Consumer<ClosingEvent>>()
+    private var _frameClosedListeners = ConcurrentArrayList<Runnable>()
+    private var _frameResizedListeners = ConcurrentArrayList<Runnable>()
+    private var _frameMovedListeners = ConcurrentArrayList<Runnable>()
 
-    private var _mouseMovedListeners = ConcurrentArrayList<() -> Unit>()
-    private var _mousePressedListeners = ConcurrentArrayList<(MouseEvent) -> Unit>()
-    private var _mouseReleasedListeners = ConcurrentArrayList<(MouseEvent) -> Unit>()
-    private var _mouseClickedListeners = ConcurrentArrayList<(MouseEvent) -> Unit>()
+    private var _mouseMovedListeners = ConcurrentArrayList<Runnable>()
+    private var _mousePressedListeners = ConcurrentArrayList<Consumer<MouseEvent>>()
+    private var _mouseReleasedListeners = ConcurrentArrayList<Consumer<MouseEvent>>()
+    private var _mouseClickedListeners = ConcurrentArrayList<Consumer<MouseEvent>>()
 
-    private var _frameMinimizedListeners = ConcurrentArrayList<() -> Unit>()
-    private var _frameMaximizedListeners = ConcurrentArrayList<() -> Unit>()
-    private var _frameRestoredListeners = ConcurrentArrayList<() -> Unit>()
+    private var _frameMinimizedListeners = ConcurrentArrayList<Runnable>()
+    private var _frameMaximizedListeners = ConcurrentArrayList<Runnable>()
+    private var _frameRestoredListeners = ConcurrentArrayList<Runnable>()
 
     private fun init(){
         // 1. Unbind resource's context from its thread
@@ -353,59 +350,59 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         root.draw(gr)
     }
 
-    override fun onKeyPress(listener: (event: KeyEvent) -> Unit) {
+    override fun onKeyPress(listener: Consumer<KeyEvent>) {
         _keyPressedListeners.add(listener)
     }
 
-    override fun onKeyRelease(listener: (event: KeyEvent) -> Unit) {
+    override fun onKeyRelease(listener: Consumer<KeyEvent>) {
         _keyReleasedListeners.add(listener)
     }
 
-    override fun onKeyType(listener: (event: KeyEvent) -> Unit) {
+    override fun onKeyType(listener: Consumer<KeyEvent>) {
         _keyTypedListeners.add(listener)
     }
 
-    fun onVisibleChanges(listener: (Boolean) -> Unit) {
+    fun onVisibleChanges(listener: Consumer<Boolean>) {
         _frameVisibleListeners.add(listener)
     }
 
-    fun onClosing(listener: (ClosingEvent) -> Unit) {
+    fun onClosing(listener: Consumer<ClosingEvent>) {
         _frameClosingListeners.add(listener)
     }
 
-    fun onClose(listener: () -> Unit) {
+    fun onClose(listener: Runnable) {
         _frameClosedListeners.add(listener)
     }
 
-    override fun onResize(listener: () -> Unit) {
+    override fun onResize(listener: Runnable) {
         _frameResizedListeners.add(listener)
     }
 
-    override fun onMoved(listener: () -> Unit) {
+    override fun onMoved(listener: Runnable) {
         _frameMovedListeners.add(listener)
     }
 
-    override fun onMousePress(listener: (event: MouseEvent) -> Unit) {
+    override fun onMousePress(listener: Consumer<MouseEvent>) {
         _mousePressedListeners.add(listener)
     }
 
-    override fun onMouseRelease(listener: (event: MouseEvent) -> Unit) {
+    override fun onMouseRelease(listener: Consumer<MouseEvent>) {
         _mouseReleasedListeners.add(listener)
     }
 
-    override fun onMouseClick(listener: (event: MouseEvent) -> Unit) {
+    override fun onMouseClick(listener: Consumer<MouseEvent>) {
         _mouseClickedListeners.add(listener)
     }
 
-    fun onMaximize(listener: () -> Unit) {
+    fun onMaximize(listener: Runnable) {
         _frameMaximizedListeners.add(listener)
     }
 
-    fun onMinimize(listener: () -> Unit) {
+    fun onMinimize(listener: Runnable) {
         _frameMinimizedListeners.add(listener)
     }
 
-    fun onRestore(listener: () -> Unit) {
+    fun onRestore(listener: Runnable) {
         _frameRestoredListeners.add(listener)
     }
 
@@ -417,14 +414,11 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         var lastMouseReleaseEvent: MouseEvent? = null
         var lastMouseClickedEvent: MouseEvent? = null
 
-        var lastDisplayId = 0L
-        var dpi = 0.0
-
         fun destroy(){
             MinUI.frames.remove(this@Frame)
             glfwFreeCallbacks(window)
             glfwDestroyWindow(window)
-            _frameClosedListeners.iterate { it.invoke() }
+            _frameClosedListeners.iterate { it.run() }
             if(closeOperation == CloseOperation.ExitProgram) exitProcess(0)
         }
 
@@ -470,7 +464,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
 
         fun onClosing(): Boolean{
             val event = ClosingEvent()
-            _frameClosingListeners.iterate { it.invoke(event) }
+            _frameClosingListeners.iterate { it.accept(event) }
             return event.close
         }
 
@@ -480,7 +474,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
             root.width = _width
             root.height = _height
 
-            _frameResizedListeners.iterate { it.invoke() }
+            _frameResizedListeners.iterate { it.run() }
             updateDPI()
 
             glViewport(0, 0, width, height)
@@ -493,47 +487,47 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
 
             _x = x.toDouble() / delta
             _y = y.toDouble() / delta
-            _frameMovedListeners.iterate { it.invoke() }
+            _frameMovedListeners.iterate { it.run() }
             updateDPI()
         }
 
         fun onMaximize(maximized: Boolean){
             if(maximized) {
                 _state = FrameState.Maximized
-                _frameMaximizedListeners.iterate { it.invoke() }
+                _frameMaximizedListeners.iterate { it.run() }
             }else {
                 _state = FrameState.Default
-                _frameRestoredListeners.iterate { it.invoke() }
+                _frameRestoredListeners.iterate { it.run() }
             }
         }
 
         fun onIconify(iconified: Boolean){
             if(iconified) {
                 _state = FrameState.Minimized
-                _frameMinimizedListeners.iterate { it.invoke() }
+                _frameMinimizedListeners.iterate { it.run() }
             }else {
                 _state = FrameState.Default
-                _frameRestoredListeners.iterate { it.invoke() }
+                _frameRestoredListeners.iterate { it.run() }
             }
         }
 
         fun onKeyAction(key: Int, scancode: Int, action: Int, mods: Int){
             if(action == GLFW_RELEASE)
-                _keyReleasedListeners.iterate { it.invoke(KeyEvent(key, scancode, KeyEvent.Action.Release, mods)) }
+                _keyReleasedListeners.iterate { it.accept(KeyEvent(key, scancode, KeyEvent.Action.Release, mods)) }
             if(action == GLFW_PRESS)
-                _keyPressedListeners.iterate { it.invoke(KeyEvent(key, scancode, KeyEvent.Action.Press, mods)) }
+                _keyPressedListeners.iterate { it.accept(KeyEvent(key, scancode, KeyEvent.Action.Press, mods)) }
             if(action == GLFW_REPEAT || action == GLFW_PRESS || action == GLFW_KEY_UNKNOWN)
-                _keyTypedListeners.iterate { it.invoke(KeyEvent(key, scancode, KeyEvent.Action.Type, mods)) }
+                _keyTypedListeners.iterate { it.accept(KeyEvent(key, scancode, KeyEvent.Action.Type, mods)) }
         }
 
         fun onMouseMove() {
-            _mouseMovedListeners.iterate { it.invoke() }
+            _mouseMovedListeners.iterate { it.run() }
         }
 
         fun onMouseAction(button: Int, action: Int, mods: Int){
             if(action == GLFW_PRESS) {
                 lastMousePressedEvent = MouseEvent(button, MouseEvent.Action.Press, mods, 1, mousePosition)
-                _mousePressedListeners.iterate { it.invoke(lastMousePressedEvent!!) }
+                _mousePressedListeners.iterate { it.accept(lastMousePressedEvent!!) }
             }
             if(action == GLFW_RELEASE){
                 if(lastMousePressedEvent != null &&
@@ -545,16 +539,16 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
                     ){
                         // Not first click
                         lastMouseClickedEvent = MouseEvent(button, MouseEvent.Action.Click, mods, lastMouseClickedEvent!!.clickCount + 1, mousePosition)
-                        _mouseClickedListeners.iterate { it.invoke(lastMouseClickedEvent!!) }
+                        _mouseClickedListeners.iterate { it.accept(lastMouseClickedEvent!!) }
                     }else {
                         // First click
                         lastMouseClickedEvent = MouseEvent(button, MouseEvent.Action.Click, mods, 1, mousePosition)
-                        _mouseClickedListeners.iterate { it.invoke(lastMouseClickedEvent!!) }
+                        _mouseClickedListeners.iterate { it.accept(lastMouseClickedEvent!!) }
                     }
                 }
                 // Release
                 lastMouseReleaseEvent = MouseEvent(button, MouseEvent.Action.Release, mods, 1, mousePosition)
-                _mouseReleasedListeners.iterate { it.invoke(lastMouseReleaseEvent!!) }
+                _mouseReleasedListeners.iterate { it.accept(lastMouseReleaseEvent!!) }
             }
         }
     }

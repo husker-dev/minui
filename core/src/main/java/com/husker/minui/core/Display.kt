@@ -4,7 +4,7 @@ import com.husker.minui.core.utils.ConcurrentArrayList
 import com.husker.minui.geometry.Dimension
 import com.husker.minui.geometry.Point
 import com.husker.minui.geometry.Rectangle
-import com.husker.minui.natives.platform.PlatformLibrary
+import com.husker.minui.natives.PlatformLibrary
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.system.MemoryStack.stackPush
 

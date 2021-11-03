@@ -5,14 +5,14 @@ import java.nio.charset.StandardCharsets
 class OS {
 
     companion object {
-        const val Windows = "windows"
-        const val MacOS = "macos"
-        const val Linux = "linux"
-        const val SunOS = "sunos"
+        @JvmStatic val Windows = "windows"
+        @JvmStatic val MacOS = "macos"
+        @JvmStatic val Linux = "linux"
+        @JvmStatic val SunOS = "sunos"
 
-        const val X64 = "x64"
-        const val X86 = "x86"
-        const val Arm = "arm"
+        @JvmStatic val X64 = "x64"
+        @JvmStatic val X86 = "x86"
+        @JvmStatic val Arm = "arm"
 
         val name: String
             get() {
@@ -24,6 +24,12 @@ class OS {
                     os.contains("sunos") -> SunOS
                     else -> os
                 }
+            }
+
+        val shortName: String
+            get() = when(name){
+                Windows -> "win"
+                else -> name
             }
 
         fun isWindows(): Boolean = name == Windows

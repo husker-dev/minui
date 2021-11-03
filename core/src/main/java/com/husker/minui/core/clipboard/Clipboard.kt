@@ -3,7 +3,7 @@ package com.husker.minui.core.clipboard
 import com.husker.minui.core.MinUIObject
 import com.husker.minui.core.Resources
 import com.husker.minui.graphics.Image
-import com.husker.minui.natives.platform.PlatformLibrary
+import com.husker.minui.natives.PlatformLibrary
 import org.lwjgl.glfw.GLFW
 import java.io.File
 

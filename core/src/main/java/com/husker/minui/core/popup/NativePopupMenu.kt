@@ -2,7 +2,7 @@ package com.husker.minui.core.popup
 
 import com.husker.minui.core.Frame
 import com.husker.minui.geometry.Point
-import com.husker.minui.natives.platform.PlatformLibrary
+import com.husker.minui.natives.PlatformLibrary
 import kotlin.concurrent.thread
 
 class NativePopupMenu() {

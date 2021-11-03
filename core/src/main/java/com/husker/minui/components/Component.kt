@@ -24,7 +24,7 @@ abstract class Component: Drawable, Sizable, Positionable {
         get() = _x
         set(value) {
             _x = value
-            _componentMovedListeners.iterate { it.invoke() }
+            _componentMovedListeners.iterate { it.run() }
         }
 
     private var _y = 0.0
@@ -32,7 +32,7 @@ abstract class Component: Drawable, Sizable, Positionable {
         get() = _y
         set(value) {
             _y = value
-            _componentMovedListeners.iterate { it.invoke() }
+            _componentMovedListeners.iterate { it.run() }
         }
 
     private var _width = 0.0
@@ -40,7 +40,7 @@ abstract class Component: Drawable, Sizable, Positionable {
         get() = _width
         set(value) {
             _width = value
-            _componentResizedListeners.iterate { it.invoke() }
+            _componentResizedListeners.iterate { it.run() }
         }
 
     private var _height = 0.0
@@ -48,7 +48,7 @@ abstract class Component: Drawable, Sizable, Positionable {
         get() = _height
         set(value) {
             _height = value
-            _componentResizedListeners.iterate { it.invoke() }
+            _componentResizedListeners.iterate { it.run() }
         }
 
     override var size: Dimension
@@ -75,8 +75,8 @@ abstract class Component: Drawable, Sizable, Positionable {
             return Point(parentPos.x + x, parentPos.y + y)
         }
 
-    private var _componentResizedListeners = ConcurrentArrayList<() -> Unit>()
-    private var _componentMovedListeners = ConcurrentArrayList<() -> Unit>()
+    private var _componentResizedListeners = ConcurrentArrayList<Runnable>()
+    private var _componentMovedListeners = ConcurrentArrayList<Runnable>()
 
     protected fun isZeroSize(): Boolean = width <= 0.0 || height <= 0.0
 
@@ -84,11 +84,11 @@ abstract class Component: Drawable, Sizable, Positionable {
         return "${this::class.java.canonicalName}(x=$x, y=$y, prefW=$preferredWidth, prefH=$preferredHeight, width=$width, height=$height)"
     }
 
-    override fun onResize(listener: () -> Unit) {
+    override fun onResize(listener: Runnable) {
         _componentResizedListeners.add(listener)
     }
 
-    override fun onMoved(listener: () -> Unit) {
+    override fun onMoved(listener: Runnable) {
         _componentMovedListeners.add(listener)
     }
 }

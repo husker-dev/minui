@@ -7,7 +7,7 @@
 
 extern "C" {
 
-    JNIEXPORT jbyteArray JNICALL Java_com_husker_minui_natives_platform_Win_nWideTextToMultiByte(JNIEnv *env, jobject, jbyteArray jbytes) {
+    JNIEXPORT jbyteArray JNICALL Java_com_husker_minui_natives_impl_win_Win_nWideTextToMultiByte(JNIEnv *env, jobject, jbyteArray jbytes) {
         char* source = reinterpret_cast<char *>(env->GetByteArrayElements(jbytes, nullptr));
 
         const int utf8_length = WideCharToMultiByte(CP_UTF8, 0, reinterpret_cast<LPCWCH>(source), -1, nullptr, 0, nullptr, nullptr);
@@ -21,7 +21,7 @@ extern "C" {
         return jkeys;
     }
 
-    JNIEXPORT jbyteArray JNICALL Java_com_husker_minui_natives_platform_Win_nMultiByteToWideText(JNIEnv *env, jobject, jbyteArray jbytes, jint chars) {
+    JNIEXPORT jbyteArray JNICALL Java_com_husker_minui_natives_impl_win_Win_nMultiByteToWideText(JNIEnv *env, jobject, jbyteArray jbytes, jint chars) {
         auto source = env->GetByteArrayElements(jbytes, nullptr);
 
         auto* wstr = new wchar_t[chars];
@@ -34,7 +34,7 @@ extern "C" {
         return jkeys;
     }
 
-    JNIEXPORT jintArray JNICALL Java_com_husker_minui_natives_platform_Win_nGetMousePosition(JNIEnv *env, jobject) {
+    JNIEXPORT jintArray JNICALL Java_com_husker_minui_natives_impl_win_Win_nGetMousePosition(JNIEnv *env, jobject) {
         POINT p;
         GetCursorPos(&p);
 
@@ -44,7 +44,7 @@ extern "C" {
         return jints;
     }
 
-    JNIEXPORT jintArray JNICALL Java_com_husker_minui_natives_platform_Win_nScreenToClient(JNIEnv *env, jobject, jlong hwnd, jint x, jint y) {
+    JNIEXPORT jintArray JNICALL Java_com_husker_minui_natives_impl_win_Win_nScreenToClient(JNIEnv *env, jobject, jlong hwnd, jint x, jint y) {
         POINT p;
         p.x = x;
         p.y = y;

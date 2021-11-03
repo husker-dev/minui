@@ -1,12 +1,14 @@
-package com.husker.minui.natives.platform
+package com.husker.minui.natives.impl
 
 import com.husker.minui.core.Display
 import com.husker.minui.core.Frame
 import com.husker.minui.core.clipboard.DataType
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.geometry.Point
+import com.husker.minui.natives.PlatformLibrary
+import java.nio.charset.StandardCharsets
 
-object EmptyLibrary: PlatformLibrary("") {
+object UnknownPlatform: PlatformLibrary("") {
     override fun setTaskbarIconEnabled(frame: Frame, enabled: Boolean) {
     }
 
@@ -19,6 +21,9 @@ object EmptyLibrary: PlatformLibrary("") {
 
     override fun getMousePosition(): Point = Point(0.0, 0.0)
     override fun screenPointToClient(point: Point, frame: Frame): Point = Point(-1.0, -1.0)
+    override fun systemBytesToString(bytes: ByteArray): String = bytes.toString(StandardCharsets.UTF_8)
+
+    override fun getFontPaths(family: String): List<String> = emptyList()
 
     override fun getClipboardDataKeys(): Array<String> = emptyArray()
     override fun getClipboardData(key: String): ByteArray? = null

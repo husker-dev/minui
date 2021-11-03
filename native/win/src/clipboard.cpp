@@ -31,7 +31,7 @@ extern "C"{
             "CF_DIBV5"
     };
 
-    JNIEXPORT jobjectArray JNICALL Java_com_husker_minui_natives_platform_Win_nGetClipboardKeys(JNIEnv *env, jobject) {
+    JNIEXPORT jobjectArray JNICALL Java_com_husker_minui_natives_impl_win_Win_nGetClipboardKeys(JNIEnv *env, jobject) {
         OpenClipboard(nullptr);
 
         std::vector<UINT> keys;
@@ -51,7 +51,7 @@ extern "C"{
         return jkeys;
     }
 
-    JNIEXPORT jbyteArray JNICALL Java_com_husker_minui_natives_platform_Win_nGetClipboardData(JNIEnv *env, jobject, jstring jkey) {
+    JNIEXPORT jbyteArray JNICALL Java_com_husker_minui_natives_impl_win_Win_nGetClipboardData(JNIEnv *env, jobject, jstring jkey) {
         char* key = const_cast<char *>(env->GetStringUTFChars(jkey, nullptr));
 
         OpenClipboard(nullptr);
@@ -66,13 +66,13 @@ extern "C"{
         return jkeys;
     }
 
-    JNIEXPORT void JNICALL Java_com_husker_minui_natives_platform_Win_nEmptyClipboard(JNIEnv *env, jobject) {
+    JNIEXPORT void JNICALL Java_com_husker_minui_natives_impl_win_Win_nEmptyClipboard(JNIEnv *env, jobject) {
         OpenClipboard(nullptr);
         EmptyClipboard();
         CloseClipboard();
     }
 
-    JNIEXPORT void JNICALL Java_com_husker_minui_natives_platform_Win_nSetClipboardData(JNIEnv *env, jobject, jstring jkey, jbyteArray jbytes) {
+    JNIEXPORT void JNICALL Java_com_husker_minui_natives_impl_win_Win_nSetClipboardData(JNIEnv *env, jobject, jstring jkey, jbyteArray jbytes) {
         auto* bytes = env->GetByteArrayElements(jbytes, nullptr);
         int size = env->GetArrayLength(jbytes);
         auto* key = env->GetStringUTFChars(jkey, nullptr);
@@ -87,7 +87,7 @@ extern "C"{
         GlobalFree(data);
     }
 
-    JNIEXPORT jbyteArray JNICALL Java_com_husker_minui_natives_platform_Win_nGetLCID(JNIEnv *env, jobject, jbyteArray localeBytes) {
+    JNIEXPORT jbyteArray JNICALL Java_com_husker_minui_natives_impl_win_Win_nGetLCID(JNIEnv *env, jobject, jbyteArray localeBytes) {
         LCID lcid = 0;
         GetLocaleInfoEx((LPCWSTR) env->GetByteArrayElements(localeBytes, nullptr), LOCALE_RETURN_NUMBER | LOCALE_ILANGUAGE, (LPWSTR)&lcid, sizeof(lcid));
 

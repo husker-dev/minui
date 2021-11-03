@@ -1,6 +1,6 @@
 package com.husker.minui.core
 
-open class MinUIObject {
+abstract class MinUIObject {
 
     companion object{
         init{
