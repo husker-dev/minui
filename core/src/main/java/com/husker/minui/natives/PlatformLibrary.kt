@@ -5,6 +5,7 @@ import com.husker.minui.core.Frame
 import com.husker.minui.core.OS
 import com.husker.minui.core.OS.Companion.Windows
 import com.husker.minui.core.clipboard.ClipboardDataType
+import com.husker.minui.core.notification.Notification
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.geometry.Point
 import com.husker.minui.natives.impl.UnknownPlatform
@@ -41,4 +42,6 @@ abstract class PlatformLibrary(fileName: String): Library(fileName) {
     abstract fun systemBytesToString(bytes: ByteArray): String
 
     abstract fun getFontPaths(family: String): List<String>
+
+    abstract fun showNotification(notification: Notification)
 }

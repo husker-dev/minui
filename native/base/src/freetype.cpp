@@ -69,4 +69,12 @@ extern "C" {
 
         return out;
     }
+
+    JNIEXPORT jlong JNICALL Java_com_husker_minui_natives_impl_BaseLibrary_nLoadGlyphTexture(JNIEnv *env, jobject, jlong face, jchar ch) {
+        // load character glyph
+        if (FT_Load_Char((FT_Face) face, (char)ch, FT_LOAD_RENDER)){
+            std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+        }
+    }
+
 }

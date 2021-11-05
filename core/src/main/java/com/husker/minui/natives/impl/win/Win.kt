@@ -3,6 +3,7 @@ package com.husker.minui.natives.impl.win
 import com.husker.minui.core.Display
 import com.husker.minui.core.Frame
 import com.husker.minui.core.clipboard.ClipboardDataType
+import com.husker.minui.core.notification.Notification
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.geometry.Point
 import com.husker.minui.natives.PlatformLibrary
@@ -50,6 +51,11 @@ object Win: PlatformLibrary("minui-win") {
 
     external fun nGetRegistryValues(hkey: Long, path: String): Array<Any>
 
+    external fun nToastInit(id: ByteArray, displayName: ByteArray, imagePath: ByteArray)
+    external fun nToastShow(xml: ByteArray)
+    external fun nToastClearAll()
+    external fun nToastUninstall()
+
     // Implementation
 
     override fun getFrameDisplay(frame: Frame): Display {
@@ -94,5 +100,5 @@ object Win: PlatformLibrary("minui-win") {
 
     override fun showNativePopup(popup: NativePopupMenu, x: Int, y: Int, frame: Frame?) = WinPopup.showNativePopup(popup, x, y, frame)
 
-
+    override fun showNotification(notification: Notification) = WinNotificationExecutor.showNotification(notification)
 }

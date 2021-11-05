@@ -14,6 +14,8 @@ import kotlin.concurrent.thread
 
 object MinUI {
 
+    var appName = "MinUI Application"
+
     const val version = "0.1"
 
     private var _isActive = true
