@@ -13,11 +13,10 @@ var startTime = System.currentTimeMillis()
 fun main(){
     LibraryUtils.forceLoad = true
 
-    lateinit var icon: Image
+    val icon = Image.fromResource("icon.png")
     with(MinUI){
         appId = "minui.test"
         appName = "MinUI Testing"
-        icon = Image.fromResourceFile("icon.png")
         appIcon = icon
     }
 

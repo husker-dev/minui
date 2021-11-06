@@ -4,7 +4,7 @@ abstract class MinUIObject {
 
     companion object{
         init{
-            MinUI.checkInitialization()
+            MinUI.initialize()
         }
     }
 

@@ -12,6 +12,6 @@ fun main(){
         background = Color.Transparent
         visible = true
 
-        root.add(ImageView(Image.fromResourceFile("/bg.png")))
+        root.add(ImageView(Image.fromResource("/bg.png")))
     }
 }

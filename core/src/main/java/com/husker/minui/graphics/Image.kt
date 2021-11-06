@@ -31,7 +31,7 @@ open class Image: MinUIObject {
         fun fromURL(url: URL): Image = Image(url)
         fun fromFile(file: File): Image = Image(file.absolutePath)
         fun fromFile(path: String): Image = Image(path)
-        fun fromResourceFile(path: String): Image = if(path.startsWith("/")) Image(path) else Image("/$path")
+        fun fromResource(path: String): Image = if(path.startsWith("/")) Image(path) else Image("/$path")
         fun fromInputStream(inputStream: InputStream): Image = Image(inputStream)
         fun fromBytes(bytes: ByteArray): Image = Image(bytes)
         fun fromByteBuffer(buffer: ByteBuffer): Image = Image(buffer)

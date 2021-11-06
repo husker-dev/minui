@@ -13,7 +13,7 @@ import org.lwjgl.system.Configuration
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.concurrent.thread
 
-object MinUI {
+class MinUI { companion object {
 
     var appName = "MinUI Application"
     var appId = "minui.application"
@@ -21,17 +21,24 @@ object MinUI {
 
     const val version = "0.1"
 
+    private var _initialized = false
+    val initialized: Boolean
+        get() = _initialized
+
     private var _isActive = true
     val isActive: Boolean
         get() = _isActive
 
     private var mainQueue = ConcurrentLinkedQueue<Runnable>()
     private var currentWindow = -1L
-    private var mainThread: Thread
+    private lateinit var mainThread: Thread
 
     val frames = ConcurrentArrayList<Frame>()
 
-    init {
+    fun initialize(){
+        if(initialized) return
+        _initialized = true
+
         BaseLibrary.checkInitialization()
         Configuration.DISABLE_CHECKS.set(true)
 
@@ -41,8 +48,9 @@ object MinUI {
             GLFWErrorCallback.createPrint(System.err).set()
             if (!glfwInit())
                 throw IllegalStateException("Unable to initialize GLFW")
+            Resources.initialize()
 
-            Resources.checkInitialization()
+            // The main initialization is completed, then there is a loop with windows
             initializeTrigger.ready()
 
             while (isActive) {
@@ -75,7 +83,9 @@ object MinUI {
             frames.clear()
         }
 
-        //  Check for active threads.
+        initializeTrigger.waitForReady()
+
+        //  Checking for active threads.
         //  If there are only MinUI threads, then shutdown them
         thread(name = "MinUI Background"){
             while(isActive) {
@@ -83,8 +93,10 @@ object MinUI {
                     .toTypedArray()
                     .filter {
                         it.threadGroup != null && it.threadGroup.name == "main" &&
-                        it.name !in arrayOf("DestroyJavaVM", "Monitor Ctrl-Break") &&       // TODO: May not be all names
-                        it !in arrayOf(Thread.currentThread(), Resources.thread, mainThread)
+                                it.name !in arrayOf("DestroyJavaVM", "Monitor Ctrl-Break") &&       // TODO: May not be all names
+                                it != Thread.currentThread() &&
+                                it != Resources.resourceThread &&
+                                it != mainThread
                     }
 
                 if (allThreads.isEmpty() && frames.isEmpty())
@@ -92,9 +104,9 @@ object MinUI {
                 Thread.sleep(400)
             }
         }
+    }
 
-        initializeTrigger.waitForReady()
-
+    init {
 
     }
 
@@ -171,4 +183,4 @@ object MinUI {
     fun shutdown(){
         _isActive = false
     }
-}
+}}
