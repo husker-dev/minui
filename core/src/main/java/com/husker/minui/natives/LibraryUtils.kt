@@ -15,7 +15,7 @@ class LibraryUtils {
         @JvmStatic
         var forceLoad = false
         private val tmpDir = "${System.getProperty("java.io.tmpdir")}/minui_cache/${MinUI.version}"
-        private var currentDir = ""
+        var currentTmpDir = ""
 
         init{
             val directoriesStates = hashMapOf<File, Boolean>()
@@ -37,17 +37,17 @@ class LibraryUtils {
                         }catch (e: Exception){ }
                     }else{
                         found = true
-                        currentDir = it.key.path
+                        currentTmpDir = it.key.path
                     }
                 }
             }
             if(!found)
-                currentDir = "$tmpDir/${System.nanoTime()}"
+                currentTmpDir = "$tmpDir/${System.nanoTime()}"
         }
 
         @JvmStatic
         fun loadResourceLibrary(name: String){
-            val file = File("$currentDir/$name")
+            val file = File("$currentTmpDir/$name")
             if(file.exists() && !forceLoad) {
                 System.load(file.absolutePath)
                 return

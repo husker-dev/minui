@@ -3,19 +3,29 @@ package com.husker.minui.graphics
 import com.husker.minui.core.MinUIObject
 import com.husker.minui.core.Resources
 import com.husker.minui.core.utils.BufferUtils
-import org.lwjgl.BufferUtils.createByteBuffer
+import com.husker.minui.graphics.ImageEncoding.*
+import com.husker.minui.natives.LibraryUtils
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.stb.STBImage.*
+import org.lwjgl.stb.STBImageWrite.*
 import org.lwjgl.system.MemoryStack.stackPush
 import java.io.File
 import java.io.InputStream
 import java.net.URL
 import java.nio.ByteBuffer
 
+enum class ImageEncoding {
+    PNG,
+    JPEG,
+    BMP,
+    TGA
+}
 
 open class Image: MinUIObject {
 
     companion object{
+        private var count = 0
+
         fun create(width: Int, height: Int): Image = Image(width, height)
         fun fromURL(url: String): Image = Image(URL(url))
         fun fromURL(url: URL): Image = Image(url)
@@ -26,6 +36,8 @@ open class Image: MinUIObject {
         fun fromBytes(bytes: ByteArray): Image = Image(bytes)
         fun fromByteBuffer(buffer: ByteBuffer): Image = Image(buffer)
     }
+
+    private val id = count++
 
     private var _width = 0
     val width: Int
@@ -87,6 +99,7 @@ open class Image: MinUIObject {
         this._width = width
         this._height = height
         this._components = 4
+
         Resources.invokeSync{ _textId = createEmptyTexture() }
     }
 
@@ -144,6 +157,24 @@ open class Image: MinUIObject {
             applyData(data, w[0], h[0], components[0])
             stbi_image_free(data)
         }
+    }
+
+    fun save(encoding: ImageEncoding, file: File, quality: Int = 90) = save(encoding, file.absolutePath, quality)
+
+    fun save(encoding: ImageEncoding, path: String, quality: Int = 90){
+        when(encoding){
+            PNG -> stbi_write_png(path, width, height, 4, data, width * 4)
+            JPEG -> stbi_write_jpg(path, width, height, 4, data, quality)
+            BMP -> stbi_write_bmp(path, width, height, 4, data)
+            TGA -> stbi_write_tga(path, width, height, 4, data)
+        }
+    }
+
+    fun cacheFile(): File {
+        val file = File(LibraryUtils.currentTmpDir, "cached_images/${id}.png")
+        file.parentFile.mkdirs()
+        save(PNG, file)
+        return file
     }
 
     override fun toString(): String {

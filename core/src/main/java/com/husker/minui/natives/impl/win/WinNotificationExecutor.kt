@@ -9,10 +9,14 @@ import kotlin.concurrent.thread
 class WinNotificationExecutor { companion object {
 
     init{
+        val iconPath = if(MinUI.appIcon != null){
+            MinUI.appIcon!!.cacheFile().absolutePath
+        }else ""
+
         Win.nToastInit(
-            "MinUI.${MinUI.appName}".wideBytes,
+            "MinUI.${MinUI.appId}".wideBytes,
             MinUI.appName.wideBytes,
-            "C:\\Users\\redfa\\Desktop\\33a76a8509a87a8322f12b97ad4af0f3.jpg".wideBytes)
+            iconPath.wideBytes)
 
         Runtime.getRuntime().addShutdownHook(thread(start = false){
             Win.nToastClearAll()

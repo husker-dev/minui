@@ -2,6 +2,7 @@ package com.husker.minui.core
 
 import com.husker.minui.core.utils.ConcurrentArrayList
 import com.husker.minui.core.utils.Trigger
+import com.husker.minui.graphics.Image
 import com.husker.minui.natives.impl.BaseLibrary
 
 import org.lwjgl.glfw.GLFW.*
@@ -15,6 +16,8 @@ import kotlin.concurrent.thread
 object MinUI {
 
     var appName = "MinUI Application"
+    var appId = "minui.application"
+    var appIcon: Image? = null
 
     const val version = "0.1"
 
@@ -91,6 +94,8 @@ object MinUI {
         }
 
         initializeTrigger.waitForReady()
+
+
     }
 
     fun makeCurrent(window: Long){

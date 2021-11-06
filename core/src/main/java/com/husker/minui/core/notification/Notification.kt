@@ -4,6 +4,7 @@ import com.husker.minui.core.MinUIObject
 import com.husker.minui.core.OS
 import com.husker.minui.core.OS.Companion.Windows
 import com.husker.minui.core.utils.ConcurrentArrayList
+import com.husker.minui.graphics.Image
 import com.husker.minui.natives.PlatformLibrary
 
 
@@ -21,19 +22,19 @@ abstract class Notification: MinUIObject() {
             return instance
         }
 
-        fun createWithImage(title: String = "", text: String = "", src: String = ""): Notification {
+        fun createWithImage(title: String = "", text: String = "", image: Image): Notification {
             val instance = create(title, text)
-            instance.configureImageNotification(src)
+            instance.configureImageNotification(image)
             return instance
         }
-        fun createWithSmallImage(title: String = "", text: String = "", src: String = ""): Notification {
+        fun createWithSmallImage(title: String = "", text: String = "", image: Image): Notification {
             val instance = create(title, text)
-            instance.configureSmallNotification(src)
+            instance.configureSmallNotification(image)
             return instance
         }
-        fun createWithLargeImage(title: String = "", text: String = "", src: String = ""): Notification {
+        fun createWithLargeImage(title: String = "", text: String = "", image: Image): Notification {
             val instance = create(title, text)
-            instance.configureLargeImageNotification(src)
+            instance.configureLargeImageNotification(image)
             return instance
         }
 
@@ -56,7 +57,7 @@ abstract class Notification: MinUIObject() {
         onClickListeners.add(listener)
     }
 
-    abstract fun configureImageNotification(src: String)
-    abstract fun configureLargeImageNotification(src: String)
-    abstract fun configureSmallNotification(src: String)
+    abstract fun configureImageNotification(image: Image)
+    abstract fun configureLargeImageNotification(image: Image)
+    abstract fun configureSmallNotification(image: Image)
 }

@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
-object Resources {
+object Resources: MinUIObject() {
 
     var window: Long = 0
     var thread: Thread

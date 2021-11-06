@@ -1,6 +1,7 @@
 package com.husker.minui.core.notification
 
 import com.husker.minui.core.utils.ConcurrentArrayList
+import com.husker.minui.graphics.Image
 import com.husker.minui.natives.impl.win.Win
 
 enum class ToastTypes(val value: String) {
@@ -143,25 +144,25 @@ class WinNotification: Notification() {
         }
     }
 
-    override fun configureImageNotification(src: String) {
+    override fun configureImageNotification(image: Image) {
         build {
-            image(src, placement= Placement.Hero)
+            image(image, placement= Placement.Hero)
             text(title)
             text(text)
         }
     }
 
-    override fun configureLargeImageNotification(src: String) {
+    override fun configureLargeImageNotification(image: Image) {
         build {
-            image(src)
+            image(image)
             text(title)
             text(text)
         }
     }
 
-    override fun configureSmallNotification(src: String) {
+    override fun configureSmallNotification(image: Image) {
         build {
-            image(src, placement= Placement.AppLogo)
+            image(image, placement= Placement.AppLogo)
             text(title)
             text(text)
         }
@@ -225,7 +226,7 @@ class WinNotification: Notification() {
         }
 
         class VisualImage(
-            var src: String,
+            var image: Image,
             var placement: Placement,
             var crop: ImageCrop,
             var removeMargin: Boolean,
@@ -240,7 +241,7 @@ class WinNotification: Notification() {
                 val query = if(query)                                   "addImageQuery=\"true\"" else ""
                 val alt = if(alt.isNotEmpty())                          "alt=\"$alt\"" else ""
                 val align = if(align != ImageAlign.Default)             "align=\"${align.value}\"" else ""
-                return "<image $placement $crop $removeMargin $query $alt $align src=\"$src\"/>"
+                return "<image $placement $crop $removeMargin $query $alt $align src=\"${image.cacheFile().absolutePath}\"/>"
             }
         }
 
@@ -314,7 +315,7 @@ class WinNotification: Notification() {
         }
 
         fun image(
-            src: String,
+            image: Image,
             placement: Placement = Placement.Default,
             crop: ImageCrop = ImageCrop.Default,
             removeMargin: Boolean = false,
@@ -323,7 +324,7 @@ class WinNotification: Notification() {
             query: Boolean = false,
             supplier: WinNotificationBuilder.VisualImage.() -> Unit = {}
         ){
-            val instance = WinNotificationBuilder.VisualImage(src, placement, crop, removeMargin, align, alt, query)
+            val instance = WinNotificationBuilder.VisualImage(image, placement, crop, removeMargin, align, alt, query)
             supplier.invoke(instance)
             visuals.add(instance)
         }
