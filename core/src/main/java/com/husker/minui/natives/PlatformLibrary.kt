@@ -14,7 +14,8 @@ import com.husker.minui.natives.impl.win.Win
 abstract class PlatformLibrary(fileName: String): Library(fileName) {
 
     companion object{
-        val instance = when(OS.name){
+        val instance: PlatformLibrary
+            get() = when(OS.name){
                 Windows -> Win
                 else -> UnknownPlatform
             }

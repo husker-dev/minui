@@ -1,5 +1,8 @@
 package com.husker.minui.core.notification
 
+import com.husker.minui.core.utils.ConcurrentArrayList
+import com.husker.minui.natives.impl.win.Win
+
 enum class ToastTypes(val value: String) {
     Default(""),
     Reminder("reminder"),
@@ -65,6 +68,10 @@ enum class TextStacking(val value: String) {
 
 class WinNotification: Notification() {
 
+    companion object {
+        private var count = 0
+    }
+
     var content = ""
 
     private var _title = ""
@@ -83,8 +90,15 @@ class WinNotification: Notification() {
             configureDefault(title, text)
         }
 
+    private val id = count++
+
     init{
         configureDefault(title, text)
+        Win.toastCallbackListeners.putIfAbsent(id, ConcurrentArrayList())
+        Win.toastCallbackListeners[id]!!.add {
+            if(it == -1)
+                onClickListeners.iterate { l -> l.run() }
+        }
     }
 
     fun build(type: ToastTypes = ToastTypes.Default, builder: WinNotificationBuilder.() -> Unit): WinNotificationBuilder{
@@ -125,22 +139,22 @@ class WinNotification: Notification() {
         }
     }
 
-    class WinNotificationBuilder(private val parent: WinNotification, var type: ToastTypes): VisualContainer(){
+    class WinNotificationBuilder(private val notification: WinNotification, var type: ToastTypes): VisualContainer(){
         private val actions = arrayListOf<Any>()
 
-        fun action(text: String){
-            actions.add(Action(text))
+        fun action(text: String, onClick: () -> Unit = {}){
+            actions.add(Action(text, onClick, notification))
         }
 
         fun show(){
-            parent.show()
+            notification.show()
         }
 
         override fun toString(): String {
             val scenario = if(type == ToastTypes.Default) "" else "scenario=\"${type.value}\""
 
             return  """
-                        <toast $scenario launch="main">
+                        <toast $scenario launch="${notification.id}_-1">
                             <visual>
                                 <binding template="ToastGeneric">
                                     ${childrenToString()}
@@ -208,9 +222,26 @@ class WinNotification: Notification() {
             }
         }
 
-        class Action(var text: String){
+        class Action(
+            var text: String,
+            var onClick: () -> Unit,
+            private val notification: WinNotification,
+        ){
+            companion object{
+                private var count = 0
+            }
+            private val index = count++
+
+            init{
+                Win.toastCallbackListeners.putIfAbsent(notification.id, ConcurrentArrayList())
+                Win.toastCallbackListeners[notification.id]!!.add{
+                    if(it == index)
+                        onClick()
+                }
+            }
+
             override fun toString(): String {
-                return "<action content=\"$text\" arguments=\"a\"/>"
+                return "<action content=\"$text\" arguments=\"${notification.id}_$index\"/>"
             }
         }
     }

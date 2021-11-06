@@ -148,9 +148,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="base.cpp" />
     <ClCompile Include="clipboard.cpp" />
     <ClCompile Include="DesktopNotificationManagerCompat.cpp" />
@@ -165,6 +162,9 @@
   <ItemGroup>
     <ClInclude Include="DesktopNotificationManagerCompat.h" />
     <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -5,6 +5,7 @@ import com.husker.minui.core.Frame
 import com.husker.minui.core.clipboard.ClipboardDataType
 import com.husker.minui.core.notification.Notification
 import com.husker.minui.core.popup.NativePopupMenu
+import com.husker.minui.core.utils.ConcurrentArrayList
 import com.husker.minui.geometry.Point
 import com.husker.minui.natives.PlatformLibrary
 import org.lwjgl.glfw.GLFWNativeWin32
@@ -55,6 +56,17 @@ object Win: PlatformLibrary("minui-win") {
     external fun nToastShow(xml: ByteArray)
     external fun nToastClearAll()
     external fun nToastUninstall()
+
+    // Callbacks
+
+    val toastCallbackListeners = hashMapOf<Int, ConcurrentArrayList<(Int) -> Unit>>()
+
+    fun onToastCallback(event: String){
+        val toastId = event.split("_")[0].toInt()
+        if(toastId in toastCallbackListeners)
+            toastCallbackListeners[toastId]!!.iterate { it.invoke(event.split("_")[1].toInt()) }
+        toastCallbackListeners.remove(toastId)
+    }
 
     // Implementation
 

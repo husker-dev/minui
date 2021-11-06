@@ -1,12 +1,13 @@
 package com.husker.minui.core.notification
 
+import com.husker.minui.core.MinUIObject
 import com.husker.minui.core.OS
 import com.husker.minui.core.OS.Companion.Windows
 import com.husker.minui.core.utils.ConcurrentArrayList
 import com.husker.minui.natives.PlatformLibrary
 
 
-abstract class Notification {
+abstract class Notification: MinUIObject() {
 
     companion object {
 
@@ -41,9 +42,13 @@ abstract class Notification {
     open var title = ""
     open var text = ""
 
+    private var shown = false
+
     protected val onClickListeners = ConcurrentArrayList<Runnable>()
 
     fun show(){
+        if(shown) throw UnsupportedOperationException("Can't reuse notification after showing")
+        shown = true
         PlatformLibrary.instance.showNotification(this)
     }
 

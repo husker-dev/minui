@@ -25,6 +25,5 @@ class WinNotificationExecutor { companion object {
             throw UnsupportedOperationException("Can't show not WinNotification instance")
 
         Win.nToastShow(notification.content.wideBytes)
-        Thread.sleep(10000)
     }
 }}
