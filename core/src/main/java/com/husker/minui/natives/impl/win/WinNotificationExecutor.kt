@@ -10,13 +10,13 @@ class WinNotificationExecutor { companion object {
 
     init{
         Win.nToastInit(
-            "MinUI.${System.nanoTime()}".wideBytes,
+            "MinUI.${MinUI.appName}".wideBytes,
             MinUI.appName.wideBytes,
             "C:\\Users\\redfa\\Desktop\\33a76a8509a87a8322f12b97ad4af0f3.jpg".wideBytes)
 
         Runtime.getRuntime().addShutdownHook(thread(start = false){
             Win.nToastClearAll()
-            Win.nToastUninstall()
+            //Win.nToastUninstall()
         })
     }
 

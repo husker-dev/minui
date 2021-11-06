@@ -24,6 +24,8 @@ fun main(){
         action("Умереть"){
             println("Умер")
         }
+
+        audio(AudioType.IM)
     }.show()
 
     Thread.sleep(10000)

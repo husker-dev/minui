@@ -66,6 +66,34 @@ enum class TextStacking(val value: String) {
     Bottom("bottom")
 }
 
+enum class AudioType(val value: String) {
+    Default("Default"),
+    IM("IM"),
+    Mail("Mail"),
+    Reminder("Reminder"),
+    SMS("SMS"),
+    Alarm("Looping.Alarm"),
+    Alarm2("Looping.Alarm2"),
+    Alarm3("Looping.Alarm3"),
+    Alarm4("Looping.Alarm4"),
+    Alarm5("Looping.Alarm5"),
+    Alarm6("Looping.Alarm6"),
+    Alarm7("Looping.Alarm7"),
+    Alarm8("Looping.Alarm8"),
+    Alarm9("Looping.Alarm9"),
+    Alarm10("Looping.Alarm10"),
+    Call("Looping.Call"),
+    Call2("Looping.Call2"),
+    Call3("Looping.Call3"),
+    Call4("Looping.Call4"),
+    Call5("Looping.Call5"),
+    Call6("Looping.Call6"),
+    Call7("Looping.Call7"),
+    Call8("Looping.Call8"),
+    Call9("Looping.Call9"),
+    Call10("Looping.Call10"),
+}
+
 class WinNotification: Notification() {
 
     companion object {
@@ -141,9 +169,20 @@ class WinNotification: Notification() {
 
     class WinNotificationBuilder(private val notification: WinNotification, var type: ToastTypes): VisualContainer(){
         private val actions = arrayListOf<Any>()
+        private var audio: ToastAudio = ToastAudio(silent = false, loop = false, type = AudioType.Default)
 
         fun action(text: String, onClick: () -> Unit = {}){
             actions.add(Action(text, onClick, notification))
+        }
+
+        fun audio(
+            type: AudioType = AudioType.Default,
+            silent: Boolean = false,
+            loop: Boolean = false,
+            supplier: ToastAudio.() -> Unit = {}
+        ){
+            audio = ToastAudio(silent, loop, type)
+            supplier.invoke(audio)
         }
 
         fun show(){
@@ -152,18 +191,18 @@ class WinNotification: Notification() {
 
         override fun toString(): String {
             val scenario = if(type == ToastTypes.Default) "" else "scenario=\"${type.value}\""
-
             return  """
-                        <toast $scenario launch="${notification.id}_-1">
-                            <visual>
-                                <binding template="ToastGeneric">
-                                    ${childrenToString()}
-                                </binding>
-                            </visual>
-                            <actions>
-                                ${actions.joinToString(separator = "\n") { it.toString() }}
-                            </actions>
-                        </toast>
+                    <toast $scenario launch="${notification.id}_-1">
+                        <visual>
+                            <binding template="ToastGeneric">
+                                ${childrenToString()}
+                            </binding>
+                        </visual>
+                        <actions>
+                            ${actions.joinToString(separator = "\n") { it.toString() }}
+                        </actions>
+                        $audio
+                    </toast>
                     """
         }
 
@@ -195,7 +234,7 @@ class WinNotification: Notification() {
             var query: Boolean
         ){
             override fun toString(): String {
-                val placement = if(placement != Placement.Default) "placement=\"${placement.value}\"" else ""
+                val placement = if(placement != Placement.Default)      "placement=\"${placement.value}\"" else ""
                 val crop = if(crop != ImageCrop.Default)                "hint-crop=\"${crop.value}\"" else ""
                 val removeMargin = if(removeMargin)                     "hint-removeMargin=\"$removeMargin\"" else ""
                 val query = if(query)                                   "addImageQuery=\"true\"" else ""
@@ -222,6 +261,19 @@ class WinNotification: Notification() {
             }
         }
 
+        class ToastAudio(
+            var silent: Boolean,
+            var loop: Boolean,
+            var type: AudioType
+        ){
+            override fun toString(): String {
+                val silent = if(silent)                     "silent=\"$silent\"" else ""
+                val loop = if(loop)                         "loop=\"$loop\"" else ""
+                val type = if(type != AudioType.Default)    "src=\"ms-winsoundevent:Notification.${type.value}\"" else ""
+                return "<audio $silent $loop $type/>"
+            }
+        }
+
         class Action(
             var text: String,
             var onClick: () -> Unit,
@@ -233,10 +285,8 @@ class WinNotification: Notification() {
             private val index = count++
 
             init{
-                Win.toastCallbackListeners.putIfAbsent(notification.id, ConcurrentArrayList())
-                Win.toastCallbackListeners[notification.id]!!.add{
-                    if(it == index)
-                        onClick()
+                Win.toastCallbackListeners[notification.id]!!.add {
+                    if(it == index) onClick()
                 }
             }
 

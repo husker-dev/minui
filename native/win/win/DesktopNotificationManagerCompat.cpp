@@ -19,6 +19,7 @@
 #include "NotificationActivationCallback.h"
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Foundation.Collections.h>
+#include <iostream>
 
 using namespace winrt;
 using namespace Windows::ApplicationModel;
