@@ -1,9 +1,8 @@
 package examples
 
 import com.husker.minui.core.MinUI
-import com.husker.minui.core.notification.Notification
-import com.husker.minui.core.notification.Placement
-import com.husker.minui.core.notification.WinNotification
+import com.husker.minui.core.MinUIEnvironment
+import com.husker.minui.core.notification.*
 import com.husker.minui.graphics.Image
 import com.husker.minui.natives.LibraryUtils
 
@@ -13,21 +12,32 @@ var startTime = System.currentTimeMillis()
 fun main(){
     LibraryUtils.forceLoad = true
 
-    val icon = Image.fromResource("icon.png")
+    println(MinUIEnvironment.file)
+
+    //val icon = Image.fromResource("icon.png")
     with(MinUI){
         appId = "minui.test"
-        appName = "MinUI Testing"
-        appIcon = icon
+        appName = "My Chat"
+        appIcon = Image.fromResource("telephone.png")
     }
 
     val notification = Notification.create()
     if(notification is WinNotification) notification.build {
-        text("Hello")
-        image(icon, placement= Placement.Hero)
+        type = ToastTypes.IncomingCall
+        audio(loop = true)
+
+        text("Doggy Doggo")
+        text("Incoming Call")
+        image(Image.fromResource("background.png"), crop = ImageCrop.Circle)
+
+        action("Text reply", image= Image.fromResource("message.png"))
+        action("Reminder", image= Image.fromResource("reminder.png"))
+        action("Ignore", image= Image.fromResource("cancel.png"))
+        action("Answer", image= Image.fromResource("telephone.png"))
     }
     notification.show()
 
-    Thread.sleep(10000)
+    Thread.sleep(15000)
 }
 
 fun printDebug(title: String){

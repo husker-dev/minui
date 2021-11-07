@@ -172,8 +172,12 @@ class WinNotification: Notification() {
         private val actions = arrayListOf<Any>()
         private var audio: ToastAudio = ToastAudio(silent = false, loop = false, type = AudioType.Default)
 
-        fun action(text: String, onClick: () -> Unit = {}){
-            actions.add(Action(text, onClick, notification))
+        fun action(
+            text: String,
+            image: Image? = null,
+            onClick: () -> Unit = {}
+        ){
+            actions.add(ToastAction(text, image, onClick, notification))
         }
 
         fun audio(
@@ -275,8 +279,9 @@ class WinNotification: Notification() {
             }
         }
 
-        class Action(
+        class ToastAction(
             var text: String,
+            var image: Image?,
             var onClick: () -> Unit,
             private val notification: WinNotification,
         ){
@@ -292,7 +297,8 @@ class WinNotification: Notification() {
             }
 
             override fun toString(): String {
-                return "<action content=\"$text\" arguments=\"${notification.id}_$index\"/>"
+                val image = if(image != null) "imageUri=\"file://${image!!.cacheFile().absolutePath}\"" else ""
+                return "<action content=\"$text\" $image arguments=\"${notification.id}_$index\"/>"
             }
         }
     }

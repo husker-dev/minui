@@ -11,7 +11,8 @@ fun main(){
         root = BorderPane()
         background = Color.Transparent
         visible = true
+        vsync = false
 
-        root.add(ImageView(Image.fromResource("/bg.png")))
+        root.add(ImageView(Image.fromResource("/background.png")))
     }
 }

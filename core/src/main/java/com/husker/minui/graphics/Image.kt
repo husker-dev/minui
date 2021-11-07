@@ -1,5 +1,6 @@
 package com.husker.minui.graphics
 
+import com.husker.minui.core.MinUIEnvironment
 import com.husker.minui.core.MinUIObject
 import com.husker.minui.core.Resources
 import com.husker.minui.core.utils.BufferUtils
@@ -171,7 +172,7 @@ open class Image: MinUIObject {
     }
 
     fun cacheFile(): File {
-        val file = File(LibraryUtils.currentTmpDir, "cached_images/${id}.png")
+        val file = File(MinUIEnvironment.file, "cached_images/${id}.png")
         file.parentFile.mkdirs()
         save(PNG, file)
         return file
