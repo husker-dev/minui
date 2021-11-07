@@ -23,7 +23,7 @@ extern "C" {
         env->GetJavaVM(&jvm);
         callbackObj = env->NewWeakGlobalRef(_obj);
         jclass callbackClass = env->GetObjectClass(callbackObj);
-        callbackMethod = env->GetMethodID(callbackClass, "onToastCallbackÛ", "(Ljava/lang/String;)V");
+        callbackMethod = env->GetMethodID(callbackClass, "onToastCallback", "(Ljava/lang/String;)V");
 
         auto _id = (LPCWSTR) env->GetByteArrayElements(id, nullptr);
         auto _displayName = (LPCWSTR) env->GetByteArrayElements(displayName, nullptr);
