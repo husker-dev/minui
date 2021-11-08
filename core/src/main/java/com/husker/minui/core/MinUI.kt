@@ -40,7 +40,7 @@ class MinUI { companion object {
         _initialized = true
 
         BaseLibrary.checkInitialization()
-        Configuration.DISABLE_CHECKS.set(true)
+        //Configuration.DISABLE_CHECKS.set(true)
 
         val initializeTrigger = Trigger()
 

@@ -35,7 +35,7 @@ class WinClipboard { companion object{
                 else
                     Win.nGetClipboardData("CF_TEXT").toString(StandardCharsets.US_ASCII)
             }
-            ClipboardDataType.Image -> Image(Win.nGetClipboardData("PNG"))
+            ClipboardDataType.Image -> Image.fromBytes(Win.nGetClipboardData("PNG"))
             ClipboardDataType.Other -> null
         }
     }

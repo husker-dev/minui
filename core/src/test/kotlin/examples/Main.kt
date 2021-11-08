@@ -1,9 +1,11 @@
 package examples
 
-import com.husker.minui.core.MinUI
-import com.husker.minui.core.MinUIEnvironment
-import com.husker.minui.core.notification.*
+import com.husker.minui.components.ImageView
+import com.husker.minui.core.Frame
 import com.husker.minui.graphics.Image
+import com.husker.minui.graphics.ImageEncoding
+import com.husker.minui.graphics.ResizeType
+import com.husker.minui.layouts.FlowPane
 import com.husker.minui.natives.LibraryUtils
 
 
@@ -12,32 +14,38 @@ var startTime = System.currentTimeMillis()
 fun main(){
     LibraryUtils.forceLoad = true
 
-    println(MinUIEnvironment.file)
+    val icon = Image.fromResource("icon.png")
 
-    //val icon = Image.fromResource("icon.png")
-    with(MinUI){
-        appId = "minui.test"
-        appName = "My Chat"
-        appIcon = Image.fromResource("telephone.png")
+    Frame().apply {
+        vsync = false
+        root = FlowPane().apply {
+            printDebug("Init")
+            for(type in ResizeType.values()){
+                val scaled = icon.resize(100, 100, type= type)
+                printDebug("Scale: ${type.name}")
+                scaled.linearFiltering = false
+
+                val view = ImageView(scaled)
+                view.preferredWidth = 500.toDouble()
+                view.preferredHeight = 500.toDouble()
+                add(view)
+            }
+        }
+        visible = true
     }
 
-    val notification = Notification.create()
-    if(notification is WinNotification) notification.build {
-        type = ToastTypes.IncomingCall
-        audio(loop = true)
+}
 
-        text("Doggy Doggo")
-        text("Incoming Call")
-        image(Image.fromResource("background.png"), crop = ImageCrop.Circle)
-
-        action("Text reply", image= Image.fromResource("message.png"))
-        action("Reminder", image= Image.fromResource("reminder.png"))
-        action("Ignore", image= Image.fromResource("cancel.png"))
-        action("Answer", image= Image.fromResource("telephone.png"))
+fun printPixels(image: Image){
+    val data = image.data
+    for(i in 0..10){
+        val index = image.components * i
+        val r = data.get(index)
+        val g = data.get(index+1)
+        val b = data.get(index+2)
+        val a = data.get(index+3)
+        println("${r.toUByte()} ${g.toUByte()} ${b.toUByte()} ${a.toUByte()}")
     }
-    notification.show()
-
-    Thread.sleep(15000)
 }
 
 fun printDebug(title: String){

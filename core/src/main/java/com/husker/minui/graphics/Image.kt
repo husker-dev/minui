@@ -5,21 +5,42 @@ import com.husker.minui.core.MinUIObject
 import com.husker.minui.core.Resources
 import com.husker.minui.core.utils.BufferUtils
 import com.husker.minui.graphics.ImageEncoding.*
-import com.husker.minui.natives.LibraryUtils
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.stb.STBImage.*
+import org.lwjgl.stb.STBImageResize.*
 import org.lwjgl.stb.STBImageWrite.*
 import org.lwjgl.system.MemoryStack.stackPush
+import org.lwjgl.system.MemoryUtil
 import java.io.File
 import java.io.InputStream
 import java.net.URL
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 enum class ImageEncoding {
     PNG,
     JPEG,
     BMP,
     TGA
+}
+
+/**  Resize Types
+ *   ##### Enum values:
+ *
+ * - [Box][ResizeType.Box] - A trapezoid w/1-pixel wide ramps, same result as box for integer scale ratios.
+ * - [Triangle][ResizeType.Triangle] - On upsampling, produces same results as bilinear texture filtering.
+ * - [CubicBSpline][ResizeType.CubicBSpline] - The cubic b-spline (aka Mitchell-Netrevalli with B=1,C=0), gaussian-esque.
+ * - [CatmullRom][ResizeType.CatmullRom] - An interpolating cubic spline.
+ * - [Mitchell][ResizeType.Mitchell] - Mitchell-Netrevalli filter with B=1/3, C=1/3.
+ */
+enum class ResizeType(var value: Int) {
+    Nearest(-2),
+    Linear(-1),
+    Box(1),
+    Triangle(2),
+    CubicBSpline(3),
+    CatmullRom(4),
+    Mitchell(5),
 }
 
 open class Image: MinUIObject {
@@ -34,8 +55,14 @@ open class Image: MinUIObject {
         fun fromFile(path: String): Image = Image(path)
         fun fromResource(path: String): Image = if(path.startsWith("/")) Image(path) else Image("/$path")
         fun fromInputStream(inputStream: InputStream): Image = Image(inputStream)
+
+        // File bytes (PNG, JPEG)
         fun fromBytes(bytes: ByteArray): Image = Image(bytes)
         fun fromByteBuffer(buffer: ByteBuffer): Image = Image(buffer)
+
+        // Bitmap
+        fun fromByteBuffer(buffer: ByteBuffer, width: Int, height: Int, components: Int): Image = Image(buffer, width, height, components)
+        fun fromByteBuffer(bytes: ByteArray, width: Int, height: Int, components: Int): Image = Image(bytes, width, height, components)
     }
 
     private val id = count++
@@ -65,43 +92,67 @@ open class Image: MinUIObject {
         get() = _linearFiltering
         set(value) {
             _linearFiltering = value
-            // TODO: implement linear filtering
-            /*
-            glBindTexture(GL_TEXTURE_2D, textId)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, if(value) GL_LINEAR else GL_NEAREST)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, if(value) GL_LINEAR else GL_NEAREST)
-
-             */
+            Resources.invokeSync {
+                glBindTexture(GL_TEXTURE_2D, textId!!)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, if (value) GL_LINEAR else GL_NEAREST)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, if (value) GL_LINEAR else GL_NEAREST)
+            }
         }
 
-    constructor(path: String): super(){
+    private constructor(path: String): super(){
        if(path.startsWith("/"))
            loadFromByteArray(Image::class.java.getResourceAsStream(path)!!.readBytes())
        else
            loadFromFile(path)
+        configureImage()
     }
 
-    constructor(inputStream: InputStream): this(inputStream.readBytes())
+    private constructor(inputStream: InputStream): this(inputStream.readBytes())
 
-    constructor(bytes: ByteArray): super(){
+    // Formats as PNG, JPEG, etc.
+    private constructor(bytes: ByteArray): super(){
         loadFromByteArray(bytes)
+        configureImage()
     }
 
-    constructor(buffer: ByteBuffer): super(){
+    // Formats as PNG, JPEG, etc.
+    private constructor(buffer: ByteBuffer): super(){
         if(buffer.isDirect)
             loadFromDirectByteBuffer(buffer)
         else
             loadFromByteArray(buffer.array())
+        configureImage()
     }
 
-    constructor(url: URL): this(url.openStream())
+    // Pure bitmap
+    private constructor(buffer: ByteBuffer, width: Int, height: Int, components: Int): super(){
+        applyData(buffer, width, height, components)
+        configureImage()
+    }
 
-    constructor(width: Int, height: Int){
+    // Pure bitmap
+    private constructor(bytes: ByteArray, width: Int, height: Int, components: Int): super(){
+        val directBuffer = ByteBuffer.allocateDirect(bytes.size)
+        directBuffer.put(bytes)
+        BufferUtils.flipBuffer(directBuffer)
+
+        applyData(directBuffer, width, height, components)
+        configureImage()
+    }
+
+    private constructor(url: URL): this(url.openStream())
+
+    private constructor(width: Int, height: Int){
         this._width = width
         this._height = height
         this._components = 4
 
         Resources.invokeSync{ _textId = createEmptyTexture() }
+        configureImage()
+    }
+
+    private fun configureImage(){
+        linearFiltering = linearFiltering
     }
 
     private fun applyData(loadedData: ByteBuffer, width: Int, height: Int, components: Int){
@@ -112,7 +163,6 @@ open class Image: MinUIObject {
         var id = 0
         Resources.invokeSync{ id = createEmptyTexture() }
         Resources.writeTextureBytes(id, width, height, loadedData)
-
         _textId = id
     }
 
@@ -125,8 +175,10 @@ open class Image: MinUIObject {
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, MemoryUtil.NULL)
 
-        glGenerateMipmap(GL_TEXTURE_2D)
+        //glGenerateMipmap(GL_TEXTURE_2D)
+
         return id
     }
 
@@ -135,7 +187,9 @@ open class Image: MinUIObject {
             val w = stack.mallocInt(1)
             val h = stack.mallocInt(1)
             val components = stack.mallocInt(1)
-            val data = stbi_load(path, w, h, components, 4)!!
+
+            stbi_info(path, w, h, components)
+            val data = stbi_load(path, w, h, stack.mallocInt(1), components[0])!!
             applyData(data, w[0], h[0], components[0])
             stbi_image_free(data)
         }
@@ -153,28 +207,53 @@ open class Image: MinUIObject {
         stackPush().use { stack ->
             val w = stack.mallocInt(1)
             val h = stack.mallocInt(1)
-            val components = stack.mallocInt(1)
-            val data = stbi_load_from_memory(buffer, w, h, components, 4)!!
-            applyData(data, w[0], h[0], components[0])
+
+            val data = stbi_load_from_memory(buffer, w, h, stack.mallocInt(1), 4)!!
+
+            applyData(data, w[0], h[0], 4)
             stbi_image_free(data)
         }
     }
 
-    fun save(encoding: ImageEncoding, file: File, quality: Int = 90) = save(encoding, file.absolutePath, quality)
+    fun resize(newWidth: Int, newHeight: Int, type: ResizeType = ResizeType.CubicBSpline): Image{
+        val buffer = ByteBuffer.allocateDirect(newWidth * newHeight * 4)
+        if(type.value < 0){
+            Resources.resizeTexture(textId!!, newWidth, newHeight, buffer, linear= type == ResizeType.Linear)
+        }else {
+            stbir_resize(
+                data, width, height, 0,
+                buffer, newWidth, newHeight, 0,
+                STBIR_TYPE_UINT8, 4, 3, 0,
+                STBIR_EDGE_CLAMP,
+                STBIR_EDGE_CLAMP,
+                type.value,
+                type.value,
+                STBIR_COLORSPACE_SRGB
+            )
+        }
+        //BufferUtils.flipBuffer(buffer)
+        return fromByteBuffer(buffer, newWidth, newHeight, components)
+    }
 
-    fun save(encoding: ImageEncoding, path: String, quality: Int = 90){
+    fun save(file: File, encoding: ImageEncoding = PNG, quality: Int = 90) = save(file.absolutePath, encoding, quality)
+
+    fun save(
+        path: String,
+        encoding: ImageEncoding = PNG,
+        quality: Int = 90
+    ){
         when(encoding){
-            PNG -> stbi_write_png(path, width, height, 4, data, width * 4)
-            JPEG -> stbi_write_jpg(path, width, height, 4, data, quality)
-            BMP -> stbi_write_bmp(path, width, height, 4, data)
-            TGA -> stbi_write_tga(path, width, height, 4, data)
+            PNG -> stbi_write_png(path, width, height, components, data, width * components)
+            JPEG -> stbi_write_jpg(path, width, height, components, data, quality)
+            BMP -> stbi_write_bmp(path, width, height, components, data)
+            TGA -> stbi_write_tga(path, width, height, components, data)
         }
     }
 
     fun cacheFile(): File {
         val file = File(MinUIEnvironment.file, "cached_images/${id}.png")
         file.parentFile.mkdirs()
-        save(PNG, file)
+        save(file, PNG)
         return file
     }
 

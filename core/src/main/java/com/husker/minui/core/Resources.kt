@@ -3,9 +3,12 @@ package com.husker.minui.core
 import com.husker.minui.core.utils.Trigger
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL.*
+import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil.*
 import java.nio.ByteBuffer
+import java.nio.IntBuffer
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -19,10 +22,12 @@ class Resources { companion object {
     fun initialize() {
         glfwDefaultWindowHints()
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)
-        window = glfwCreateWindow(800, 800, "Resources context", NULL, NULL)
+        window = glfwCreateWindow(1000000, 1000000, "Resources context", NULL, NULL)
 
         resourceThread = thread(name = "MinUI Resource"){
             requestContext()
+
+            glMatrixMode(GL_PROJECTION)
             glEnable(GL_TEXTURE_2D)
 
             while(MinUI.isActive){
@@ -76,11 +81,50 @@ class Resources { companion object {
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texId, 0)
 
             glReadBuffer(GL_COLOR_ATTACHMENT0)
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
             glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
 
             glDeleteFramebuffers(fb)
         }
         return buffer
+    }
+
+    // TODO: Size is limited to user's display
+    fun resizeTexture(texId: Int, newWidth: Int, newHeight: Int, buffer: ByteBuffer, linear: Boolean){
+        invokeSync{
+            glViewport(0, 0, newWidth, newHeight)
+            glLoadIdentity()
+            glOrtho(0.0, newWidth.toDouble(), newHeight.toDouble(), 0.0, 0.0, 1.0)
+
+            glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+            glClearColor(1f, 1f, 1f, 0f)
+
+            glBindTexture(GL_TEXTURE_2D, texId)
+
+            val lastFilter = glGetTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER)
+            val currentFilter = if(linear) GL_LINEAR else GL_NEAREST
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, currentFilter)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, currentFilter)
+
+            glBegin(GL_QUADS)
+            glTexCoord2f(0.0f, 0.0f)
+            glVertex2d(0.0, newHeight.toDouble())
+            glTexCoord2f(1.0f, 0.0f)
+            glVertex2d(newWidth.toDouble(), newHeight.toDouble())
+            glTexCoord2f(1.0f, 1.0f)
+            glVertex2d(newWidth.toDouble(), 0.0)
+            glTexCoord2f(0.0f, 1.0f)
+            glVertex2d(0.0, 0.0)
+            glEnd()
+
+            glReadBuffer(GL_COLOR_ATTACHMENT0)
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+            glReadPixels(0, 0, newWidth, newHeight, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, lastFilter)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, lastFilter)
+            //glfwSwapBuffers(window)
+        }
     }
 
     fun writeTextureBytes(texId: Int, width: Int, height: Int, buffer: ByteBuffer){
