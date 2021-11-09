@@ -7,6 +7,7 @@ import com.husker.minui.graphics.ImageEncoding
 import com.husker.minui.graphics.ResizeType
 import com.husker.minui.layouts.FlowPane
 import com.husker.minui.natives.LibraryUtils
+import kotlin.concurrent.thread
 
 
 var startTime = System.currentTimeMillis()
@@ -18,20 +19,23 @@ fun main(){
 
     Frame().apply {
         vsync = false
-        root = FlowPane().apply {
-            printDebug("Init")
-            for(type in ResizeType.values()){
-                val scaled = icon.resize(100, 100, type= type)
-                printDebug("Scale: ${type.name}")
-                scaled.linearFiltering = false
+        visible = true
 
-                val view = ImageView(scaled)
-                view.preferredWidth = 500.toDouble()
-                view.preferredHeight = 500.toDouble()
-                add(view)
+        root = FlowPane().apply {
+            thread {
+                printDebug("Init")
+                for (type in ResizeType.values()) {
+                    val scaled = icon.resize(10000, 10000, type = type)
+                    printDebug("Scale: ${type.name}")
+                    scaled.linearFiltering = false
+
+                    val view = ImageView(scaled)
+                    view.preferredWidth = 500.toDouble()
+                    view.preferredHeight = 500.toDouble()
+                    add(view)
+                }
             }
         }
-        visible = true
     }
 
 }

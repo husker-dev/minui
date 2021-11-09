@@ -15,8 +15,14 @@ import java.io.File
 import java.io.InputStream
 import java.net.URL
 import java.nio.ByteBuffer
-import java.nio.ByteOrder
 
+/**  Encoding Types
+ *   ##### Enum values:
+ *
+ * - [PNG][ImageEncoding.PNG] - 4 channels
+ * - [JPEG][ImageEncoding.JPEG] - 3 channels, less size
+ * - [BMP][ImageEncoding.BMP] - 4 channels
+ */
 enum class ImageEncoding {
     PNG,
     JPEG,
@@ -27,6 +33,8 @@ enum class ImageEncoding {
 /**  Resize Types
  *   ##### Enum values:
  *
+ * - [Nearest][ResizeType.Nearest] - "Nearest" texture filtering in OpenGL
+ * - [Linear][ResizeType.Linear] - "Linear" texture filtering in OpenGL
  * - [Box][ResizeType.Box] - A trapezoid w/1-pixel wide ramps, same result as box for integer scale ratios.
  * - [Triangle][ResizeType.Triangle] - On upsampling, produces same results as bilinear texture filtering.
  * - [CubicBSpline][ResizeType.CubicBSpline] - The cubic b-spline (aka Mitchell-Netrevalli with B=1,C=0), gaussian-esque.
@@ -48,21 +56,102 @@ open class Image: MinUIObject {
     companion object{
         private var count = 0
 
+        /**
+         * Creates empty image with specified size
+         *
+         * @param width image width
+         * @param height image height
+         * @return Empty image object
+         */
         fun create(width: Int, height: Int): Image = Image(width, height)
+
+        /**
+         * Downloads image from specified URL string
+         *
+         * @param url image URL string
+         * @return Downloaded image object
+         */
         fun fromURL(url: String): Image = Image(URL(url))
+
+        /**
+         * Downloads image from specified URL
+         *
+         * @param url image URL
+         * @return Downloaded image object
+         */
         fun fromURL(url: URL): Image = Image(url)
+
+        /**
+         * Loads image from specified file
+         *
+         * @param file image file
+         * @return Image object
+         */
         fun fromFile(file: File): Image = Image(file.absolutePath)
+
+        /**
+         * Loads image from specified file path
+         *
+         * @param path image file path
+         * @return Image object from file
+         */
         fun fromFile(path: String): Image = Image(path)
+
+        /**
+         * Loads image from specified resource file path (inside jar file)
+         *
+         * The path can start **with** or **without** "/"
+         *
+         * @param path resources file path to image
+         * @return Image object from resources
+         */
         fun fromResource(path: String): Image = if(path.startsWith("/")) Image(path) else Image("/$path")
+
+        /**
+         * Loads image from [InputStream][InputStream]
+         *
+         * @param inputStream stream of image file (not bitmap)
+         * @return Image object
+         */
         fun fromInputStream(inputStream: InputStream): Image = Image(inputStream)
 
-        // File bytes (PNG, JPEG)
+        /**
+         * Loads image from file bytes **(not bitmap)**
+         *
+         * @param bytes image file bytes
+         * @return Image object
+         */
         fun fromBytes(bytes: ByteArray): Image = Image(bytes)
+
+        /**
+         * Loads image from file [ByteBuffer][ByteBuffer] **(not bitmap)**
+         *
+         * @param buffer image file byte buffer
+         * @return Image object
+         */
         fun fromByteBuffer(buffer: ByteBuffer): Image = Image(buffer)
 
-        // Bitmap
+        /**
+         * Loads image from image [ByteBuffer][ByteBuffer] **(bitmap)**
+         *
+         * @param buffer image byte buffer
+         * @param width image width
+         * @param height image height
+         * @param components components count (RGB = 3, RGBA = 4)
+         * @return Image object
+         */
         fun fromByteBuffer(buffer: ByteBuffer, width: Int, height: Int, components: Int): Image = Image(buffer, width, height, components)
-        fun fromByteBuffer(bytes: ByteArray, width: Int, height: Int, components: Int): Image = Image(bytes, width, height, components)
+
+        /**
+         * Loads image from image bytes **(bitmap)**
+         *
+         * @param bytes image byte array
+         * @param width image width
+         * @param height image height
+         * @param components components count (RGB = 3, RGBA = 4)
+         * @return Image object
+         */
+        fun fromBytes(bytes: ByteArray, width: Int, height: Int, components: Int): Image = Image(bytes, width, height, components)
     }
 
     private val id = count++
@@ -153,6 +242,7 @@ open class Image: MinUIObject {
 
     private fun configureImage(){
         linearFiltering = linearFiltering
+        glGenerateMipmap(GL_TEXTURE_2D)
     }
 
     private fun applyData(loadedData: ByteBuffer, width: Int, height: Int, components: Int){
@@ -176,8 +266,6 @@ open class Image: MinUIObject {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, MemoryUtil.NULL)
-
-        //glGenerateMipmap(GL_TEXTURE_2D)
 
         return id
     }
@@ -215,6 +303,14 @@ open class Image: MinUIObject {
         }
     }
 
+    /**
+     * Creates new image instance with specified size
+     *
+     * @param newWidth new image width
+     * @param newHeight new image height
+     * @param type resizing type
+     * @return Resized image instance
+     */
     fun resize(newWidth: Int, newHeight: Int, type: ResizeType = ResizeType.CubicBSpline): Image{
         val buffer = ByteBuffer.allocateDirect(newWidth * newHeight * 4)
         if(type.value < 0){
@@ -231,12 +327,25 @@ open class Image: MinUIObject {
                 STBIR_COLORSPACE_SRGB
             )
         }
-        //BufferUtils.flipBuffer(buffer)
         return fromByteBuffer(buffer, newWidth, newHeight, components)
     }
 
+    /**
+     * Saves image to a specified file
+     *
+     * @param file destination file
+     * @param encoding bitmap encoding
+     * @param quality defines compression quality. Used only for [JPEG][ImageEncoding.JPEG] encoding
+     */
     fun save(file: File, encoding: ImageEncoding = PNG, quality: Int = 90) = save(file.absolutePath, encoding, quality)
 
+    /**
+     * Saves image to a specified file path
+     *
+     * @param path destination file path
+     * @param encoding bitmap encoding
+     * @param quality defines compression quality. Used only for [JPEG][ImageEncoding.JPEG] encoding
+     */
     fun save(
         path: String,
         encoding: ImageEncoding = PNG,

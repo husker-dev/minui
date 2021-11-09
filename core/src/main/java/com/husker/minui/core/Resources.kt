@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL.*
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30.*
+import org.lwjgl.opengl.GL32.glFramebufferTexture
 import org.lwjgl.system.MemoryUtil.*
 import java.nio.ByteBuffer
 import java.nio.IntBuffer
@@ -22,7 +23,7 @@ class Resources { companion object {
     fun initialize() {
         glfwDefaultWindowHints()
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)
-        window = glfwCreateWindow(1000000, 1000000, "Resources context", NULL, NULL)
+        window = glfwCreateWindow(30, 30, "Resources context", NULL, NULL)
 
         resourceThread = thread(name = "MinUI Resource"){
             requestContext()
@@ -89,15 +90,22 @@ class Resources { companion object {
         return buffer
     }
 
-    // TODO: Size is limited to user's display
     fun resizeTexture(texId: Int, newWidth: Int, newHeight: Int, buffer: ByteBuffer, linear: Boolean){
         invokeSync{
             glViewport(0, 0, newWidth, newHeight)
             glLoadIdentity()
             glOrtho(0.0, newWidth.toDouble(), newHeight.toDouble(), 0.0, 0.0, 1.0)
 
-            glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-            glClearColor(1f, 1f, 1f, 0f)
+            val fbo = glGenFramebuffers()
+            glBindFramebuffer(GL_FRAMEBUFFER, fbo)
+
+            val tex = glGenTextures()
+            glBindTexture(GL_TEXTURE_2D, tex)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+            glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tex, 0)
+            glDrawBuffers(GL_COLOR_ATTACHMENT0)
 
             glBindTexture(GL_TEXTURE_2D, texId)
 
@@ -123,7 +131,9 @@ class Resources { companion object {
 
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, lastFilter)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, lastFilter)
-            //glfwSwapBuffers(window)
+
+            glDeleteTextures(tex)
+            glDeleteFramebuffers(fbo)
         }
     }
 
