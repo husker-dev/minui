@@ -156,6 +156,8 @@ open class Image: MinUIObject {
 
     private val id = count++
 
+    private var changed = false
+
     private var _width = 0
     val width: Int
         get() = _width
@@ -172,9 +174,19 @@ open class Image: MinUIObject {
     val textId: Int?
         get() = _textId
 
+    private lateinit var _data: ByteBuffer
     var data: ByteBuffer
-        get() = Resources.readTextureBytes(textId!!, width, height)
-        set(value) = Resources.writeTextureBytes(textId!!, width, height, value)
+        get() {
+            if(changed) {
+                changed = false
+                _data = Resources.readTextureBytes(textId!!, width, height)
+            }
+            return _data
+        }
+        set(value) {
+            Resources.writeTextureBytes(textId!!, width, height, value)
+            changed = true
+        }
 
     private var _linearFiltering = true
     var linearFiltering: Boolean
@@ -189,10 +201,10 @@ open class Image: MinUIObject {
         }
 
     private constructor(path: String): super(){
-       if(path.startsWith("/"))
-           loadFromByteArray(Image::class.java.getResourceAsStream(path)!!.readBytes())
-       else
-           loadFromFile(path)
+        if(path.startsWith("/"))
+            loadFromByteArray(Image::class.java.getResourceAsStream(path)!!.readBytes())
+        else
+            loadFromFile(path)
         configureImage()
     }
 
@@ -248,6 +260,7 @@ open class Image: MinUIObject {
         this._width = width
         this._height = height
         this._components = components
+        this._data = loadedData
 
         var id = 0
         Resources.invokeSync{ id = createEmptyTexture() }
@@ -275,10 +288,8 @@ open class Image: MinUIObject {
             val h = stack.mallocInt(1)
             val components = stack.mallocInt(1)
 
-            stbi_info(path, w, h, components)
-            val data = stbi_load(path, w, h, stack.mallocInt(1), components[0])!!
-            applyData(data, w[0], h[0], components[0])
-            stbi_image_free(data)
+            val data = stbi_load(path, w, h, components, 4)!!
+            applyData(data, w[0], h[0], 4)
         }
     }
 
@@ -296,9 +307,7 @@ open class Image: MinUIObject {
             val h = stack.mallocInt(1)
 
             val data = stbi_load_from_memory(buffer, w, h, stack.mallocInt(1), 4)!!
-
             applyData(data, w[0], h[0], 4)
-            stbi_image_free(data)
         }
     }
 
@@ -368,6 +377,4 @@ open class Image: MinUIObject {
     override fun toString(): String {
         return "Image(width=$_width, height=$_height, components=$_components, textId=$_textId)"
     }
-
-
 }
