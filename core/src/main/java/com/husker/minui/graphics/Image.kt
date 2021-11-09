@@ -242,7 +242,6 @@ open class Image: MinUIObject {
 
     private fun configureImage(){
         linearFiltering = linearFiltering
-        glGenerateMipmap(GL_TEXTURE_2D)
     }
 
     private fun applyData(loadedData: ByteBuffer, width: Int, height: Int, components: Int){
