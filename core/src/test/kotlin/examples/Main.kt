@@ -20,12 +20,14 @@ fun main(){
 
     val icon = Image.fromResource("icon.png")
 
-    Frame().apply {
+    Frame("Test", icon).apply {
         vsync = false
-        visible = true
 
-        root = BorderPane(ImageView(icon, color = Color.Blue))
-    }
+        showTaskbarIcon = false
+        undecorated = true
+
+        root = BorderPane(ImageView(icon))
+    }.show()
 
 }
 

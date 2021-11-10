@@ -1,15 +1,11 @@
 package com.husker.minui.core
 
+import com.husker.minui.components.*
+import com.husker.minui.geometry.*
+import com.husker.minui.graphics.*
+import com.husker.minui.layouts.*
 import com.husker.minui.core.listeners.*
 import com.husker.minui.core.utils.ConcurrentArrayList
-import com.husker.minui.geometry.Dimension
-import com.husker.minui.geometry.Point
-import com.husker.minui.geometry.Rectangle
-import com.husker.minui.graphics.Color
-import com.husker.minui.graphics.Graphics
-import com.husker.minui.graphics.Image
-import com.husker.minui.layouts.Container
-import com.husker.minui.layouts.Pane
 import com.husker.minui.natives.PlatformLibrary
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
@@ -23,7 +19,10 @@ import java.util.function.Consumer
 import kotlin.system.exitProcess
 
 
-open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawable, Sizable, Positionable {
+open class Frame(
+    title: String = "",
+    icon: Image? = null
+): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawable, Sizable, Positionable {
     val backend = FrameBackend()
 
     enum class FrameState {
@@ -83,7 +82,9 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         }
         get() = _root
 
-    private var _title = ""
+    private val layerPane = LayerPane()
+
+    private var _title = title
     var title: String
         set(value) {
             _title = value
@@ -172,7 +173,7 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         }
         get() = Rectangle(x, y, width, height)
 
-    private var _icon: Image? = null
+    private var _icon: Image? = icon
     var icon: Image?
         set(value) {
             _icon = value
@@ -307,7 +308,6 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
                 backend.initialized = true
 
                 // Update some window properties
-                state = state
                 icon = icon
                 undecorated = undecorated
                 alwaysOnTop = alwaysOnTop
@@ -319,6 +319,9 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
                 // Initialize window callbacks
                 MinUI.initializeCallbacks(this@Frame)
                 MinUI.frames.add(this@Frame)
+
+                // Show window
+                state = state
             }
         }
     }
@@ -331,6 +334,10 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         this.title = title
         this._width = width
         this._height = height
+    }
+
+    fun show(){
+        visible = true
     }
 
     fun close(){
@@ -367,6 +374,14 @@ open class Frame(): MinUIObject(), KeyEventsReceiver, MouseEventsReceiver, Drawa
         glfwImage.set(image.width, image.height, image.data)
         imageBf.put(0, glfwImage)
         glfwSetWindowIcon(backend.window, imageBf)
+    }
+
+    private fun splash(splashImage: Image, initBlock: Runnable){
+        splash(ImageView(splashImage), initBlock)
+    }
+
+    private fun splash(splashComponent: Component, initBlock: Runnable){
+
     }
 
     fun requestFocus(){

@@ -6,7 +6,7 @@ import com.husker.minui.graphics.Graphics
 
 abstract class Container: Component() {
 
-    protected open val children = ConcurrentArrayList<Component>()
+    val children = ConcurrentArrayList<Component>()
 
     open val childrenCount: Int
         get() = children.size
