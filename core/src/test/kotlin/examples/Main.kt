@@ -1,10 +1,13 @@
 package examples
 
+import com.husker.minui.components.FitType
 import com.husker.minui.components.ImageView
 import com.husker.minui.core.Frame
+import com.husker.minui.graphics.Color
 import com.husker.minui.graphics.Image
 import com.husker.minui.graphics.ImageEncoding
 import com.husker.minui.graphics.ResizeType
+import com.husker.minui.layouts.BorderPane
 import com.husker.minui.layouts.FlowPane
 import com.husker.minui.natives.LibraryUtils
 import kotlin.concurrent.thread
@@ -13,7 +16,7 @@ import kotlin.concurrent.thread
 var startTime = System.currentTimeMillis()
 
 fun main(){
-    LibraryUtils.forceLoad = true
+    //LibraryUtils.forceLoad = true
 
     val icon = Image.fromResource("icon.png")
 
@@ -21,21 +24,7 @@ fun main(){
         vsync = false
         visible = true
 
-        root = FlowPane().apply {
-            thread {
-                printDebug("Init")
-                for (type in ResizeType.values()) {
-                    val scaled = icon.resize(10000, 10000, type = type)
-                    printDebug("Scale: ${type.name}")
-                    scaled.linearFiltering = false
-
-                    val view = ImageView(scaled)
-                    view.preferredWidth = 500.toDouble()
-                    view.preferredHeight = 500.toDouble()
-                    add(view)
-                }
-            }
-        }
+        root = BorderPane(ImageView(icon, color = Color.Blue))
     }
 
 }

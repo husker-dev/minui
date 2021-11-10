@@ -248,8 +248,10 @@ open class Image: MinUIObject {
         this._height = height
         this._components = 4
 
-        Resources.invokeSync{ _textId = createEmptyTexture() }
+        var id = 0
+        Resources.invokeSync{ id = createEmptyTexture() }
         configureImage()
+        _textId = id
     }
 
     private fun configureImage(){
