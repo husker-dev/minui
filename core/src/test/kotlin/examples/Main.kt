@@ -17,7 +17,7 @@ fun main(){
     Frame("Test", icon).apply {
         vsync = false
 
-        showTaskbarIcon = false
+        //showTaskbarIcon = false
         //undecorated = true
 
         root = BorderPane(ImageView(icon))
