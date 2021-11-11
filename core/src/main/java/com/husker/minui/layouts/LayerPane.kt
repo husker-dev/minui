@@ -1,6 +1,8 @@
 package com.husker.minui.layouts
 
-class LayerPane: Pane() {
+import com.husker.minui.components.Component
+
+class LayerPane(vararg components: Component): Pane(*components) {
 
     override fun layout() {
         children.iterate { child ->

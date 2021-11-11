@@ -1,21 +1,15 @@
 package examples
 
-import com.husker.minui.components.FitType
 import com.husker.minui.components.ImageView
 import com.husker.minui.core.Frame
-import com.husker.minui.graphics.Color
 import com.husker.minui.graphics.Image
-import com.husker.minui.graphics.ImageEncoding
-import com.husker.minui.graphics.ResizeType
 import com.husker.minui.layouts.BorderPane
-import com.husker.minui.layouts.FlowPane
-import com.husker.minui.natives.LibraryUtils
-import kotlin.concurrent.thread
 
 
 var startTime = System.currentTimeMillis()
 
 fun main(){
+
     //LibraryUtils.forceLoad = true
 
     val icon = Image.fromResource("icon.png")
@@ -24,7 +18,7 @@ fun main(){
         vsync = false
 
         showTaskbarIcon = false
-        undecorated = true
+        //undecorated = true
 
         root = BorderPane(ImageView(icon))
     }.show()

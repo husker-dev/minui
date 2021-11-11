@@ -14,7 +14,7 @@ class WinRegistry{ companion object{
     const val HKEY_CURRENT_USER_LOCAL_SETTINGS = 0x80000007L
 
     fun getFolderValuesMap(hkey: Long, path: String): Map<String, String>{
-        val result = Win.nGetRegistryValues(hkey, path)
+        val result = Win.nRegistryGetMap(hkey, path)
         if(result.size == 1){
             throw when(result[0].toString()){
                 "1" -> UnsupportedOperationException("winerror: ERROR_INVALID_FUNCTION")

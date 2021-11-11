@@ -24,41 +24,48 @@ object Win: PlatformLibrary("minui-win") {
     val ByteArray.utf8Text: ByteArray
         get() = nWideTextToMultiByte(this)
 
-    external fun nGetWindowExStyle(hwnd: Long): Long
-    external fun nSetWindowExStyle(hwnd: Long, exStyle: Long)
-
-    external fun nGetClipboardKeys(): Array<String>
-    external fun nGetClipboardData(key: String): ByteArray
-    external fun nSetClipboardData(key: String, bytes: ByteArray): ByteArray
-    external fun nEmptyClipboard()
-
-    external fun nCreatePopupMenu(): Long
-    external fun nAddPopupString(hmenu: Long, id: Int, wideText: ByteArray)
-    external fun nAddPopupSeparator(hmenu: Long)
-    external fun nAddPopupSubMenu(hmenu: Long, wideText: ByteArray, subMenu: Long)
-    external fun nShowPopup(hmenu: Long, x: Int, y: Int): Int
-    external fun nShowPopupWnd(hmenu: Long, x: Int, y: Int, hwnd: Long): Int
-
-    external fun nGetMousePosition(): IntArray
-    external fun nScreenToClient(hwnd: Long, x: Int, y: Int): IntArray
-
+    // base.h
+    external fun nWideTextToMultiByte(bytes: ByteArray): ByteArray
+    external fun nMultiByteToWideText(bytes: ByteArray, chars: Int): ByteArray
+    external fun nGetMousePositionX(): Int
+    external fun nGetMousePositionY(): Int
+    external fun nScreenToClientX(hwnd: Long, x: Int, y: Int): Int
+    external fun nScreenToClientY(hwnd: Long, x: Int, y: Int): Int
     external fun nGetLCID(localeBytes: ByteArray): ByteArray
 
+    // clipboard.h
+    external fun nClipboardGetKeys(): Array<String>
+    external fun nClipboardGetData(key: String): ByteArray
+    external fun nClipboardEmpty()
+    external fun nClipboardSetData(key: String, bytes: ByteArray): ByteArray
+
+    // notification.h
+    // Here is temporary empty
+
+    // popup_menu.h
+    external fun nPopupCreate(): Long
+    external fun nPopupAddString(hmenu: Long, id: Int, wideText: ByteArray)
+    external fun nPopupAddSeparator(hmenu: Long)
+    external fun nPopupAddSubMenu(hmenu: Long, wideText: ByteArray, subMenu: Long)
+    external fun nPopupShow(hmenu: Long, x: Int, y: Int): Int
+    external fun nPopupShowWnd(hmenu: Long, x: Int, y: Int, hwnd: Long): Int
+
+    // registry.h
+    external fun nRegistryGetMap(hkey: Long, path: String): Array<Any>
+
+    // toast.h
+    external fun nToastInit(id: ByteArray, displayName: ByteArray, imagePath: ByteArray)
+    external fun nToastShow(xml: ByteArray)
+    external fun nToastUninstall()
+    external fun nToastClearAll()
+
+    // window.h
+    external fun nGetWindowExStyle(hwnd: Long): Long
+    external fun nSetWindowExStyle(hwnd: Long, exStyle: Long)
     external fun nMonitorFromWindow(hwnd: Long): Long
     external fun nGetMonitorName(hwnd: Long): String
 
-    external fun nWideTextToMultiByte(bytes: ByteArray): ByteArray
-    external fun nMultiByteToWideText(bytes: ByteArray, chars: Int): ByteArray
-
-    external fun nGetRegistryValues(hkey: Long, path: String): Array<Any>
-
-    external fun nToastInit(id: ByteArray, displayName: ByteArray, imagePath: ByteArray)
-    external fun nToastShow(xml: ByteArray)
-    external fun nToastClearAll()
-    external fun nToastUninstall()
-
     // Callbacks
-
     val toastCallbackListeners = hashMapOf<Int, ConcurrentArrayList<(Int) -> Unit>>()
 
     fun onToastCallback(event: String){
@@ -81,13 +88,13 @@ object Win: PlatformLibrary("minui-win") {
     }
 
     override fun getMousePosition(): Point {
-        val point = nGetMousePosition()
-        return Point(point[0].toDouble(), point[1].toDouble())
+        return Point(nGetMousePositionX().toDouble(), nGetMousePositionY().toDouble())
     }
 
     override fun screenPointToClient(point: Point, frame: Frame): Point {
-        val relativePoint = nScreenToClient(frame.hwnd, point.x.toInt(), point.y.toInt())
-        return Point(relativePoint[0].toDouble(), relativePoint[1].toDouble())
+        return Point(
+            nScreenToClientX(frame.hwnd, point.x.toInt(), point.y.toInt()).toDouble(),
+            nScreenToClientY(frame.hwnd, point.x.toInt(), point.y.toInt()).toDouble())
     }
 
     override fun systemBytesToString(bytes: ByteArray): String {

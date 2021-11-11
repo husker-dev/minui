@@ -2,7 +2,7 @@ package com.husker.minui.layouts
 
 import com.husker.minui.components.Component
 
-open class FlowPane(): Pane() {
+open class FlowPane(vararg components: Component): Pane(*components) {
 
     enum class VPos{
         Top, Center, Bottom
@@ -44,12 +44,12 @@ open class FlowPane(): Pane() {
             layout()
         }
 
-    constructor(hgap: Double, vgap: Double): this(){
+    constructor(hgap: Double, vgap: Double, vararg components: Component): this(*components){
         this.vgap = vgap
         this.hgap = hgap
     }
 
-    constructor(gap: Double): this(){
+    constructor(gap: Double, vararg components: Component): this(*components){
         this.hgap = gap
         this.vgap = gap
     }

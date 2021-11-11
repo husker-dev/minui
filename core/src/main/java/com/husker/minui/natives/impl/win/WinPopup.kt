@@ -14,23 +14,23 @@ class WinPopup{ companion object{
         val hmenu = createPopup(popup, indices)
         var result = 0
         if (frame != null)
-            MinUI.invokeLaterSync { result = Win.nShowPopupWnd(hmenu, x, y, frame.hwnd) }
+            MinUI.invokeLaterSync { result = Win.nPopupShowWnd(hmenu, x, y, frame.hwnd) }
         else
-            result = Win.nShowPopup(hmenu, x, y)
+            result = Win.nPopupShow(hmenu, x, y)
         if (result != 0 && indices[result - 1] is NativePopupMenu.ButtonElement)
             (indices[result - 1] as NativePopupMenu.ButtonElement).action?.invoke()
     }
 
     private fun createPopup(popup: NativePopupMenu, indices: ArrayList<NativePopupMenu.PopupElement>): Long {
-        val hmenu = Win.nCreatePopupMenu()
+        val hmenu = Win.nPopupCreate()
         popup.elements.forEach { element ->
             indices.add(element)
             if (element is NativePopupMenu.ButtonElement)
-                Win.nAddPopupString(hmenu, indices.size, element.text.wideBytes)
+                Win.nPopupAddString(hmenu, indices.size, element.text.wideBytes)
             if (element is NativePopupMenu.Separator)
-                Win.nAddPopupSeparator(hmenu)
+                Win.nPopupAddSeparator(hmenu)
             if (element is NativePopupMenu.SubMenu)
-                Win.nAddPopupSubMenu(hmenu, element.text.wideBytes, createPopup(element.menu, indices))
+                Win.nPopupAddSubMenu(hmenu, element.text.wideBytes, createPopup(element.menu, indices))
         }
         return hmenu
     }

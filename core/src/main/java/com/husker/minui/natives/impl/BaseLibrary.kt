@@ -6,13 +6,14 @@ import java.nio.charset.StandardCharsets
 
 object BaseLibrary: Library("freetype", "minui-base") {
 
+    // freetype.h
     external fun nInitFreetype(): Long
     external fun nLoadFaceFile(ft: Long, path: String): Long
-    external fun nLoadFace(ft: Long, data: ByteArray): Long
     external fun nDoneFace(face: Long): Long
+    external fun nLoadFace(ft: Long, data: ByteArray): Long
     external fun nSetFaceSize(face: Long, size: Int)
-    external fun nGetFaceName(face: Long, id: Int): Array<Any>
     external fun nGetFaceNameCount(face: Long): Int
+    external fun nGetFaceName(face: Long, id: Int): Array<Any>
 
     val nFreetype: Long = nInitFreetype()
 

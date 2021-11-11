@@ -4,9 +4,9 @@ import com.husker.minui.components.Component
 import com.husker.minui.core.utils.ConcurrentArrayList
 import com.husker.minui.graphics.Graphics
 
-abstract class Container: Component() {
+abstract class Container(vararg children: Component): Component() {
 
-    val children = ConcurrentArrayList<Component>()
+    val children = ConcurrentArrayList(*children)
 
     open val childrenCount: Int
         get() = children.size
@@ -17,6 +17,7 @@ abstract class Container: Component() {
             super.width = value
             layout()
         }
+
     override var height: Double
         get() = super.height
         set(value) {
