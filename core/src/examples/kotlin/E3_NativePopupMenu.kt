@@ -1,5 +1,3 @@
-package examples
-
 import com.husker.minui.core.Frame
 import com.husker.minui.core.Mouse
 import com.husker.minui.core.popup.NativePopupMenu

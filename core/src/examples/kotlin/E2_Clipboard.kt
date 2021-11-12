@@ -1,5 +1,3 @@
-package examples
-
 import com.husker.minui.core.clipboard.Clipboard
 import com.husker.minui.core.clipboard.ClipboardDataType
 import com.husker.minui.natives.LibraryUtils

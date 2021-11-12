@@ -252,14 +252,13 @@ open class Frame(
         set(value) {
             _vsync = value
             if (backend.initialized) MinUI.invokeLaterSync {
-                MinUI.makeCurrent(backend.window)
                 glfwSwapInterval(if (value) GLFW_TRUE else GLFW_FALSE)
             }
         }
         get() = _vsync
 
     val display: Display
-        get() = if (backend.initialized) Display.ofFrame(this) else Display.default
+        get() = if (backend.initializeEnded) Display.ofFrame(this) else Display.default
 
     val mousePosition: Point
         get() = Mouse.getPositionInFrame(this)
@@ -322,6 +321,8 @@ open class Frame(
 
                 // Show window
                 state = state
+
+                backend.initializeEnded = true
             }
         }
     }
@@ -451,6 +452,7 @@ open class Frame(
     inner class FrameBackend{
         var window = -1L
         var initialized = false
+        var initializeEnded = false
 
         var lastMousePressedEvent: MouseEvent? = null
         var lastMouseReleaseEvent: MouseEvent? = null

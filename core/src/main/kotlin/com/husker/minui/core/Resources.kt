@@ -37,7 +37,11 @@ class Resources { companion object {
                     requestContext()
                 if(!toInvoke.needContext)
                     clearContext()
-                toInvoke.runnable.run()
+                try {
+                    toInvoke.runnable.run()
+                }catch (e: Exception){
+                    e.printStackTrace()
+                }
             }
         }
     }

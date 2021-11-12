@@ -1,5 +1,3 @@
-package examples
-
 import com.husker.minui.components.Button
 import com.husker.minui.core.Frame
 

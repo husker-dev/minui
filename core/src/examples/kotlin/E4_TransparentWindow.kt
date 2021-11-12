@@ -1,5 +1,3 @@
-package examples
-
 import com.husker.minui.components.ImageView
 import com.husker.minui.core.Frame
 import com.husker.minui.graphics.Color

@@ -30,10 +30,23 @@ repositories {
 }
 
 sourceSets {
-    main { resources { srcDirs "src/main/resources" } }
+    main {
+        resources { srcDirs "src/main/resources" }
+    }
+    examples {
+        resources { srcDirs "src/examples/resources" }
+        java {
+            srcDirs 'src/examples/kotlin'
+            compileClasspath += sourceSets.main.runtimeClasspath
+            runtimeClasspath += sourceSets.main.runtimeClasspath
+        }
+    }
 }
 
 dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31'
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
@@ -42,4 +55,10 @@ dependencies {
         for(platform in lwjglPlatforms)
             runtimeOnly "org.lwjgl:$module:$lwjglVersion:$platform"
     }
+}
+
+test {
+    useJUnitPlatform()
+    forkEvery = 1
+    maxParallelForks = 1
 }

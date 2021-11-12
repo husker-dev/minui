@@ -248,10 +248,16 @@ open class Image: MinUIObject {
         this._height = height
         this._components = 4
 
+        val buffer = ByteBuffer.allocateDirect(width * height * _components)
+        buffer.put(ByteArray(width * height * _components))
+        BufferUtils.flipBuffer(buffer)
+
+        this._data = buffer
+
         var id = 0
         Resources.invokeSync{ id = createEmptyTexture() }
-        configureImage()
         _textId = id
+        configureImage()
     }
 
     private fun configureImage(){
