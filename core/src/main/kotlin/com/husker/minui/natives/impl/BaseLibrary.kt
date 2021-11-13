@@ -4,7 +4,7 @@ import com.husker.minui.natives.Library
 import java.io.File
 import java.nio.charset.StandardCharsets
 
-object BaseLibrary: Library("freetype", "minui-base") {
+object BaseLibrary: Library("minui-base") {
 
     // freetype.h
     external fun nInitFreetype(): Long

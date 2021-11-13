@@ -311,7 +311,6 @@ open class Frame(
                 undecorated = undecorated
                 alwaysOnTop = alwaysOnTop
                 resizable = resizable
-                vsync = vsync
                 showTaskbarIcon = showTaskbarIcon
                 minimumSize = minimumSize   // maximumSize is the same
 
@@ -321,6 +320,9 @@ open class Frame(
 
                 // Show window
                 state = state
+
+                // Update properties after creation context
+                vsync = vsync
 
                 backend.initializeEnded = true
             }
