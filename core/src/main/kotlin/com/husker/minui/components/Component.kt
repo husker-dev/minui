@@ -1,11 +1,11 @@
 package com.husker.minui.components
 
 import com.husker.minui.layouts.Container
-import com.husker.minui.core.Positionable
-import com.husker.minui.core.Sizable
+import com.husker.minui.core.interfaces.Positionable
+import com.husker.minui.core.interfaces.Sizable
 import com.husker.minui.geometry.Dimension
 import com.husker.minui.geometry.Point
-import com.husker.minui.core.Drawable
+import com.husker.minui.core.interfaces.Drawable
 import com.husker.minui.core.utils.ConcurrentArrayList
 
 abstract class Component: Drawable, Sizable, Positionable {

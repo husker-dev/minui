@@ -1,4 +1,4 @@
-import com.husker.minui.core.Font
+import com.husker.minui.core.font.Font
 import com.husker.minui.core.MinUI
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll

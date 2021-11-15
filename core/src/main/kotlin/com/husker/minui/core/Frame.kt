@@ -1,6 +1,11 @@
 package com.husker.minui.core
 
 import com.husker.minui.components.*
+import com.husker.minui.core.input.Mouse
+import com.husker.minui.core.input.MouseAction
+import com.husker.minui.core.interfaces.Drawable
+import com.husker.minui.core.interfaces.Positionable
+import com.husker.minui.core.interfaces.Sizable
 import com.husker.minui.geometry.*
 import com.husker.minui.graphics.*
 import com.husker.minui.layouts.*
@@ -292,8 +297,6 @@ open class Frame(
                 glfwDefaultWindowHints()
                 glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)
                 glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE)
-                glfwWindowHint(GLFW_DECORATED, if(undecorated) GLFW_FALSE else GLFW_TRUE)
-                glfwWindowHint(GLFW_RESIZABLE, if(resizable) GLFW_TRUE else GLFW_FALSE)
                 glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE)
                 glfwWindowHint(GLFW_WIN32_KEYBOARD_MENU, GLFW_TRUE)
 
@@ -528,7 +531,7 @@ open class Frame(
         }
 
         fun onMove(x: Int, y: Int){
-            // If window is not in main display, then set 'dpi' to main display's
+            // If window is not in main display, then set 'dpi' to main's display
             val delta = if(Point(x.toDouble(), y.toDouble()) in Display.default.bounds) 1.0 else Display.default.dpi
 
             _x = x.toDouble() / delta
@@ -572,7 +575,7 @@ open class Frame(
 
         fun onMouseAction(button: Int, action: Int, mods: Int){
             if(action == GLFW_PRESS) {
-                lastMousePressedEvent = MouseEvent(button, MouseEvent.Action.Press, mods, 1, mousePosition)
+                lastMousePressedEvent = MouseEvent(button, MouseAction.Press, mods, 1, mousePosition)
                 _mousePressedListeners.iterate { it.accept(lastMousePressedEvent!!) }
             }
             if(action == GLFW_RELEASE){
@@ -584,16 +587,16 @@ open class Frame(
                         System.currentTimeMillis() - lastMouseClickedEvent!!.time < 400
                     ){
                         // Not first click
-                        lastMouseClickedEvent = MouseEvent(button, MouseEvent.Action.Click, mods, lastMouseClickedEvent!!.clickCount + 1, mousePosition)
+                        lastMouseClickedEvent = MouseEvent(button, MouseAction.Click, mods, lastMouseClickedEvent!!.clickCount + 1, mousePosition)
                         _mouseClickedListeners.iterate { it.accept(lastMouseClickedEvent!!) }
                     }else {
                         // First click
-                        lastMouseClickedEvent = MouseEvent(button, MouseEvent.Action.Click, mods, 1, mousePosition)
+                        lastMouseClickedEvent = MouseEvent(button, MouseAction.Click, mods, 1, mousePosition)
                         _mouseClickedListeners.iterate { it.accept(lastMouseClickedEvent!!) }
                     }
                 }
                 // Release
-                lastMouseReleaseEvent = MouseEvent(button, MouseEvent.Action.Release, mods, 1, mousePosition)
+                lastMouseReleaseEvent = MouseEvent(button, MouseAction.Release, mods, 1, mousePosition)
                 _mouseReleasedListeners.iterate { it.accept(lastMouseReleaseEvent!!) }
             }
         }

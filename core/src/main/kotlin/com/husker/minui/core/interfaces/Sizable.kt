@@ -1,4 +1,4 @@
-package com.husker.minui.core
+package com.husker.minui.core.interfaces
 
 import com.husker.minui.geometry.Dimension
 

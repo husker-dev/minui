@@ -1,8 +1,8 @@
 #include "registry.h"
 
-jobjectArray nRegistryGetMap(JNIEnv* env, jlong hkey, jstring jpath) {
+jobjectArray nRegistryGetMap(JNIEnv* env, jlong hkey, jbyteArray jpath) {
 	HKEY hKey;
-	auto status = RegOpenKeyEx((HKEY)hkey, (LPCWSTR)env->GetStringUTFChars(jpath, nullptr), 0, KEY_READ, &hKey);
+	auto status = RegOpenKeyEx((HKEY)hkey, (LPCWSTR)env->GetByteArrayElements(jpath, nullptr), 0, KEY_READ, &hKey);
 	if (status != ERROR_SUCCESS)
 		return env->NewObjectArray(1, env->FindClass("java/lang/Object"), env->NewStringUTF(std::to_string(status).c_str()));
 

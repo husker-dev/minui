@@ -152,6 +152,14 @@ open class Image: MinUIObject {
          * @return Image object
          */
         fun fromBytes(bytes: ByteArray, width: Int, height: Int, components: Int): Image = Image(bytes, width, height, components)
+
+        /**
+         * Loads image from OpenGL texture
+         *
+         * @param textureId texture pointer
+         * @return Image object
+         */
+        fun fromTexture(textureId: Int): Image = Image(textureId)
     }
 
     private val id = count++
@@ -246,7 +254,7 @@ open class Image: MinUIObject {
     private constructor(width: Int, height: Int){
         this._width = width
         this._height = height
-        this._components = 4
+        this._components = GL_RGBA
 
         val buffer = ByteBuffer.allocateDirect(width * height * _components)
         buffer.put(ByteArray(width * height * _components))
@@ -258,6 +266,17 @@ open class Image: MinUIObject {
         Resources.invokeSync{ id = createEmptyTexture() }
         _textId = id
         configureImage()
+    }
+
+    private constructor(textureId: Int): super(){
+        Resources.invokeSync{
+            glBindTexture(GL_TEXTURE_2D, textureId)
+            _width = glGetTexLevelParameteri(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH)
+            _height = glGetTexLevelParameteri(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT)
+            _components = glGetTexLevelParameteri(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT)
+            _textId = textureId
+        }
+
     }
 
     private fun configureImage(){

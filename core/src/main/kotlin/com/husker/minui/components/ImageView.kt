@@ -31,7 +31,8 @@ class ImageView(
             FitType.Cover -> {
                 val imageHeight: Double
                 val imageWidth: Double
-                if(height > width){
+                val delta = image!!.width.toDouble() / image!!.height
+                if(height * delta > width){
                     imageWidth = height / image!!.height * image!!.width
                     imageHeight = height
                 }else{
@@ -43,7 +44,8 @@ class ImageView(
             FitType.Fit -> {
                 val imageHeight: Double
                 val imageWidth: Double
-                if(height > width){
+                val delta = image!!.width.toDouble() / image!!.height
+                if(height * delta > width){
                     imageWidth = width
                     imageHeight = width / image!!.width * image!!.height
                     gr.drawImage(image!!, (width - imageWidth) / 2.0, (height - imageHeight) / 2.0, imageWidth, imageHeight, color)

@@ -51,7 +51,7 @@ object Win: PlatformLibrary("minui-win") {
     external fun nPopupShowWnd(hmenu: Long, x: Int, y: Int, hwnd: Long): Int
 
     // registry.h
-    external fun nRegistryGetMap(hkey: Long, path: String): Array<Any>
+    external fun nRegistryGetMap(hkey: Long, path: ByteArray): Array<Any>
 
     // toast.h
     external fun nToastInit(id: ByteArray, displayName: ByteArray, imagePath: ByteArray)

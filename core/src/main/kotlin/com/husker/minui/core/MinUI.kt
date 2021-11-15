@@ -106,10 +106,6 @@ class MinUI { companion object {
         }
     }
 
-    init {
-
-    }
-
     fun makeCurrent(window: Long){
         if(window != currentWindow){
             currentWindow = window
