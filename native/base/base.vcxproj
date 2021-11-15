@@ -163,11 +163,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype</AdditionalIncludeDirectories>
-      <ModuleOutputFile>tmp/$(PlatformShortName)</ModuleOutputFile>
-      <AssemblerListingLocation>tmp/$(PlatformShortName)</AssemblerListingLocation>
-      <ModuleDependenciesFile>tmp/$(PlatformShortName)</ModuleDependenciesFile>
-      <ObjectFileName>tmp/$(PlatformShortName)</ObjectFileName>
-      <SourceDependenciesFile>tmp/$(PlatformShortName)</SourceDependenciesFile>
+      <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <SourceDependenciesFile>$(IntDir)</SourceDependenciesFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -190,11 +190,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype</AdditionalIncludeDirectories>
-      <ModuleOutputFile>tmp/$(PlatformShortName)</ModuleOutputFile>
-      <AssemblerListingLocation>tmp/$(PlatformShortName)</AssemblerListingLocation>
-      <ModuleDependenciesFile>tmp/$(PlatformShortName)</ModuleDependenciesFile>
-      <ObjectFileName>tmp/$(PlatformShortName)</ObjectFileName>
-      <SourceDependenciesFile>tmp/$(PlatformShortName)</SourceDependenciesFile>
+      <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <SourceDependenciesFile>$(IntDir)</SourceDependenciesFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -217,11 +217,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype</AdditionalIncludeDirectories>
-      <ModuleOutputFile>tmp/$(PlatformShortName)</ModuleOutputFile>
-      <AssemblerListingLocation>tmp/$(PlatformShortName)</AssemblerListingLocation>
-      <ModuleDependenciesFile>tmp/$(PlatformShortName)</ModuleDependenciesFile>
-      <ObjectFileName>tmp/$(PlatformShortName)</ObjectFileName>
-      <SourceDependenciesFile>tmp/$(PlatformShortName)</SourceDependenciesFile>
+      <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <SourceDependenciesFile>$(IntDir)</SourceDependenciesFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -242,11 +242,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype</AdditionalIncludeDirectories>
-      <ModuleOutputFile>tmp/$(PlatformShortName)</ModuleOutputFile>
-      <AssemblerListingLocation>tmp/$(PlatformShortName)</AssemblerListingLocation>
-      <ModuleDependenciesFile>tmp/$(PlatformShortName)</ModuleDependenciesFile>
-      <ObjectFileName>tmp/$(PlatformShortName)</ObjectFileName>
-      <SourceDependenciesFile>tmp/$(PlatformShortName)</SourceDependenciesFile>
+      <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <SourceDependenciesFile>$(IntDir)</SourceDependenciesFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -267,11 +267,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype</AdditionalIncludeDirectories>
-      <AssemblerListingLocation>tmp/$(PlatformShortName)</AssemblerListingLocation>
-      <ModuleOutputFile>tmp/$(PlatformShortName)</ModuleOutputFile>
-      <ModuleDependenciesFile>tmp/$(PlatformShortName)</ModuleDependenciesFile>
-      <ObjectFileName>tmp/$(PlatformShortName)</ObjectFileName>
-      <SourceDependenciesFile>tmp/$(PlatformShortName)</SourceDependenciesFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
+      <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <SourceDependenciesFile>$(IntDir)</SourceDependenciesFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -294,11 +294,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype</AdditionalIncludeDirectories>
-      <ModuleOutputFile>tmp/$(PlatformShortName)</ModuleOutputFile>
-      <AssemblerListingLocation>tmp/$(PlatformShortName)</AssemblerListingLocation>
-      <ModuleDependenciesFile>tmp/$(PlatformShortName)</ModuleDependenciesFile>
-      <ObjectFileName>tmp/$(PlatformShortName)</ObjectFileName>
-      <SourceDependenciesFile>tmp/$(PlatformShortName)</SourceDependenciesFile>
+      <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <SourceDependenciesFile>$(IntDir)</SourceDependenciesFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -323,11 +323,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype</AdditionalIncludeDirectories>
-      <ModuleOutputFile>tmp/$(PlatformShortName)</ModuleOutputFile>
-      <AssemblerListingLocation>tmp/$(PlatformShortName)</AssemblerListingLocation>
-      <ModuleDependenciesFile>tmp/$(PlatformShortName)</ModuleDependenciesFile>
-      <ObjectFileName>tmp/$(PlatformShortName)</ObjectFileName>
-      <SourceDependenciesFile>tmp/$(PlatformShortName)</SourceDependenciesFile>
+      <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <SourceDependenciesFile>$(IntDir)</SourceDependenciesFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -352,11 +352,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype</AdditionalIncludeDirectories>
-      <AssemblerListingLocation>tmp/$(PlatformShortName)</AssemblerListingLocation>
-      <ModuleOutputFile>tmp/$(PlatformShortName)</ModuleOutputFile>
-      <ModuleDependenciesFile>tmp/$(PlatformShortName)</ModuleDependenciesFile>
-      <ObjectFileName>tmp/$(PlatformShortName)</ObjectFileName>
-      <SourceDependenciesFile>tmp/$(PlatformShortName)</SourceDependenciesFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
+      <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <SourceDependenciesFile>$(IntDir)</SourceDependenciesFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
