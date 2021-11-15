@@ -17,8 +17,8 @@ fun main(){
     Frame().apply {
         vsync = false
         root = FlowPane().apply {
-            for(i in "Hello world"){
-                val image = Image.fromTexture(font.backend.getGlyphTexture(i))
+            for(char in "Hello world"){
+                val image = font.getGlyph(char).getImage()
 
                 add(ImageView(image, color = Color.Black, fitType = FitType.Cover).apply {
                     preferredWidth = image.width.toDouble()

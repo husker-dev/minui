@@ -2,12 +2,13 @@ package com.husker.minui.core.font
 
 import com.husker.minui.core.MinUIObject
 import com.husker.minui.core.Resources
+import com.husker.minui.geometry.Dimension
+import com.husker.minui.graphics.Image
 import com.husker.minui.natives.PlatformLibrary
 import com.husker.minui.natives.impl.BaseLibrary
 import com.husker.minui.natives.impl.cStr
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
-import org.lwjgl.opengl.GL30
 import java.io.File
 import java.io.InputStream
 import java.net.URL
@@ -70,6 +71,7 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
     val backend = FontBackend(this, nFace)
 
     private var disposed = false
+    private val cachedGlyphs = hashMapOf<Char, Glyph>()
 
     val metadataSize = backend.getFontMetaCount()
 
@@ -100,7 +102,31 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
         backend.dispose()
     }
 
+    fun getGlyph(char: Char): Glyph{
+        if(char !in cachedGlyphs){
+            val texture = backend.getGlyphTexture(char)
+            val size = backend.getGlyphSize(char)
+            cachedGlyphs[char] = Glyph(char, texture, size.width.toInt(), size.height.toInt())
+        }
+        return cachedGlyphs[char]!!
+    }
+
     class FontFile(nFace: Long, size: Int, val file: File): Font(nFace, size)
+
+    class Glyph(
+        val char: Char,
+        val textureId: Int,
+        val width: Int,
+        val height: Int
+    ){
+        private var cachedImage: Image? = null
+        fun getImage(): Image {
+            if(cachedImage == null)
+                cachedImage = Image.fromTexture(textureId)
+            return cachedImage!!
+        }
+
+    }
 
     class FontBackend(val font: Font, val nFace: Long) {
 
@@ -256,6 +282,11 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
                 bytes.toString(StandardCharsets.UTF_16BE)
             else
                 bytes.toString(StandardCharsets.UTF_8)
+        }
+
+        fun getGlyphSize(char: Char): Dimension {
+            BaseLibrary.nFtLoadChar(nFace, char.code)
+            return Dimension(BaseLibrary.nFtGetGlyphWidth(nFace).toDouble(), BaseLibrary.nFtGetGlyphHeight(nFace).toDouble())
         }
 
         fun getGlyphTexture(char: Char): Int{
