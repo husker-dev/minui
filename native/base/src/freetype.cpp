@@ -75,3 +75,7 @@ jobject nFtGetGlyphData(JNIEnv* env, jlong face) {
 	auto data = ((FT_Face)face)->glyph->bitmap.buffer;
 	return env->NewDirectByteBuffer(data, (jlong)((FT_Face)face)->glyph->bitmap.width * (jlong)((FT_Face)face)->glyph->bitmap.rows);
 }
+
+jlong nHfCreateFont(jlong ftFace) {
+	return (jlong)hb_ft_font_create_referenced((FT_Face)ftFace);
+}

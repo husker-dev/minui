@@ -1,6 +1,9 @@
 #include <jni.h>
 #include <iostream>
 
+#include <hb.h>
+#include <hb-ft.h>
+
 #include "ft2build.h"
 #include FT_FREETYPE_H
 #include FT_SFNT_NAMES_H
@@ -17,6 +20,8 @@ jlong nFtLoadChar(jlong, jint);
 jlong nFtGetGlyphWidth(jlong);
 jlong nFtGetGlyphHeight(jlong);
 jobject nFtGetGlyphData(JNIEnv*, jlong);
+
+jlong nHfCreateFont(jlong);
 
 extern "C" {
 
@@ -131,5 +136,16 @@ extern "C" {
 	*/
 	JNIEXPORT jobject JNICALL Java_com_husker_minui_natives_impl_BaseLibrary_nFtGetGlyphData(JNIEnv* env, jobject, jlong face) {
 		return nFtGetGlyphData(env, face);
+	}
+
+	/*
+		nHfCreateFont
+	*/
+	JNIEXPORT jlong JNICALL Java_com_husker_minui_natives_impl_BaseLibrary_nHfCreateFont(JNIEnv* env, jobject, jlong ftFace) {
+		return nHfCreateFont(ftFace);
+	}
+
+	JNIEXPORT jlong JNICALL JavaCritical_com_husker_minui_natives_impl_BaseLibrary_nHfCreateFont(jlong ftFace) {
+		return nHfCreateFont(ftFace);
 	}
 }
