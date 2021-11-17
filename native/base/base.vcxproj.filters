@@ -18,13 +18,16 @@
     <ClCompile Include="src\freetype.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\harfbuzz.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\freetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ClInclude Include="src\harfbuzz.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

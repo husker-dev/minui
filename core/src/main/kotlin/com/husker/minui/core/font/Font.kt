@@ -62,7 +62,7 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
         }
 
         init {
-            //registerFont(fromResource("/com/husker/minui/core/fonts/Inter-Regular.otf"))
+            registerFont(fromResource("/com/husker/minui/core/fonts/Inter-Regular.otf"))
             //registerFont(fromResource("/com/husker/minui/core/fonts/Inter-Italic.otf"))
             //registerFont(fromResource("/com/husker/minui/core/fonts/Inter-Bold.otf"))
         }

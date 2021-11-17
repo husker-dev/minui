@@ -25,6 +25,23 @@ object BaseLibrary: Library("minui-base") {
     external fun nFtGetGlyphHeight(face: Long): Long
     external fun nFtGetGlyphData(face: Long): ByteBuffer
 
+    // harfbuzz.h
+    external fun nHfCreateBuffer(): Long
+    external fun nHfSetBufferText(buffer: Long, text: ByteArray)
+    external fun nHfCreateFont(ftFace: Long): Long
+
+    external fun nHfShape(font: Long, buffer: Long)
+
+    external fun nHfGetGlyphCount(buffer: Long): Int
+    external fun nHfGetGlyphInfo(buffer: Long): Long
+    external fun nHfGetGlyphPositions(buffer: Long): Long
+
+    external fun nHfGetGlyphId(info: Long, index: Int): Int
+    external fun nHfGetXOffset(positions: Long, index: Int): Int
+    external fun nHfGetYOffset(positions: Long, index: Int): Int
+    external fun nHfGetXAdvance(positions: Long, index: Int): Int
+    external fun nHfGetYAdvance(positions: Long, index: Int): Int
+
     fun checkInitialization() { /* Here is empty. Used for singleton (object) initialization. */ }
 
 

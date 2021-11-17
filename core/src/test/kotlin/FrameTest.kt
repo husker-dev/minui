@@ -57,10 +57,12 @@ internal class FrameTest {
 
     @Test
     fun customDisplay(){
-        val main = Display.displays.last()
+        val custom = Display.displays.last()
+        frame.fullscreenDisplay = custom
+        frame.state = Frame.FrameState.WindowedFullscreen
         frame.show()
 
-        assertEquals(main.id, frame.display.id)
+        assertEquals(custom.id, frame.display.id)
     }
 
     @Test

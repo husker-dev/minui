@@ -36,12 +36,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\freetype.cpp" />
+    <ClCompile Include="src\harfbuzz.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\freetype.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ClInclude Include="src\harfbuzz.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -165,7 +164,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -175,8 +174,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -191,7 +191,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -203,8 +203,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -217,7 +218,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -227,8 +228,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -241,7 +243,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -251,8 +253,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -265,7 +268,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -275,8 +278,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -291,7 +295,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -303,8 +307,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -319,7 +324,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -331,8 +336,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -347,7 +353,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -359,29 +365,13 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="packages\freetype.redist.2.8.0.1\build\native\freetype.redist.targets" Condition="Exists('packages\freetype.redist.2.8.0.1\build\native\freetype.redist.targets')" />
-    <Import Project="packages\freetype.2.8.0.1\build\native\freetype.targets" Condition="Exists('packages\freetype.2.8.0.1\build\native\freetype.targets')" />
-    <Import Project="packages\freetype2.2.6.0.1\build\native\freetype2.targets" Condition="Exists('packages\freetype2.2.6.0.1\build\native\freetype2.targets')" />
-    <Import Project="packages\harfbuzz.redist.1.5.1\build\native\harfbuzz.redist.targets" Condition="Exists('packages\harfbuzz.redist.1.5.1\build\native\harfbuzz.redist.targets')" />
-    <Import Project="packages\harfbuzz.1.5.1\build\native\harfbuzz.targets" Condition="Exists('packages\harfbuzz.1.5.1\build\native\harfbuzz.targets')" />
-  </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\freetype.redist.2.8.0.1\build\native\freetype.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\freetype.redist.2.8.0.1\build\native\freetype.redist.targets'))" />
-    <Error Condition="!Exists('packages\freetype.2.8.0.1\build\native\freetype.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\freetype.2.8.0.1\build\native\freetype.targets'))" />
-    <Error Condition="!Exists('packages\freetype2.2.6.0.1\build\native\freetype2.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\freetype2.2.6.0.1\build\native\freetype2.targets'))" />
-    <Error Condition="!Exists('packages\harfbuzz.redist.1.5.1\build\native\harfbuzz.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\harfbuzz.redist.1.5.1\build\native\harfbuzz.redist.targets'))" />
-    <Error Condition="!Exists('packages\harfbuzz.1.5.1\build\native\harfbuzz.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\harfbuzz.1.5.1\build\native\harfbuzz.targets'))" />
-  </Target>
 </Project>

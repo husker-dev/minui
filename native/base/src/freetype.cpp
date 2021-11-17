@@ -30,7 +30,7 @@ jlong nLoadFace(jlong ft, jbyte* data, jlong length) {
 }
 
 jlong nSetFaceSize(jlong face, jint size) {
-	if (int status = FT_Set_Pixel_Sizes((FT_Face)face, 0, (FT_UInt)size)) 
+	if (int status = FT_Set_Pixel_Sizes((FT_Face)face, 0, (FT_UInt)size))
 		return -status;
 }
 
@@ -41,7 +41,7 @@ jint nGetFaceNameCount(jlong face) {
 jobjectArray nGetFaceName(JNIEnv* env, jlong face, jint id) {
 	FT_SfntName name;
 	FT_Get_Sfnt_Name((FT_Face)face, id, &name);
-	
+
 	auto byteArray = env->NewByteArray((jsize)name.string_len);
 	env->SetByteArrayRegion(byteArray, 0, (jsize)name.string_len, (jbyte*)name.string);
 
@@ -76,6 +76,5 @@ jobject nFtGetGlyphData(JNIEnv* env, jlong face) {
 	return env->NewDirectByteBuffer(data, (jlong)((FT_Face)face)->glyph->bitmap.width * (jlong)((FT_Face)face)->glyph->bitmap.rows);
 }
 
-jlong nHfCreateFont(jlong ftFace) {
-	return (jlong)hb_ft_font_create_referenced((FT_Face)ftFace);
-}
+// HarfBuzz
+
