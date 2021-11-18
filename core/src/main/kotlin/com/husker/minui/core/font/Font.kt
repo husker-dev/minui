@@ -21,7 +21,6 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
         private const val defaultSize = 16
 
         private val families = hashMapOf<String, LinkedHashMap<String, Font>>()
-        private val fonts = arrayListOf<Font>()
 
         fun fromFile(file: File) = fromFile(file.absolutePath)
         fun fromFile(path: String): FontFile = FontFile(FontBackend.loadFont(path), defaultSize, File(path))
@@ -31,34 +30,34 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
         fun fromURL(url: String): Font = fromURL(URL(url))
         fun fromResource(path: String): Font = fromStream(Font::class.java.getResourceAsStream(if(path.startsWith("/")) path else "/$path")!!)
 
-        fun registerFont(font: Font){
+        fun registerFont(font: Font): Font{
             val family = font.family.lowercase()
             val type = font.subfamily.lowercase()
             families.putIfAbsent(family, linkedMapOf())
             families[family]!![type] = font
+            return font
         }
-
-        val registeredFonts: Array<Font>
-            get() = fonts.toTypedArray()
 
         val registeredFamilies: Array<String>
             get() = families.keys.toTypedArray()
 
         val default: Font
-            get() = get("Inter")!!
+            get() = get("Inter")
 
-        operator fun get(name: String): Font? {
+        operator fun get(name: String, size: Int) = get(name).resize(size)
+
+        operator fun get(name: String): Font {
             val family = name.lowercase()
             return if(family in families)
                 if("regular" in families[family]!!) families[family]!!["regular"]!!
                 else families[family]!!.values.first()
             else {
                 val systemFonts = PlatformLibrary.instance.getFontPaths(name)
-                return if(systemFonts.isNotEmpty()){
+                if(systemFonts.isNotEmpty()){
                     for(fontPath in systemFonts)
                         registerFont(fromFile(fontPath))
                     return get(family)
-                }else null
+                }else throw NullPointerException("Font '$name' not found")
             }
         }
 
@@ -103,9 +102,9 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
         backend.dispose()
     }
 
-    fun getGlyph(char: Char): Glyph{
+    fun getGlyph(char: Char, dpi: Double): Glyph{
         if(char !in cachedGlyphs){
-            val info = backend.getGlyphInfo(char)
+            val info = backend.getGlyphInfo(char, dpi)
 
             cachedGlyphs[char] = Glyph(
                 info.code,
@@ -132,6 +131,8 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
 
         companion object {
             val ftLibrary: Long = BaseLibrary.nFreetypeInit()
+
+            private val ftFaceUsage = hashMapOf<Long, Int>()
 
             fun loadFont(data: ByteArray): Long {
                 return checkFontError(BaseLibrary.nFreetypeLoadFace(ftLibrary, data))
@@ -268,6 +269,11 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
         val hbBuffer: Long = BaseLibrary.nHarfBuzzCreateBuffer()
         val cachedGlyphInfo = hashMapOf<Int, CachedGlyphInfo>()
 
+        init{
+            ftFaceUsage.putIfAbsent(ftFace, 0)
+            ftFaceUsage[ftFace] = ftFaceUsage[ftFace]!! + 1;
+        }
+
         fun getFontMetaCount() = BaseLibrary.nFreetypeGetFaceNameCount(ftFace)
 
         fun getFontMeta(id: Int): String {
@@ -287,8 +293,10 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
                 bytes.toString(StandardCharsets.UTF_8)
         }
 
-        fun getTextTexture(text: String): Int{
-            BaseLibrary.nFreetypeSetFaceSize(ftFace, font.size)
+        fun getTextTexture(text: String, dpi: Double): Int{
+            val px = (font.size / (72 / (96 * dpi))).toInt()
+
+            BaseLibrary.nFreetypeSetFaceSize(ftFace, px)
             val hbFont: Long = BaseLibrary.nHarfBuzzCreateFont(ftFace)
 
             BaseLibrary.nHarfBuzzSetBufferText(hbBuffer, text.cStr())
@@ -309,7 +317,7 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
             var currentY = 0
             for(i in 0 until count){
                 val code = BaseLibrary.nHarfBuzzGetGlyphId(info, i)
-                val glyphInfo = getGlyphInfo(code)
+                val glyphInfo = getGlyphInfo(code, dpi)
 
                 val width = glyphInfo.width
                 val height = glyphInfo.height
@@ -348,7 +356,7 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
                     currentY = 0
                     for(i in 0 until count){
                         val code = BaseLibrary.nHarfBuzzGetGlyphId(info, i)
-                        val glyphInfo = getGlyphInfo(code)
+                        val glyphInfo = getGlyphInfo(code, dpi)
 
                         val glyphWidth = glyphInfo.width
                         val glyphHeight = glyphInfo.height
@@ -382,11 +390,12 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
             return texId
         }
 
-        fun getGlyphInfo(char: Char) = getGlyphInfo(BaseLibrary.nFreetypeGetCharIndex(ftFace, char.code))
+        fun getGlyphInfo(char: Char, dpi: Double) = getGlyphInfo(BaseLibrary.nFreetypeGetCharIndex(ftFace, char.code), dpi)
 
-        fun getGlyphInfo(code: Int): CachedGlyphInfo{
+        fun getGlyphInfo(code: Int, dpi: Double): CachedGlyphInfo{
+            val px = (font.size / (72 / (96 * dpi))).toInt()
             if(code !in cachedGlyphInfo){
-                BaseLibrary.nFreetypeSetFaceSize(ftFace, font.size)
+                BaseLibrary.nFreetypeSetFaceSize(ftFace, px)
                 BaseLibrary.nFreetypeLoadChar(ftFace, code)
                 val data = BaseLibrary.nFreetypeGetGlyphData(ftFace)
                 val width = BaseLibrary.nFreetypeGetGlyphWidth(ftFace).toInt()
@@ -413,7 +422,11 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
         }
 
         fun dispose(){
-            checkFontError(BaseLibrary.nFreetypeDoneFace(ftFace))
+            ftFaceUsage[ftFace] = ftFaceUsage[ftFace]!! - 1
+            if(ftFaceUsage[ftFace] == 0) {
+                ftFaceUsage.remove(ftFace)
+                checkFontError(BaseLibrary.nFreetypeDoneFace(ftFace))
+            }
         }
 
         class CachedGlyphInfo(
