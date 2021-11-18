@@ -37,10 +37,256 @@
   <ItemGroup>
     <ClCompile Include="src\freetype.cpp" />
     <ClCompile Include="src\harfbuzz.cpp" />
+    <ClCompile Include="src\harfbuzz\harfbuzz.cc" />
+    <ClCompile Include="src\harfbuzz\hb-aat-layout.cc" />
+    <ClCompile Include="src\harfbuzz\hb-aat-map.cc" />
+    <ClCompile Include="src\harfbuzz\hb-blob.cc" />
+    <ClCompile Include="src\harfbuzz\hb-buffer-serialize.cc" />
+    <ClCompile Include="src\harfbuzz\hb-buffer.cc" />
+    <ClCompile Include="src\harfbuzz\hb-common.cc" />
+    <ClCompile Include="src\harfbuzz\hb-coretext.cc" />
+    <ClCompile Include="src\harfbuzz\hb-directwrite.cc" />
+    <ClCompile Include="src\harfbuzz\hb-draw.cc" />
+    <ClCompile Include="src\harfbuzz\hb-face.cc" />
+    <ClCompile Include="src\harfbuzz\hb-fallback-shape.cc" />
+    <ClCompile Include="src\harfbuzz\hb-font.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ft.cc" />
+    <ClCompile Include="src\harfbuzz\hb-gdi.cc" />
+    <ClCompile Include="src\harfbuzz\hb-glib.cc" />
+    <ClCompile Include="src\harfbuzz\hb-gobject-structs.cc" />
+    <ClCompile Include="src\harfbuzz\hb-graphite2.cc" />
+    <ClCompile Include="src\harfbuzz\hb-icu.cc" />
+    <ClCompile Include="src\harfbuzz\hb-map.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ms-feature-ranges.cc" />
+    <ClCompile Include="src\harfbuzz\hb-number.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-cff1-table.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-cff2-table.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-color.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-face.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-font.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-layout.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-map.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-math.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-meta.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-metrics.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-name.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-complex-arabic.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-complex-default.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-complex-hangul.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-complex-hebrew.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-complex-indic-table.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-complex-indic.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-complex-khmer.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-complex-myanmar.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-complex-syllabic.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-complex-thai.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-complex-use.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-complex-vowel-constraints.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-fallback.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape-normalize.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-shape.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-tag.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ot-var.cc" />
+    <ClCompile Include="src\harfbuzz\hb-set.cc" />
+    <ClCompile Include="src\harfbuzz\hb-shape-plan.cc" />
+    <ClCompile Include="src\harfbuzz\hb-shape.cc" />
+    <ClCompile Include="src\harfbuzz\hb-shaper.cc" />
+    <ClCompile Include="src\harfbuzz\hb-static.cc" />
+    <ClCompile Include="src\harfbuzz\hb-style.cc" />
+    <ClCompile Include="src\harfbuzz\hb-subset-cff-common.cc" />
+    <ClCompile Include="src\harfbuzz\hb-subset-cff1.cc" />
+    <ClCompile Include="src\harfbuzz\hb-subset-cff2.cc" />
+    <ClCompile Include="src\harfbuzz\hb-subset-input.cc" />
+    <ClCompile Include="src\harfbuzz\hb-subset-plan.cc" />
+    <ClCompile Include="src\harfbuzz\hb-subset.cc" />
+    <ClCompile Include="src\harfbuzz\hb-ucd.cc" />
+    <ClCompile Include="src\harfbuzz\hb-unicode.cc" />
+    <ClCompile Include="src\harfbuzz\hb-uniscribe.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\freetype.h" />
     <ClInclude Include="src\harfbuzz.h" />
+    <ClInclude Include="src\harfbuzz\hb-aat-layout-ankr-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-aat-layout-bsln-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-aat-layout-common.hh" />
+    <ClInclude Include="src\harfbuzz\hb-aat-layout-feat-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-aat-layout-just-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-aat-layout-kerx-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-aat-layout-morx-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-aat-layout-opbd-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-aat-layout-trak-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-aat-layout.h" />
+    <ClInclude Include="src\harfbuzz\hb-aat-layout.hh" />
+    <ClInclude Include="src\harfbuzz\hb-aat-ltag-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-aat-map.hh" />
+    <ClInclude Include="src\harfbuzz\hb-aat.h" />
+    <ClInclude Include="src\harfbuzz\hb-algs.hh" />
+    <ClInclude Include="src\harfbuzz\hb-array.hh" />
+    <ClInclude Include="src\harfbuzz\hb-atomic.hh" />
+    <ClInclude Include="src\harfbuzz\hb-bimap.hh" />
+    <ClInclude Include="src\harfbuzz\hb-bit-page.hh" />
+    <ClInclude Include="src\harfbuzz\hb-bit-set-invertible.hh" />
+    <ClInclude Include="src\harfbuzz\hb-bit-set.hh" />
+    <ClInclude Include="src\harfbuzz\hb-blob.h" />
+    <ClInclude Include="src\harfbuzz\hb-blob.hh" />
+    <ClInclude Include="src\harfbuzz\hb-buffer-deserialize-json.hh" />
+    <ClInclude Include="src\harfbuzz\hb-buffer-deserialize-text.hh" />
+    <ClInclude Include="src\harfbuzz\hb-buffer.h" />
+    <ClInclude Include="src\harfbuzz\hb-buffer.hh" />
+    <ClInclude Include="src\harfbuzz\hb-cache.hh" />
+    <ClInclude Include="src\harfbuzz\hb-cff-interp-common.hh" />
+    <ClInclude Include="src\harfbuzz\hb-cff-interp-cs-common.hh" />
+    <ClInclude Include="src\harfbuzz\hb-cff-interp-dict-common.hh" />
+    <ClInclude Include="src\harfbuzz\hb-cff1-interp-cs.hh" />
+    <ClInclude Include="src\harfbuzz\hb-cff2-interp-cs.hh" />
+    <ClInclude Include="src\harfbuzz\hb-common.h" />
+    <ClInclude Include="src\harfbuzz\hb-config.hh" />
+    <ClInclude Include="src\harfbuzz\hb-coretext.h" />
+    <ClInclude Include="src\harfbuzz\hb-debug.hh" />
+    <ClInclude Include="src\harfbuzz\hb-deprecated.h" />
+    <ClInclude Include="src\harfbuzz\hb-directwrite.h" />
+    <ClInclude Include="src\harfbuzz\hb-dispatch.hh" />
+    <ClInclude Include="src\harfbuzz\hb-draw.h" />
+    <ClInclude Include="src\harfbuzz\hb-draw.hh" />
+    <ClInclude Include="src\harfbuzz\hb-face.h" />
+    <ClInclude Include="src\harfbuzz\hb-face.hh" />
+    <ClInclude Include="src\harfbuzz\hb-font.h" />
+    <ClInclude Include="src\harfbuzz\hb-font.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ft.h" />
+    <ClInclude Include="src\harfbuzz\hb-gdi.h" />
+    <ClInclude Include="src\harfbuzz\hb-glib.h" />
+    <ClInclude Include="src\harfbuzz\hb-gobject-structs.h" />
+    <ClInclude Include="src\harfbuzz\hb-gobject.h" />
+    <ClInclude Include="src\harfbuzz\hb-graphite2.h" />
+    <ClInclude Include="src\harfbuzz\hb-icu.h" />
+    <ClInclude Include="src\harfbuzz\hb-iter.hh" />
+    <ClInclude Include="src\harfbuzz\hb-kern.hh" />
+    <ClInclude Include="src\harfbuzz\hb-machinery.hh" />
+    <ClInclude Include="src\harfbuzz\hb-map.h" />
+    <ClInclude Include="src\harfbuzz\hb-map.hh" />
+    <ClInclude Include="src\harfbuzz\hb-meta.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ms-feature-ranges.hh" />
+    <ClInclude Include="src\harfbuzz\hb-mutex.hh" />
+    <ClInclude Include="src\harfbuzz\hb-null.hh" />
+    <ClInclude Include="src\harfbuzz\hb-number-parser.hh" />
+    <ClInclude Include="src\harfbuzz\hb-number.hh" />
+    <ClInclude Include="src\harfbuzz\hb-object.hh" />
+    <ClInclude Include="src\harfbuzz\hb-open-file.hh" />
+    <ClInclude Include="src\harfbuzz\hb-open-type.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-cff-common.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-cff1-std-str.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-cff1-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-cff2-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-cmap-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-color-cbdt-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-color-colr-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-color-colrv1-closure.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-color-cpal-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-color-sbix-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-color-svg-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-color.h" />
+    <ClInclude Include="src\harfbuzz\hb-ot-deprecated.h" />
+    <ClInclude Include="src\harfbuzz\hb-ot-face-table-list.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-face.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-font.h" />
+    <ClInclude Include="src\harfbuzz\hb-ot-gasp-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-glyf-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-hdmx-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-head-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-hhea-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-hmtx-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-kern-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-layout-base-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-layout-common.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-layout-gdef-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-layout-gpos-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-layout-gsub-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-layout-gsubgpos.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-layout-jstf-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-layout.h" />
+    <ClInclude Include="src\harfbuzz\hb-ot-layout.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-map.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-math-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-math.h" />
+    <ClInclude Include="src\harfbuzz\hb-ot-maxp-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-meta-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-meta.h" />
+    <ClInclude Include="src\harfbuzz\hb-ot-metrics.h" />
+    <ClInclude Include="src\harfbuzz\hb-ot-metrics.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-name-language-static.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-name-language.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-name-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-name.h" />
+    <ClInclude Include="src\harfbuzz\hb-ot-os2-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-os2-unicode-ranges.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-post-macroman.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-post-table-v2subset.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-post-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-arabic-fallback.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-arabic-joining-list.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-arabic-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-arabic-win1256.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-arabic.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-indic-machine.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-indic.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-khmer-machine.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-khmer.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-myanmar-machine.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-myanmar.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-syllabic.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-use-machine.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-use-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex-vowel-constraints.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-complex.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-fallback.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape-normalize.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape.h" />
+    <ClInclude Include="src\harfbuzz\hb-ot-shape.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-stat-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-tag-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-var-avar-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-var-common.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-var-fvar-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-var-gvar-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-var-hvar-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-var-mvar-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot-var.h" />
+    <ClInclude Include="src\harfbuzz\hb-ot-vorg-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ot.h" />
+    <ClInclude Include="src\harfbuzz\hb-pool.hh" />
+    <ClInclude Include="src\harfbuzz\hb-priority-queue.hh" />
+    <ClInclude Include="src\harfbuzz\hb-repacker.hh" />
+    <ClInclude Include="src\harfbuzz\hb-sanitize.hh" />
+    <ClInclude Include="src\harfbuzz\hb-serialize.hh" />
+    <ClInclude Include="src\harfbuzz\hb-set-digest.hh" />
+    <ClInclude Include="src\harfbuzz\hb-set.h" />
+    <ClInclude Include="src\harfbuzz\hb-set.hh" />
+    <ClInclude Include="src\harfbuzz\hb-shape-plan.h" />
+    <ClInclude Include="src\harfbuzz\hb-shape-plan.hh" />
+    <ClInclude Include="src\harfbuzz\hb-shape.h" />
+    <ClInclude Include="src\harfbuzz\hb-shaper-impl.hh" />
+    <ClInclude Include="src\harfbuzz\hb-shaper-list.hh" />
+    <ClInclude Include="src\harfbuzz\hb-shaper.hh" />
+    <ClInclude Include="src\harfbuzz\hb-string-array.hh" />
+    <ClInclude Include="src\harfbuzz\hb-style.h" />
+    <ClInclude Include="src\harfbuzz\hb-subset-cff-common.hh" />
+    <ClInclude Include="src\harfbuzz\hb-subset-cff1.hh" />
+    <ClInclude Include="src\harfbuzz\hb-subset-cff2.hh" />
+    <ClInclude Include="src\harfbuzz\hb-subset-input.hh" />
+    <ClInclude Include="src\harfbuzz\hb-subset-plan.hh" />
+    <ClInclude Include="src\harfbuzz\hb-subset.h" />
+    <ClInclude Include="src\harfbuzz\hb-subset.hh" />
+    <ClInclude Include="src\harfbuzz\hb-ucd-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-unicode-emoji-table.hh" />
+    <ClInclude Include="src\harfbuzz\hb-unicode.h" />
+    <ClInclude Include="src\harfbuzz\hb-unicode.hh" />
+    <ClInclude Include="src\harfbuzz\hb-uniscribe.h" />
+    <ClInclude Include="src\harfbuzz\hb-utf.hh" />
+    <ClInclude Include="src\harfbuzz\hb-vector.hh" />
+    <ClInclude Include="src\harfbuzz\hb-version.h" />
+    <ClInclude Include="src\harfbuzz\hb.h" />
+    <ClInclude Include="src\harfbuzz\hb.hh" />
+    <ClInclude Include="src\stdafx.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -161,10 +407,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -174,9 +420,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -188,10 +434,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -203,9 +449,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -215,10 +461,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -228,9 +474,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -240,10 +486,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -253,9 +499,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -265,10 +511,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -278,9 +524,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -292,10 +538,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -307,9 +553,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -321,10 +567,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -336,9 +582,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -350,10 +596,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/harfbuzz/include;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -365,9 +611,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>libs/freetype;libs/harfbuzz</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/freetype</AdditionalLibraryDirectories>
       <OutputFile>build/$(PlatformShortName)/$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>freetype_$(PlatformShortName).lib;harfbuzz_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype_$(PlatformShortName).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>

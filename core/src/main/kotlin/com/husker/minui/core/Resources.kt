@@ -2,6 +2,7 @@ package com.husker.minui.core
 
 import com.husker.minui.core.utils.Trigger
 import org.lwjgl.glfw.GLFW.*
+import org.lwjgl.opengl.ARBImaging
 import org.lwjgl.opengl.GL.*
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL20
@@ -30,6 +31,10 @@ class Resources { companion object {
 
             glMatrixMode(GL_PROJECTION)
             glEnable(GL_TEXTURE_2D)
+
+            glEnable(GL_BLEND)
+            glBlendEquation(GL_FUNC_ADD)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
             while(MinUI.isActive){
                 val toInvoke = resourcesQueue.poll(300, TimeUnit.MILLISECONDS) ?: continue
@@ -92,6 +97,28 @@ class Resources { companion object {
             glDeleteFramebuffers(fb)
         }
         return buffer
+    }
+
+    fun renderOnTexture(textureId: Int, render: () -> Unit){
+        invokeSync{
+            glBindTexture(GL_TEXTURE_2D, textureId)
+            val width = glGetTexLevelParameteri(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH)
+            val height = glGetTexLevelParameteri(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT)
+
+            glViewport(0, 0, width, height)
+            glLoadIdentity()
+            glOrtho(0.0, width.toDouble(), height.toDouble(), 0.0, 0.0, 1.0)
+
+            val fbo = glGenFramebuffers()
+            glBindFramebuffer(GL_FRAMEBUFFER, fbo)
+
+            glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureId, 0)
+            glDrawBuffers(GL_COLOR_ATTACHMENT0)
+            glBindFramebuffer(GL_FRAMEBUFFER, fbo)
+
+            render.invoke()
+            glDeleteFramebuffers(fbo)
+        }
     }
 
     fun resizeTexture(texId: Int, newWidth: Int, newHeight: Int, buffer: ByteBuffer, linear: Boolean){

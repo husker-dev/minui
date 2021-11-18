@@ -13,36 +13,34 @@ fun String.cStr(): ByteArray{
 object BaseLibrary: Library("minui-base") {
 
     // freetype.h
-    external fun nInitFreetype(): Long
-    external fun nLoadFaceFile(ft: Long, path: ByteArray): Long
-    external fun nDoneFace(face: Long): Long
-    external fun nLoadFace(ft: Long, data: ByteArray): Long
-    external fun nSetFaceSize(face: Long, size: Int): Long
-    external fun nGetFaceNameCount(face: Long): Int
-    external fun nGetFaceName(face: Long, id: Int): Array<Any>
-    external fun nFtLoadChar(face: Long, char: Int)
-    external fun nFtGetGlyphWidth(face: Long): Long
-    external fun nFtGetGlyphHeight(face: Long): Long
-    external fun nFtGetGlyphData(face: Long): ByteBuffer
+    external fun nFreetypeInit(): Long
+    external fun nFreetypeLoadFaceFile(ft: Long, path: ByteArray): Long
+    external fun nFreetypeDoneFace(face: Long): Long
+    external fun nFreetypeLoadFace(ft: Long, data: ByteArray): Long
+    external fun nFreetypeSetFaceSize(face: Long, size: Int): Long
+    external fun nFreetypeGetFaceNameCount(face: Long): Int
+    external fun nFreetypeGetFaceName(face: Long, id: Int): Array<Any>
+    external fun nFreetypeGetCharIndex(face: Long, char: Int): Int
+    external fun nFreetypeLoadChar(face: Long, char: Int)
+    external fun nFreetypeGetGlyphWidth(face: Long): Long
+    external fun nFreetypeGetGlyphHeight(face: Long): Long
+    external fun nFreetypeGetGlyphData(face: Long): ByteBuffer
+    external fun nFreetypeGetBearingX(face: Long): Int
+    external fun nFreetypeGetBearingY(face: Long): Int
 
     // harfbuzz.h
-    external fun nHfCreateBuffer(): Long
-    external fun nHfSetBufferText(buffer: Long, text: ByteArray)
-    external fun nHfCreateFont(ftFace: Long): Long
-
-    external fun nHfShape(font: Long, buffer: Long)
-
-    external fun nHfGetGlyphCount(buffer: Long): Int
-    external fun nHfGetGlyphInfo(buffer: Long): Long
-    external fun nHfGetGlyphPositions(buffer: Long): Long
-
-    external fun nHfGetGlyphId(info: Long, index: Int): Int
-    external fun nHfGetXOffset(positions: Long, index: Int): Int
-    external fun nHfGetYOffset(positions: Long, index: Int): Int
-    external fun nHfGetXAdvance(positions: Long, index: Int): Int
-    external fun nHfGetYAdvance(positions: Long, index: Int): Int
+    external fun nHarfBuzzCreateBuffer(): Long
+    external fun nHarfBuzzSetBufferText(buffer: Long, text: ByteArray)
+    external fun nHarfBuzzCreateFont(ftFace: Long): Long
+    external fun nHarfBuzzShape(font: Long, buffer: Long)
+    external fun nHarfBuzzGetGlyphCount(buffer: Long): Int
+    external fun nHarfBuzzGetGlyphInfo(buffer: Long): Long
+    external fun nHarfBuzzGetGlyphPositions(buffer: Long): Long
+    external fun nHarfBuzzGetGlyphId(info: Long, index: Int): Int
+    external fun nHarfBuzzGetXOffset(positions: Long, index: Int): Int
+    external fun nHarfBuzzGetYOffset(positions: Long, index: Int): Int
+    external fun nHarfBuzzGetXAdvance(positions: Long, index: Int): Int
+    external fun nHarfBuzzGetYAdvance(positions: Long, index: Int): Int
 
     fun checkInitialization() { /* Here is empty. Used for singleton (object) initialization. */ }
-
-
 }

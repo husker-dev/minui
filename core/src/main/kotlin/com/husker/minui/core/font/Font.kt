@@ -2,17 +2,18 @@ package com.husker.minui.core.font
 
 import com.husker.minui.core.MinUIObject
 import com.husker.minui.core.Resources
-import com.husker.minui.geometry.Dimension
 import com.husker.minui.graphics.Image
 import com.husker.minui.natives.PlatformLibrary
 import com.husker.minui.natives.impl.BaseLibrary
 import com.husker.minui.natives.impl.cStr
-import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
+import org.lwjgl.opengl.GL30.*
 import java.io.File
 import java.io.InputStream
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import kotlin.math.*
+
 
 open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
 
@@ -62,7 +63,7 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
         }
 
         init {
-            registerFont(fromResource("/com/husker/minui/core/fonts/Inter-Regular.otf"))
+            //registerFont(fromResource("/com/husker/minui/core/fonts/Inter-Regular.otf"))
             //registerFont(fromResource("/com/husker/minui/core/fonts/Inter-Italic.otf"))
             //registerFont(fromResource("/com/husker/minui/core/fonts/Inter-Bold.otf"))
         }
@@ -89,7 +90,7 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
     val vendorURL: String by lazy { getMetadata(11) }
     val designerURL: String by lazy { getMetadata(12) }
 
-    fun resize(newSize: Int): Font = Font(backend.nFace, newSize)
+    fun resize(newSize: Int): Font = Font(backend.ftFace, newSize)
 
     fun getMetadata(id: Int): String {
         return if(id >= metadataSize) ""
@@ -104,9 +105,14 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
 
     fun getGlyph(char: Char): Glyph{
         if(char !in cachedGlyphs){
-            val texture = backend.getGlyphTexture(char)
-            val size = backend.getGlyphSize(char)
-            cachedGlyphs[char] = Glyph(char, texture, size.width.toInt(), size.height.toInt())
+            val info = backend.getGlyphInfo(char)
+
+            cachedGlyphs[char] = Glyph(
+                info.code,
+                Image.fromTexture(info.textureId),
+                info.width, info.height,
+                info.bearingX, info.bearingY
+            )
         }
         return cachedGlyphs[char]!!
     }
@@ -114,33 +120,27 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
     class FontFile(nFace: Long, size: Int, val file: File): Font(nFace, size)
 
     class Glyph(
-        val char: Char,
-        val textureId: Int,
+        val code: Int,
+        val image: Image,
         val width: Int,
-        val height: Int
-    ){
-        private var cachedImage: Image? = null
-        fun getImage(): Image {
-            if(cachedImage == null)
-                cachedImage = Image.fromTexture(textureId)
-            return cachedImage!!
-        }
+        val height: Int,
+        val bearingX: Int,
+        val bearingY: Int
+    )
 
-    }
-
-    class FontBackend(val font: Font, val nFace: Long) {
+    class FontBackend(val font: Font, val ftFace: Long) {
 
         companion object {
-            val nFtLibrary: Long = BaseLibrary.nInitFreetype()
+            val ftLibrary: Long = BaseLibrary.nFreetypeInit()
 
             fun loadFont(data: ByteArray): Long {
-                return checkFontError(BaseLibrary.nLoadFace(nFtLibrary, data))
+                return checkFontError(BaseLibrary.nFreetypeLoadFace(ftLibrary, data))
             }
 
             fun loadFont(path: String): Long{
                 if(!File(path).exists())
                     throw NullPointerException("File doesn't exist: $path")
-                return checkFontError(BaseLibrary.nLoadFaceFile(nFtLibrary, path.cStr())) { path }
+                return checkFontError(BaseLibrary.nFreetypeLoadFaceFile(ftLibrary, path.cStr())) { path }
             }
 
             private fun checkFontError(status: Long, addition: () -> String? = {null}): Long{
@@ -265,10 +265,13 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
             }
         }
 
-        fun getFontMetaCount() = BaseLibrary.nGetFaceNameCount(nFace)
+        val hbBuffer: Long = BaseLibrary.nHarfBuzzCreateBuffer()
+        val cachedGlyphInfo = hashMapOf<Int, CachedGlyphInfo>()
+
+        fun getFontMetaCount() = BaseLibrary.nFreetypeGetFaceNameCount(ftFace)
 
         fun getFontMeta(id: Int): String {
-            val result = BaseLibrary.nGetFaceName(nFace, id)
+            val result = BaseLibrary.nFreetypeGetFaceName(ftFace, id)
             val bytes = result[0] as ByteArray
             val encoding = result[1] as IntArray
 
@@ -284,38 +287,145 @@ open class Font private constructor(nFace: Long, val size: Int): MinUIObject() {
                 bytes.toString(StandardCharsets.UTF_8)
         }
 
-        fun getGlyphSize(char: Char): Dimension {
-            BaseLibrary.nFtLoadChar(nFace, char.code)
-            return Dimension(BaseLibrary.nFtGetGlyphWidth(nFace).toDouble(), BaseLibrary.nFtGetGlyphHeight(nFace).toDouble())
-        }
+        fun getTextTexture(text: String): Int{
+            BaseLibrary.nFreetypeSetFaceSize(ftFace, font.size)
+            val hbFont: Long = BaseLibrary.nHarfBuzzCreateFont(ftFace)
 
-        fun getGlyphTexture(char: Char): Int{
-            BaseLibrary.nSetFaceSize(nFace, font.size)
-            BaseLibrary.nFtLoadChar(nFace, char.code)
-            val data = BaseLibrary.nFtGetGlyphData(nFace)
-            val width = BaseLibrary.nFtGetGlyphWidth(nFace).toInt()
-            val height = BaseLibrary.nFtGetGlyphHeight(nFace).toInt()
+            BaseLibrary.nHarfBuzzSetBufferText(hbBuffer, text.cStr())
+            BaseLibrary.nHarfBuzzShape(hbFont, hbBuffer)
 
+            val count = BaseLibrary.nHarfBuzzGetGlyphCount(hbBuffer)
+            val info = BaseLibrary.nHarfBuzzGetGlyphInfo(hbBuffer)
+            val positions = BaseLibrary.nHarfBuzzGetGlyphPositions(hbBuffer)
+
+            var minX = 0
+            var minY = 0
+            var maxX = 0
+            var maxY = 0
+            var baselineX = 0
+            var baselineY = 0
+
+            var currentX = 0
+            var currentY = 0
+            for(i in 0 until count){
+                val code = BaseLibrary.nHarfBuzzGetGlyphId(info, i)
+                val glyphInfo = getGlyphInfo(code)
+
+                val width = glyphInfo.width
+                val height = glyphInfo.height
+                val offsetX = BaseLibrary.nHarfBuzzGetXOffset(positions, i) / 64
+                val offsetY = BaseLibrary.nHarfBuzzGetYOffset(positions, i) / 64
+
+                if(i == 0)
+                    baselineX = -glyphInfo.bearingX
+                baselineY = max(baselineY, -glyphInfo.bearingY)
+
+                minX = min(minX, currentX + offsetX + glyphInfo.bearingX)
+                minY = min(minY, currentY + offsetY + glyphInfo.bearingY)
+                maxX = max(maxX, currentX + offsetX + glyphInfo.bearingX + width)
+                maxY = max(maxY, currentY + offsetY + glyphInfo.bearingY + height)
+
+                currentX += BaseLibrary.nHarfBuzzGetXAdvance(positions, i) / 64
+                currentY += BaseLibrary.nHarfBuzzGetYAdvance(positions, i) / 64
+            }
+
+            val width = maxX - minX
+            val height = maxY - minY
             var texId = 0
+
             Resources.invokeSync{
                 texId = glGenTextures()
-
                 glBindTexture(GL_TEXTURE_2D, texId)
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
-
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
                 glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, data)
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, 0)
+
+                Resources.renderOnTexture(texId){
+                    currentX = 0
+                    currentY = 0
+                    for(i in 0 until count){
+                        val code = BaseLibrary.nHarfBuzzGetGlyphId(info, i)
+                        val glyphInfo = getGlyphInfo(code)
+
+                        val glyphWidth = glyphInfo.width
+                        val glyphHeight = glyphInfo.height
+
+                        val offsetX = BaseLibrary.nHarfBuzzGetXOffset(positions, i) / 64
+                        val offsetY = BaseLibrary.nHarfBuzzGetYOffset(positions, i) / 64
+                        val advanceX = BaseLibrary.nHarfBuzzGetXAdvance(positions, i) / 64
+                        val advanceY = BaseLibrary.nHarfBuzzGetYAdvance(positions, i) / 64
+
+                        val x = currentX + offsetX + glyphInfo.bearingX + baselineX
+                        val y = currentY + offsetY + glyphInfo.bearingY + baselineY
+
+                        glBindTexture(GL_TEXTURE_2D, glyphInfo.textureId)
+                        glBegin(GL_QUADS)
+
+                        glTexCoord2f(0.0f, 0.0f)
+                        glVertex2i(x, y + glyphHeight)
+                        glTexCoord2f(1.0f, 0.0f)
+                        glVertex2i(x + glyphWidth, y + glyphHeight)
+                        glTexCoord2f(1.0f, 1.0f)
+                        glVertex2i(x + glyphWidth, y)
+                        glTexCoord2f(0.0f, 1.0f)
+                        glVertex2i(x, y)
+                        glEnd()
+
+                        currentX += advanceX
+                        currentY += advanceY
+                    }
+                }
             }
             return texId
         }
 
-        fun dispose(){
-            checkFontError(BaseLibrary.nDoneFace(nFace))
+        fun getGlyphInfo(char: Char) = getGlyphInfo(BaseLibrary.nFreetypeGetCharIndex(ftFace, char.code))
+
+        fun getGlyphInfo(code: Int): CachedGlyphInfo{
+            if(code !in cachedGlyphInfo){
+                BaseLibrary.nFreetypeSetFaceSize(ftFace, font.size)
+                BaseLibrary.nFreetypeLoadChar(ftFace, code)
+                val data = BaseLibrary.nFreetypeGetGlyphData(ftFace)
+                val width = BaseLibrary.nFreetypeGetGlyphWidth(ftFace).toInt()
+                val height = BaseLibrary.nFreetypeGetGlyphHeight(ftFace).toInt()
+
+                var texId = 0
+                Resources.invokeSync{
+                    texId = glGenTextures()
+
+                    glBindTexture(GL_TEXTURE_2D, texId)
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+                    glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, width, height, 0, GL_ALPHA, GL_UNSIGNED_BYTE, data)
+                }
+                cachedGlyphInfo[code] = CachedGlyphInfo(
+                    code, texId, width, height,
+                    BaseLibrary.nFreetypeGetBearingX(ftFace), BaseLibrary.nFreetypeGetBearingY(ftFace))
+            }
+            return cachedGlyphInfo[code]!!
         }
 
+        fun dispose(){
+            checkFontError(BaseLibrary.nFreetypeDoneFace(ftFace))
+        }
+
+        class CachedGlyphInfo(
+            val code: Int,
+            val textureId: Int,
+            val width: Int,
+            val height: Int,
+            val bearingX: Int,
+            bearingY: Int
+        ){
+            val bearingY = bearingY - height
+        }
 
     }
 

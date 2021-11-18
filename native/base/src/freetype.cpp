@@ -1,13 +1,13 @@
 #include "freetype.h"
 
-jlong nInitFreetype() {
+jlong nFreetypeInit() {
 	FT_Library ft;
 	if (int status = FT_Init_FreeType(&ft))
 		return -status;
 	return (jlong)ft;
 }
 
-jlong nLoadFaceFile(jlong ft, jbyte* path) {
+jlong nFreetypeLoadFaceFile(jlong ft, jbyte* path) {
 	FT_Face face;
 
 	if (int status = FT_New_Face((FT_Library)ft, (char*)path, 0, &face))
@@ -15,13 +15,13 @@ jlong nLoadFaceFile(jlong ft, jbyte* path) {
 	return (jlong)face;
 }
 
-jlong nDoneFace(jlong face) {
+jlong nFreetypeDoneFace(jlong face) {
 	if (int status = FT_Done_Face((FT_Face)face))
 		return -status;
 	return 0;
 }
 
-jlong nLoadFace(jlong ft, jbyte* data, jlong length) {
+jlong nFreetypeLoadFace(jlong ft, jbyte* data, jlong length) {
 	FT_Face face;
 	if (int status = FT_New_Memory_Face((FT_Library)ft, (FT_Byte*)data, (FT_Long)length, 0, &face))
 		return -status;
@@ -29,16 +29,16 @@ jlong nLoadFace(jlong ft, jbyte* data, jlong length) {
 	return (jlong)face;
 }
 
-jlong nSetFaceSize(jlong face, jint size) {
+jlong nFreetypeSetFaceSize(jlong face, jint size) {
 	if (int status = FT_Set_Pixel_Sizes((FT_Face)face, 0, (FT_UInt)size))
 		return -status;
 }
 
-jint nGetFaceNameCount(jlong face) {
+jint nFreetypeGetFaceNameCount(jlong face) {
 	return (jint)FT_Get_Sfnt_Name_Count((FT_Face)face);
 }
 
-jobjectArray nGetFaceName(JNIEnv* env, jlong face, jint id) {
+jobjectArray nFreetypeGetFaceName(JNIEnv* env, jlong face, jint id) {
 	FT_SfntName name;
 	FT_Get_Sfnt_Name((FT_Face)face, id, &name);
 
@@ -56,25 +56,33 @@ jobjectArray nGetFaceName(JNIEnv* env, jlong face, jint id) {
 	return out;
 }
 
-jlong nFtLoadChar(jlong face, jint ch) {
-	unsigned long c = FT_Get_Char_Index((FT_Face)face, (FT_Long)ch);
-	if (int status = FT_Load_Glyph((FT_Face)face, c, FT_LOAD_RENDER | FT_LOAD_NO_HINTING))
+jint nFreetypeGetCharIndex(jlong face, jint ch) {
+	return (jlong)FT_Get_Char_Index((FT_Face)face, (FT_Long)ch);
+}
+
+jlong nFreetypeLoadChar(jlong face, jint ch) {
+	if (int status = FT_Load_Glyph((FT_Face)face, ch, FT_LOAD_RENDER | FT_LOAD_NO_HINTING))
 		return -status;
 	return 0;
 }
 
-jlong nFtGetGlyphWidth(jlong face) {
+jlong nFreetypeGetGlyphWidth(jlong face) {
 	return ((FT_Face)face)->glyph->bitmap.width;
 }
 
-jlong nFtGetGlyphHeight(jlong face) {
+jlong nFreetypeGetGlyphHeight(jlong face) {
 	return ((FT_Face)face)->glyph->bitmap.rows;
 }
 
-jobject nFtGetGlyphData(JNIEnv* env, jlong face) {
+jobject nFreetypeGetGlyphData(JNIEnv* env, jlong face) {
 	auto data = ((FT_Face)face)->glyph->bitmap.buffer;
 	return env->NewDirectByteBuffer(data, (jlong)((FT_Face)face)->glyph->bitmap.width * (jlong)((FT_Face)face)->glyph->bitmap.rows);
 }
 
-// HarfBuzz
+jint nFreetypeGetBearingX(jlong face) {
+	return (jint)((FT_Face)face)->glyph->bitmap_left;
+}
 
+jint nFreetypeGetBearingY(jlong face) {
+	return (jint)((FT_Face)face)->glyph->bitmap_top;
+}
