@@ -1,5 +1,6 @@
-import com.husker.minui.core.Frame
-import com.husker.minui.core.input.Mouse
+/*
+import com.husker.minui.frame.Frame
+import com.husker.minui.input.Mouse
 import com.husker.minui.core.popup.NativePopupMenu
 import com.husker.minui.graphics.Color
 
@@ -34,3 +35,5 @@ fun main(){
         popup.showAsync(Mouse.location, frame)
     }
 }
+
+ */

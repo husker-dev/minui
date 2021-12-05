@@ -1,11 +1,11 @@
 package com.husker.minuicore.pipeline
 
-import com.husker.minuicore.MLCore
-import com.husker.minuicore.platform.MLPlatform
-import com.husker.minuicore.platform.MLWindowManager
+import com.husker.minuicore.MColor
+import com.husker.minuicore.MCore
 import com.husker.minuicore.utils.concurrentArrayList
+import com.husker.minuicore.window.MWindowStyle
 
-abstract class MLWindow {
+abstract class MWindow {
 
     abstract var visible: Boolean
     abstract var title: String
@@ -13,16 +13,20 @@ abstract class MLWindow {
     abstract var position: Pair<Int, Int>
     abstract var minimumSize: Pair<Int, Int>
     abstract var maximumSize: Pair<Int, Int>
-    abstract var undecorated: Boolean
     abstract var alwaysOnTop: Boolean
     abstract var resizable: Boolean
     abstract var showTaskbarIcon: Boolean
     abstract var vsync : Boolean
-    abstract var background: Triple<Float, Float, Float>
+    abstract var background: MColor
+    abstract var style: MWindowStyle
 
     init{
-        MLCore.windows.add(this)
+        MCore.windows.add(this)
     }
+
+    abstract fun setBorderlessStyle()
+    abstract fun setTitlessStyle()
+    abstract fun setDefaultStyle()
 
     abstract fun requestFocus()
 
@@ -79,7 +83,7 @@ abstract class MLWindow {
     }
 
     fun fireWindowClosedEvent() {
-        MLCore.windows.remove(this)
+        MCore.windows.remove(this)
         windowClosedListeners.iterate { it() }
     }
 

@@ -1,9 +1,9 @@
 package com.husker.minuicore.pipeline
 
-abstract class MLPipeline(val name: String) {
+abstract class MPipeline(val name: String) {
 
-    abstract val resourceFactory: MLResourceFactory
+    abstract val resourceFactory: MResourceFactory
 
-    abstract fun createWindow(): MLWindow
+    abstract fun createWindow(): MWindow
 
 }

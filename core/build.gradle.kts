@@ -1,66 +1,56 @@
+import java.net.URI
+
 plugins {
-    id "java"
-    id "org.jetbrains.kotlin.jvm"
+    id("java")
+    id("org.jetbrains.kotlin.jvm") version "1.5.31"
 }
-
-project.ext.lwjglVersion =
-        "3.3.0-SNAPSHOT"
-
-project.ext.lwjglModules = [
-        "lwjgl",
-        "lwjgl-glfw",
-        "lwjgl-opengl",
-        "lwjgl-stb"
-]
-project.ext.lwjglPlatforms = [
-        "natives-linux",
-        "natives-linux-arm32",
-        "natives-linux-arm64",
-        "natives-macos",
-        "natives-macos-arm64",
-        "natives-windows-arm64",
-        "natives-windows-x86",
-        "natives-windows"
-]
 
 group = "com.husker.minui"
 version = "0.1"
 
+val versions = hashMapOf(
+    "jupiter"   to "5.8.1"
+)
+
 repositories {
     mavenCentral()
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url = URI("https://oss.sonatype.org/content/repositories/snapshots/") }
+}
+
+val fatJar = task("fatJar", type = Jar::class) {
+    baseName = "${project.name}-fat"
+    manifest {
+        attributes["Main-Class"] = "com.husker.MainKt"
+    }
+    from(configurations.runtimeClasspath.get().map({ if (it.isDirectory) it else zipTree(it) }))
+    with(tasks.jar.get() as CopySpec)
 }
 
 sourceSets {
     main {
-        resources { srcDirs "src/main/resources" }
+        resources { srcDirs += File("src/main/resources") }
     }
-    examples {
-        resources { srcDirs "src/examples/resources" }
+
+    create("examples") {
+        resources { srcDirs += File("src/examples/resources") }
         java {
             srcDirs("src/examples/kotlin")
-            compileClasspath += sourceSets.main.runtimeClasspath
-            runtimeClasspath += sourceSets.main.runtimeClasspath
+            compileClasspath += sourceSets.main.get().runtimeClasspath
+            runtimeClasspath += sourceSets.main.get().runtimeClasspath
         }
     }
 }
 
 dependencies {
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.1"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.1"
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${versions["jupiter"]}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${versions["jupiter"]}")
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31"
-    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
-
-    for(module in lwjglModules){
-        implementation "org.lwjgl:$module:$lwjglVersion"
-        for(platform in lwjglPlatforms)
-            runtimeOnly "org.lwjgl:$module:$lwjglVersion:$platform"
-    }
+    // For debug
+    compileOnly("org.lwjgl:lwjgl-opengl:3.3.0-SNAPSHOT")
 }
 
-test {
+tasks.test {
     useJUnitPlatform()
-    forkEvery = 1
     maxParallelForks = 1
 }
+

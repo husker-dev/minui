@@ -4,6 +4,8 @@
 #include "ft2build.h"
 #include FT_FREETYPE_H
 #include FT_SFNT_NAMES_H
+#include FT_MODULE_H
+#include FT_CFF_DRIVER_H
 
 jlong nFreetypeInit();
 jlong nFreetypeLoadFaceFile(jlong, jbyte*);

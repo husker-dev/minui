@@ -18,18 +18,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\glfw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\include\GLFW\glfw3.h">
       <Filter>Source Files\include</Filter>
     </ClInclude>
     <ClInclude Include="src\include\GLFW\glfw3native.h">
       <Filter>Source Files\include</Filter>
     </ClInclude>
+    <ClInclude Include="src\glPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glPipelineWin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\wglext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\glfw.cpp">
+    <ClCompile Include="src\glPipelineWin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glPipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

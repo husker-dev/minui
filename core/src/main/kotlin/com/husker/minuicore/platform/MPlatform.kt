@@ -24,9 +24,9 @@ abstract class MLPlatform(val name: String) {
 
     abstract val architecture: String
 
-    abstract fun createWindowManager(): MLWindowManager
+    abstract fun createWindowManager(): MWindowManager
 
-    fun createWindowManager(handle: Long): MLWindowManager {
+    fun createWindowManager(handle: Long): MWindowManager {
         val manager = createWindowManager()
         manager.bindHandle(handle)
         return manager

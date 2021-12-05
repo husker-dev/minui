@@ -9,7 +9,6 @@ jlong nFreetypeInit() {
 
 jlong nFreetypeLoadFaceFile(jlong ft, jbyte* path) {
 	FT_Face face;
-
 	if (int status = FT_New_Face((FT_Library)ft, (char*)path, 0, &face))
 		return -status;
 	return (jlong)face;
@@ -30,8 +29,10 @@ jlong nFreetypeLoadFace(jlong ft, jbyte* data, jlong length) {
 }
 
 jlong nFreetypeSetFaceSize(jlong face, jint size) {
-	if (int status = FT_Set_Pixel_Sizes((FT_Face)face, 0, (FT_UInt)size))
-		return -status;
+	FT_Set_Char_Size((FT_Face)face, size << 6, size << 6, 96, 96);
+	//if (int status = FT_Set_Pixel_Sizes((FT_Face)face, 0, (FT_UInt)size))
+	//	return -status;
+	return 0;
 }
 
 jint nFreetypeGetFaceNameCount(jlong face) {
@@ -61,8 +62,9 @@ jint nFreetypeGetCharIndex(jlong face, jint ch) {
 }
 
 jlong nFreetypeLoadChar(jlong face, jint ch) {
-	if (int status = FT_Load_Glyph((FT_Face)face, ch, FT_LOAD_RENDER | FT_LOAD_NO_HINTING))
+	if (int status = FT_Load_Glyph((FT_Face)face, ch, FT_LOAD_DEFAULT))
 		return -status;
+	FT_Render_Glyph(((FT_Face)face)->glyph, FT_RENDER_MODE_LIGHT);
 	return 0;
 }
 

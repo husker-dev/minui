@@ -1,7 +1,7 @@
 package com.husker.minuicore
 
-import com.husker.minuicore.pipeline.MLPipeline
-import com.husker.minuicore.pipeline.MLWindow
+import com.husker.minuicore.pipeline.MPipeline
+import com.husker.minuicore.pipeline.MWindow
 import com.husker.minuicore.pipeline.gl.GLPipeline
 import com.husker.minuicore.platform.MLPlatform
 import com.husker.minuicore.platform.win.WinPlatform
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 @Suppress("JAVA_CLASS_ON_COMPANION")
-class MLCore {
+class MCore {
 
     companion object {
 
@@ -26,9 +26,9 @@ class MLCore {
         var disposed = false
         var forceLibraryLoad = false
 
-        val windows = ConcurrentArrayList<MLWindow>()
+        val windows = ConcurrentArrayList<MWindow>()
 
-        val pipeline: MLPipeline by lazy {
+        val pipeline: MPipeline by lazy {
             // There are only one module for now - OpenGL
             return@lazy GLPipeline()
         }
@@ -53,7 +53,7 @@ class MLCore {
         }
 
         fun loadLibrary(resourcePath: String){
-            val target = File(MLEnvironment.folder, resourcePath)
+            val target = File(MEnvironment.folder, resourcePath)
             if(forceLibraryLoad || !target.exists()){
                 target.parentFile.mkdirs()
                 MinUIUtils.copyStreams(javaClass.getResourceAsStream("/$resourcePath")!!, FileOutputStream(target))
@@ -81,19 +81,19 @@ class MLCore {
                 tasksQueue.offer(toInvoke)
         }
 
-        fun invokeOnMainThreadSync(toInvoke: () -> Unit){
+        fun <T> invokeOnMainThreadSync(toInvoke: () -> T): T{
             if(mainThread == null)
                 throw UnsupportedOperationException("Execution requires thread wrapping. Use this in main thread: wrapMainThread { ... } ")
-            if(Thread.currentThread() == mainThread) {
-                toInvoke.invoke()
-                return
-            }
+            if(Thread.currentThread() == mainThread)
+                return toInvoke.invoke()
             val trigger = Trigger()
+            var value: T? = null
             invokeOnMainThread {
-                toInvoke.invoke()
+                value = toInvoke.invoke()
                 trigger.ready()
             }
             trigger.waitForReady()
+            return value!!
         }
 
         private fun createDaemonThreadChecker(){

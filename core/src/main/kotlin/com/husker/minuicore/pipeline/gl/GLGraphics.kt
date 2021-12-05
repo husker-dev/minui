@@ -1,7 +1,7 @@
-package com.husker.minuicore.pipelines.gl
+package com.husker.minuicore.pipeline.gl
 
-import com.husker.minuicore.MLGraphics
+import com.husker.minuicore.pipeline.MGraphics
 
-class GLGraphics: MLGraphics() {
+class GLGraphics: MGraphics() {
 
 }

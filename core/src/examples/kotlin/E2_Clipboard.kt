@@ -1,5 +1,6 @@
-import com.husker.minui.core.clipboard.Clipboard
-import com.husker.minui.core.clipboard.ClipboardDataType
+/*
+import com.husker.minui.clipboard.Clipboard
+import com.husker.minui.clipboard.ClipboardDataType
 import com.husker.minui.natives.LibraryUtils
 
 
@@ -14,3 +15,5 @@ fun main(){
     })
 
 }
+
+ */

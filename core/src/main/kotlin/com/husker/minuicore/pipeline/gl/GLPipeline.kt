@@ -1,63 +1,60 @@
-package com.husker.minuicore.pipelines.gl
+package com.husker.minuicore.pipeline.gl
 
-import com.husker.minui.MinUI
-import com.husker.minuicore.MLCore
-import com.husker.minuicore.MLPipeline
-import com.husker.minuicore.MLWindow
-import com.husker.minuicore.utils.Trigger
-import org.lwjgl.glfw.GLFW.*
-import org.lwjgl.glfw.GLFWErrorCallback
-import org.lwjgl.opengl.GL.*
+
+import com.husker.minuicore.MCore
+import com.husker.minuicore.pipeline.MPipeline
+import com.husker.minuicore.pipeline.MWindow
+
 import java.util.concurrent.TimeUnit
 
-class GLPipeline: MLPipeline("OpenGL") {
+external fun nCreateWindow(shareWith: Long): Long
+external fun nSwapBuffers(handle: Long)
+external fun nPollEvents()
+external fun nMakeCurrent(handle: Long)
+external fun nSetVsync(handle: Long, value: Boolean)
+external fun nGetVsync(handle: Long): Boolean
+
+class GLPipeline: MPipeline("OpenGL") {
+
+    companion object {
+        init{
+            MCore.loadLibrary("minui_natives/${MCore.osName}/${MCore.platform.architecture}/gl.dll")
+        }
+    }
 
     private var currentContext = Long.MIN_VALUE
 
-    override val resourceFactory = GLResourceFactory()
+    override val resourceFactory by lazy { GLResourceFactory() }
 
     init{
-        val initializeTrigger = Trigger()
-
-        MLCore.invokeOnMainThread {
-            GLFWErrorCallback.createPrint(System.err).set()
-            if (!glfwInit())
-                throw IllegalStateException("Unable to initialize GLFW")
-
-            initializeTrigger.ready()
-            while(!MLCore.disposed){
+        MCore.invokeOnMainThread {
+            while(!MCore.disposed){
                 // Checking for task to execute in main thread
-                if(MLCore.tasksQueue.size > 0)
-                    MLCore.tasksQueue.poll(1, TimeUnit.MILLISECONDS)!!.run()
+                if(MCore.tasksQueue.size > 0)
+                    MCore.tasksQueue.poll(1, TimeUnit.MILLISECONDS)!!.run()
 
                 // Redraw every window
-                MinUI.frames.iterate { frame ->
-                    if(!frame.backend.initialized) return@iterate
+                MCore.windows.iterate { window ->
+                    window as GLWindow
+                    if(!window.initialized) return@iterate
 
-                    MinUI.makeCurrent(frame.backend.window)
-                    //frame.backend.drawGL()
-                    with(frame.backend) {
-                        if (glfwWindowShouldClose(window)) {
-                            if (onClosing()) destroy()
-                            else glfwSetWindowShouldClose(window, false)
-                        }
-                    }
+                    makeCurrentContext(window.handle)
+                    window.render()
                 }
-                glfwPollEvents()
+                if(MCore.windows.size > 0)
+                    nPollEvents()
             }
         }
-        initializeTrigger.waitForReady()
     }
 
-    override fun createWindow(): MLWindow {
+    override fun createWindow(): MWindow {
         return GLWindow()
     }
 
     fun makeCurrentContext(window: Long){
-        if(window != currentContext){
+        if(currentContext != window){
             currentContext = window
-            glfwMakeContextCurrent(window)
-            createCapabilities()
+            nMakeCurrent(window)
         }
     }
 

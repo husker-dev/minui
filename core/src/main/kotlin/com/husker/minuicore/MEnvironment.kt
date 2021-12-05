@@ -7,9 +7,9 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.deleteIfExists
 
-class MLEnvironment {
+class MEnvironment {
     companion object {
-        private val tempDir = File("${System.getProperty("java.io.tmpdir")}/minui_cache/${MLCore.version}")
+        private val tempDir = File("${System.getProperty("java.io.tmpdir")}/minui_cache/${MCore.version}")
         private const val fileLockName = "dir.lock"
 
         val folder = getCompatibleFolder()

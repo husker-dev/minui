@@ -1,6 +1,7 @@
 package com.husker.minuicore.platform
 
-abstract class MLWindowManager {
+
+abstract class MWindowManager {
 
     abstract fun bindHandle(handle: Long)
 
@@ -9,14 +10,19 @@ abstract class MLWindowManager {
     abstract var title: String
     abstract var visible: Boolean
     abstract var alwaysOnTop: Boolean
-    abstract var undecorated: Boolean
     abstract var resizable: Boolean
     abstract var showTaskbarIcon: Boolean
+    abstract var minimumSize: Pair<Int, Int>
+    abstract var maximumSize: Pair<Int, Int>
 
     var onClosing: () -> Boolean = { true }
     var onClose: () -> Unit = { }
     var onResize: () -> Unit = { }
     var onMove: () -> Unit = { }
+
+    abstract fun setBorderlessStyle()
+    abstract fun setTitlessStyle()
+    abstract fun setDefaultStyle()
 
     abstract fun requestFocus()
     abstract fun close()

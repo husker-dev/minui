@@ -1,4 +1,4 @@
-package com.husker.minui.core.utils
+package com.husker.minuicore.utils
 
 class Trigger {
 
@@ -15,7 +15,7 @@ class Trigger {
             synchronized(notifier) { notifier.wait() }
     }
 
-    fun reset(): Trigger{
+    fun reset(): Trigger {
         ready = false
         return this
     }
