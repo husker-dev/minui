@@ -29,9 +29,9 @@ jlong nFreetypeLoadFace(jlong ft, jbyte* data, jlong length) {
 }
 
 jlong nFreetypeSetFaceSize(jlong face, jint size) {
-	FT_Set_Char_Size((FT_Face)face, size << 6, size << 6, 96, 96);
-	//if (int status = FT_Set_Pixel_Sizes((FT_Face)face, 0, (FT_UInt)size))
-	//	return -status;
+	//FT_Set_Char_Size((FT_Face)face, size << 6, size << 6, 96, 96);
+	if (int status = FT_Set_Pixel_Sizes((FT_Face)face, 0, (FT_UInt)size))
+		return -status;
 	return 0;
 }
 

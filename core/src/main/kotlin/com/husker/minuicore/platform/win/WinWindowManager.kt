@@ -1,5 +1,6 @@
 package com.husker.minuicore.platform.win
 
+import com.husker.minuicore.MColor
 import com.husker.minuicore.platform.MWindowManager
 
 private external fun nInstall()
@@ -7,6 +8,20 @@ private external fun nInstall()
 class WinWindowManager: MWindowManager() {
 
     companion object {
+
+        enum class Styles(var id: Int) {
+            Default(0),
+            Titless(1),
+            Borderless(2),
+            ColorTitle(3),
+
+            Dark(4),
+            Light(5),
+
+            Win11Dark(6),
+            Win11Light(7)
+        }
+
         init{
             nInstall()
         }
@@ -29,11 +44,14 @@ class WinWindowManager: MWindowManager() {
     private external fun nTryCloseWindow(hwnd: Long)
     private external fun nDestroyWindow(hwnd: Long)
     private external fun nSetWindowStyleId(hwnd: Long, type: Int)
+    private external fun nSetWindowColors(hwnd: Long, title: Int, text: Int, border: Int, defaultTitle: Boolean, defaultText: Boolean, defaultBorder: Boolean)
     private external fun nUpdateExStyle(hwnd: Long, taskbar: Boolean, topMost: Boolean)
     private external fun nSetResizable(hwnd: Long, value: Boolean)
     private external fun nIsResizable(hwnd: Long): Boolean
     private external fun nSetMinimumSize(hwnd: Long, width: Int, height: Int)
     private external fun nSetMaximumSize(hwnd: Long, width: Int, height: Int)
+    private external fun nGetClientHeight(hwnd: Long): Int
+    private external fun nGetClientWidth(hwnd: Long): Int
 
     override fun bindHandle(handle: Long) {
         hwnd = handle
@@ -92,9 +110,27 @@ class WinWindowManager: MWindowManager() {
             nSetMaximumSize(hwnd, value.first, value.second)
         }
 
-    override fun setDefaultStyle() = nSetWindowStyleId(hwnd, 0)
-    override fun setTitlessStyle() = nSetWindowStyleId(hwnd, 1)
-    override fun setBorderlessStyle() = nSetWindowStyleId(hwnd, 2)
+    override val contentSize: Pair<Int, Int>
+        get() = Pair(nGetClientWidth(hwnd), nGetClientHeight(hwnd))
+
+
+
+    fun setWindowStyle(style: Styles) {
+        nSetWindowColors(hwnd, 0, 0, 0, defaultTitle = true, defaultText = true, defaultBorder = true)
+        nSetWindowStyleId(hwnd, style.id)
+    }
+    override fun setDefaultStyle() = setWindowStyle(Styles.Default)
+    override fun setTitlessStyle() = setWindowStyle(Styles.Titless)
+    override fun setBorderlessStyle() = setWindowStyle(Styles.Borderless)
+    override fun setColoredStyle(title: MColor?, text: MColor?, border: MColor?) {
+        setWindowStyle(Styles.ColorTitle)
+        nSetWindowColors(hwnd,
+            title?.toInt(false) ?: 0,
+            text?.toInt(false) ?: 0,
+            border?.toInt(false) ?: 0,
+            title == null, text == null, border == null
+            )
+    }
 
     override fun requestFocus() {
         nRequestFocus(hwnd)

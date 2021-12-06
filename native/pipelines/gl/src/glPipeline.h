@@ -10,8 +10,25 @@
 #endif
 #include <gl\gl.h>
 #include <gl\glu.h>
+#include <iostream>
 
 extern "C" {
+
+	/*=========================
+	*	nInit
+	* =========================
+	*/
+	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLPipelineKt_nInit(JNIEnv*, jobject) {
+		if (!gladLoadGL())
+			std::cout << "Failed to load GLAD" << std::endl;
+		nInit();
+	}
+
+	JNIEXPORT void JNICALL JavaCritical_com_husker_minuicore_pipeline_gl_GLPipelineKt_nInit() {
+		if (!gladLoadGL())
+			std::cout << "Failed to load GLAD" << std::endl;
+		nInit();
+	}
 
 	/*=========================
 	*	createWindow

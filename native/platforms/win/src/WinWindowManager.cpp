@@ -1,5 +1,11 @@
 #include "WinWindowManager.h"
 
+const auto DWMWA_BORDER_COLOR = DWORD(34);
+const auto DWMWA_CAPTION_COLOR = DWORD(35);
+const auto DWMWA_TEXT_COLOR = DWORD(36);
+const auto DWMWA_MICA_EFFECT = DWORD(1029);
+const auto DWMWA_USE_IMMERSIVE_DARK_MODE = DWORD(20);
+
 static jmethodID onClosingCallback;
 static jmethodID onCloseCallback;
 static jmethodID onResizeCallback;
@@ -10,6 +16,29 @@ static std::map<HWND, jweak> callbackObjects;
 
 static std::map<HWND, POINT> minimumSizes;
 static std::map<HWND, POINT> maximumSizes;
+
+static std::map<HWND, DWORD*> titleColors;
+static std::map<HWND, jint*> textColors;
+static std::map<HWND, jint*> borderColors;
+
+int to_int(char* str) {
+	int res = 0;
+	for (int i = 0; str[i] != '\0'; ++i)
+		res = res * 10 + str[i] - '0';
+	return res;
+}
+
+bool IsWindows11OrGreater() {
+	char minorVersion[64];
+	DWORD majorVersion = 0;
+
+	DWORD size1 = (DWORD)(64 * sizeof(char));
+	DWORD size2 = sizeof(DWORD);
+	RegGetValueA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "CurrentBuild", RRF_RT_REG_SZ, nullptr, &minorVersion, &size1);
+	RegGetValueA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "CurrentMajorVersionNumber", RRF_RT_REG_DWORD, nullptr, &majorVersion, &size2);
+
+	return to_int(minorVersion) > 10 || majorVersion >= 22000;
+}
 
 void printExStyles(HWND hwnd) {
 	auto style = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
@@ -269,8 +298,43 @@ jboolean nIsResizable(jlong hwnd) {
 	return (GetWindowLong((HWND)hwnd, GWL_STYLE) & WS_SIZEBOX) != 0;
 }
 
+void nSetWindowColors(jlong hwnd, jint title, jint text, jint border, jboolean defTitle, jboolean defText, jboolean defBorder) {
+	DwmSetWindowAttribute((HWND)hwnd, DWMWA_CAPTION_COLOR, defTitle ? 0 : &title, sizeof(COLORREF));
+	DwmSetWindowAttribute((HWND)hwnd, DWMWA_TEXT_COLOR, defText ? 0 : &text, sizeof(COLORREF));
+	DwmSetWindowAttribute((HWND)hwnd, DWMWA_BORDER_COLOR, defBorder ? 0 : &border, sizeof(COLORREF));
+}
+
+void applyWindowSetting(HWND hwnd, int darkMode, boolean mica) {
+	int trueValue = 1;
+	int falseValue = 0;
+	int* darkModeValue = 0;
+	if (darkMode == 1) darkModeValue = &trueValue;
+	if (darkMode == 0) darkModeValue = &falseValue;
+
+	DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, darkModeValue, sizeof(int));
+	if (IsWindows11OrGreater()) {
+		DwmSetWindowAttribute(hwnd, DWMWA_MICA_EFFECT, mica ? &trueValue : &falseValue, sizeof(int));
+	}
+}
+
 void nSetWindowStyleId(jlong hwnd, jint id) {
-	std::cout << id << std::endl;
+	if (id == 0) {			// Default
+		applyWindowSetting((HWND)hwnd, 2, false);
+	} else if (id == 1) {	// Titless
+		applyWindowSetting((HWND)hwnd, 2, false);
+	} else if (id == 2) {	// Borderless
+		applyWindowSetting((HWND)hwnd, 2, false);
+	} else if (id == 3) {	// Colorized
+		applyWindowSetting((HWND)hwnd, 2, false);
+	} else if (id == 4) {	// Dark
+		applyWindowSetting((HWND)hwnd, 1, false);
+	} else if (id == 5) {	// Light
+		applyWindowSetting((HWND)hwnd, 0, false);
+	} else if (id == 6) {	// Mica dark
+		applyWindowSetting((HWND)hwnd, 1, true);
+	} else if (id == 7) {	// Mica light
+		applyWindowSetting((HWND)hwnd, 0, true);
+	}
 }
 
 void nSetMinimumSize(jlong hwnd, jint width, jint height) {
@@ -285,6 +349,18 @@ void nSetMaximumSize(jlong hwnd, jint width, jint height) {
 		maximumSizes.erase(minimumSizes.find((HWND)hwnd));
 	else
 		maximumSizes[(HWND)hwnd] = POINT{ width, height };
+}
+
+jint nGetClientWidth(jlong hwnd) {
+	RECT r = {};
+	GetClientRect((HWND)hwnd, &r);
+	return r.right - r.left;
+}
+
+jint nGetClientHeight(jlong hwnd) {
+	RECT r = {};
+	GetClientRect((HWND)hwnd, &r);
+	return r.bottom - r.top;
 }
 
 

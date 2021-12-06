@@ -3,16 +3,18 @@ package com.husker.minuicore.pipeline.gl
 
 import com.husker.minuicore.MCore
 import com.husker.minuicore.pipeline.MPipeline
-import com.husker.minuicore.pipeline.MWindow
 
 import java.util.concurrent.TimeUnit
 
+external fun nInit()
 external fun nCreateWindow(shareWith: Long): Long
 external fun nSwapBuffers(handle: Long)
 external fun nPollEvents()
 external fun nMakeCurrent(handle: Long)
 external fun nSetVsync(handle: Long, value: Boolean)
 external fun nGetVsync(handle: Long): Boolean
+
+
 
 class GLPipeline: MPipeline("OpenGL") {
 
@@ -47,11 +49,10 @@ class GLPipeline: MPipeline("OpenGL") {
         }
     }
 
-    override fun createWindow(): MWindow {
-        return GLWindow()
-    }
+    override fun createWindow() = GLWindow()
+    override fun createGraphics() = GLGraphics()
 
-    fun makeCurrentContext(window: Long){
+    private fun makeCurrentContext(window: Long){
         if(currentContext != window){
             currentContext = window
             nMakeCurrent(window)

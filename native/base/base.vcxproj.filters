@@ -34,6 +34,9 @@
     <Filter Include="Source Files\freetype\freetype\internal\services">
       <UniqueIdentifier>{a1e6d658-ac28-4c71-9e1b-cb9893051f52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\stbi">
+      <UniqueIdentifier>{0658556e-e572-4103-9f66-41041cef844b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\freetype.cpp">
@@ -236,6 +239,12 @@
     </ClCompile>
     <ClCompile Include="src\harfbuzz\hb-uniscribe.cc">
       <Filter>Source Files\harfbuzz</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stbi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1084,6 +1093,21 @@
     </ClInclude>
     <ClInclude Include="src\freetype\freetype\internal\services\svwinfnt.h">
       <Filter>Source Files\freetype\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stbi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\AppData\Local\Temp\Rar$DRa1524.14385\stb-master\stb_image.h">
+      <Filter>Source Files\stbi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\AppData\Local\Temp\Rar$DRa1524.14385\stb-master\stb_image_resize.h">
+      <Filter>Source Files\stbi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\AppData\Local\Temp\Rar$DRa1524.14385\stb-master\stb_image_write.h">
+      <Filter>Source Files\stbi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -15,11 +15,12 @@ import kotlin.concurrent.thread
 
 class GLResourceFactory: MResourceFactory() {
 
-    private var resourcesQueue = LinkedBlockingQueue<(ResourceContext) -> Unit>()
+    private var resourcesQueue = LinkedBlockingQueue<(GLResourceFactory) -> Unit>()
     var handle: Long = 0
     lateinit var resourceThread: Thread
+    private var contextBound = false
 
-    private val context = ResourceContext(this)   // For tasks
+    lateinit var colorShader: GLShader
 
     init{
         MCore.invokeOnMainThreadSync {
@@ -27,6 +28,9 @@ class GLResourceFactory: MResourceFactory() {
 
             resourceThread = thread(name = "MinUI OpenGL Resources", isDaemon = true){
                 requestContext()
+                nInit()
+
+                colorShader = GLShader.fromResource(fragmentPath = "com/husker/minuicore/pipeline/gl/shaders/color/shader.fs")
 
                 /*
                 glMatrixMode(GL_PROJECTION)
@@ -46,63 +50,42 @@ class GLResourceFactory: MResourceFactory() {
         }
     }
 
-    private fun requestContext(){
+    fun requestContext(){
         nMakeCurrent(handle)
-        //GL.createCapabilities()
+        contextBound = true
     }
 
-    private fun clearContext(){
+    fun clearContext(){
         nMakeCurrent(0)
+        contextBound = false
     }
 
-    private fun processTask(task: (ResourceContext) -> Unit){
-        task(context)
-        if(!context.isContextBound) {
+    private fun processTask(task: (GLResourceFactory) -> Unit){
+        task(this)
+        if(!contextBound)
             requestContext()
-            context.isContextBound = true
-        }
     }
 
-    fun invoke(task: (ResourceContext) -> Unit){
+    fun invoke(task: (GLResourceFactory) -> Unit){
         if(Thread.currentThread() == resourceThread)
             processTask(task)
         else
             resourcesQueue.offer(task)
     }
 
-    fun invokeSync(task: (ResourceContext) -> Unit){
+    fun invokeSync(task: (GLResourceFactory) -> Unit){
         if(Thread.currentThread() == resourceThread)
             processTask(task)
         else {
             val trigger = Trigger()
             invoke {
-                task.invoke(it)
+                processTask(task)
                 trigger.ready()
             }
             trigger.waitForReady()
         }
     }
 
-    override fun createTexture(width: Int, height: Int, linear: Boolean): MTexture {
-        TODO("Not yet implemented")
-    }
-
-    override fun createTexture(width: Int, height: Int, byteBuffer: ByteBuffer, linear: Boolean): MTexture {
-        TODO("Not yet implemented")
-    }
-
-    class ResourceContext(private val resourceFactory: GLResourceFactory){
-        var isContextBound = true
-
-        fun requestContext(){
-            isContextBound = true
-            resourceFactory.requestContext()
-        }
-
-        fun clearContext(){
-            isContextBound = false
-            resourceFactory.clearContext()
-        }
-    }
-
+    override fun createEmptyTexture(width: Int, height: Int) = GLTexture(width, height, null)
+    override fun createTexture(width: Int, height: Int, data: ByteBuffer) = GLTexture(width, height, data)
 }

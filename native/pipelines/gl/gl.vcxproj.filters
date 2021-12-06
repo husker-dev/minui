@@ -13,17 +13,14 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\include">
-      <UniqueIdentifier>{153e9bca-c4e0-4386-9d01-a6c1811fbc1b}</UniqueIdentifier>
+    <Filter Include="Source Files\glad">
+      <UniqueIdentifier>{d49f248a-2cd9-4fdb-8c8b-4da1a063f25a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\glad\wgl">
+      <UniqueIdentifier>{d53d999c-4891-40e0-b0a9-941e43474c7e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\include\GLFW\glfw3.h">
-      <Filter>Source Files\include</Filter>
-    </ClInclude>
-    <ClInclude Include="src\include\GLFW\glfw3native.h">
-      <Filter>Source Files\include</Filter>
-    </ClInclude>
     <ClInclude Include="src\glPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -36,6 +33,18 @@
     <ClInclude Include="src\wglext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\glad\glad\glad.h">
+      <Filter>Source Files\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glad\KHR\khrplatform.h">
+      <Filter>Source Files\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glad\wgl\glad_wgl.h">
+      <Filter>Source Files\glad\wgl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glad\wgl\khrplatform.h">
+      <Filter>Source Files\glad\wgl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glPipelineWin.cpp">
@@ -46,6 +55,12 @@
     </ClCompile>
     <ClCompile Include="src\gl.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glad\glad.c">
+      <Filter>Source Files\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glad\wgl\glad_wgl.c">
+      <Filter>Source Files\glad\wgl</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

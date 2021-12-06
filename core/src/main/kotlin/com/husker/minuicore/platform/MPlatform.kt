@@ -13,6 +13,8 @@ val ByteArray.c_type: ByteArray
         System.arraycopy(this, 0, cBytes, 0, this.size)
         return cBytes
     }
+val String.c_str: ByteArray
+    get() = this.bytes.c_type
 val String.bytes: ByteArray
     get() = toByteArray(StandardCharsets.UTF_8)
 

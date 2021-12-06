@@ -1,5 +1,6 @@
 package com.husker.minuicore
 
+import com.husker.minuicore.MCoreProperties.Companion.forceLibraryLoad
 import com.husker.minuicore.pipeline.MPipeline
 import com.husker.minuicore.pipeline.MWindow
 import com.husker.minuicore.pipeline.gl.GLPipeline
@@ -10,9 +11,12 @@ import com.husker.minuicore.utils.MinUIUtils
 import com.husker.minuicore.utils.Trigger
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.Buffer
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
+
+external fun nGetBufferAddress(buffer: Buffer): Long
 
 @Suppress("JAVA_CLASS_ON_COMPANION")
 class MCore {
@@ -24,7 +28,6 @@ class MCore {
         var tasksQueue = LinkedBlockingQueue<Runnable>()
         var mainThread: Thread? = null
         var disposed = false
-        var forceLibraryLoad = false
 
         val windows = ConcurrentArrayList<MWindow>()
 
@@ -50,6 +53,10 @@ class MCore {
                 os.contains("mac") -> "macos"
                 else -> os
             }
+        }
+
+        init{
+            loadLibrary("minui_natives/${osName}/${platform.architecture}/base.dll")
         }
 
         fun loadLibrary(resourcePath: String){

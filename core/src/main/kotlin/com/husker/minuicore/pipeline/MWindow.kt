@@ -2,10 +2,14 @@ package com.husker.minuicore.pipeline
 
 import com.husker.minuicore.MColor
 import com.husker.minuicore.MCore
+import com.husker.minuicore.pipeline.gl.GLGraphics
+import com.husker.minuicore.platform.MWindowManager
 import com.husker.minuicore.utils.concurrentArrayList
-import com.husker.minuicore.window.MWindowStyle
+import com.husker.minuicore.window.WindowStyle
 
 abstract class MWindow {
+
+    abstract val windowManager: MWindowManager
 
     abstract var visible: Boolean
     abstract var title: String
@@ -18,12 +22,27 @@ abstract class MWindow {
     abstract var showTaskbarIcon: Boolean
     abstract var vsync : Boolean
     abstract var background: MColor
-    abstract var style: MWindowStyle
+    abstract var style: WindowStyle
+    abstract val contentSize: Pair<Int, Int>
+
+    val graphics = MCore.pipeline.createGraphics() as GLGraphics
+    var onRender: (Graphics) -> Unit = {}
 
     init{
         MCore.windows.add(this)
     }
 
+    fun render(){
+        graphics.reset()
+        preRender()
+        onRender.invoke(graphics)
+        postRender()
+    }
+
+    abstract fun preRender()
+    abstract fun postRender()
+
+    abstract fun setColoredStyle(title: MColor?, text: MColor?, border: MColor?)
     abstract fun setBorderlessStyle()
     abstract fun setTitlessStyle()
     abstract fun setDefaultStyle()

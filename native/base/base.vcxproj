@@ -102,8 +102,13 @@
     <ClCompile Include="src\harfbuzz\hb-ucd.cc" />
     <ClCompile Include="src\harfbuzz\hb-unicode.cc" />
     <ClCompile Include="src\harfbuzz\hb-uniscribe.cc" />
+    <ClCompile Include="src\stbi.cpp" />
+    <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\AppData\Local\Temp\Rar$DRa1524.14385\stb-master\stb_image.h" />
+    <ClInclude Include="..\..\..\..\..\AppData\Local\Temp\Rar$DRa1524.14385\stb-master\stb_image_resize.h" />
+    <ClInclude Include="..\..\..\..\..\AppData\Local\Temp\Rar$DRa1524.14385\stb-master\stb_image_write.h" />
     <ClInclude Include="src\freetype.h" />
     <ClInclude Include="src\freetype\dlg\dlg.h" />
     <ClInclude Include="src\freetype\dlg\output.h" />
@@ -385,7 +390,9 @@
     <ClInclude Include="src\harfbuzz\hb-version.h" />
     <ClInclude Include="src\harfbuzz\hb.h" />
     <ClInclude Include="src\harfbuzz\hb.hh" />
+    <ClInclude Include="src\stbi.h" />
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\utils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -393,7 +400,7 @@
     <ProjectGuid>{19546694-8cd9-4226-bbd2-363a6c1fd749}</ProjectGuid>
     <RootNamespace>base</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>minui-base</ProjectName>
+    <ProjectName>base</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

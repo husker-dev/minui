@@ -46,6 +46,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${versions["jupiter"]}")
 
     // For debug
+    // compileOnly
+
     compileOnly("org.lwjgl:lwjgl-opengl:3.3.0-SNAPSHOT")
 }
 

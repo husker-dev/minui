@@ -3,11 +3,13 @@ package com.husker.minuicore.pipeline.gl
 import com.husker.minuicore.MColor
 import com.husker.minuicore.MCore
 import com.husker.minuicore.pipeline.MWindow
-import com.husker.minuicore.window.MWindowStyle
+import com.husker.minuicore.window.WindowStyle
 
-class GLWindow: MWindow() {
 
-    var windowManager = MCore.platform.createWindowManager()
+
+open class GLWindow: MWindow() {
+
+    override var windowManager = MCore.platform.createWindowManager()
     private val resourceFactory = MCore.pipeline.resourceFactory as GLResourceFactory
     var initialized = false
     var handle = 0L
@@ -22,13 +24,14 @@ class GLWindow: MWindow() {
     override var showTaskbarIcon by windowManager::showTaskbarIcon
     override var minimumSize by windowManager::minimumSize
     override var maximumSize by windowManager::maximumSize
+    override val contentSize by windowManager::contentSize
 
     override var vsync: Boolean
         get() = MCore.invokeOnMainThreadSync { return@invokeOnMainThreadSync nGetVsync(handle) }
         set(value) = MCore.invokeOnMainThreadSync { nSetVsync(handle, value) }
 
-    private var _style: MWindowStyle = MWindowStyle.default
-    override var style: MWindowStyle
+    private var _style: WindowStyle = WindowStyle.default
+    final override var style: WindowStyle
         get() = _style
         set(value) {
             _style = value
@@ -43,25 +46,32 @@ class GLWindow: MWindow() {
                 windowManager.bindHandle(handle)
             }
         }
-        windowManager.onClosing = this::fireWindowClosingEvent
-        windowManager.onClose = this::fireWindowClosedEvent
+        windowManager.onClosing = ::fireWindowClosingEvent
+        windowManager.onClose = ::fireWindowClosedEvent
         windowManager.onResize = {
             render()
             fireWindowResizedEvent()
         }
-        windowManager.onMove = this::fireWindowMovedEvent
+        windowManager.onMove = ::fireWindowMovedEvent
 
-        style = MWindowStyle.default
+        style = WindowStyle.default
         initialized = true
     }
 
-    fun render() {
+    override fun preRender() {
+        glEnable(GL_ALPHA_TEST)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-        glClearColor(background.red.toFloat(), background.green.toFloat(), background.blue.toFloat(), background.alpha.toFloat())
+        glClearColor(0f, 0f, 0f, 0.0f)
+    }
 
+    override fun postRender() {
+        glFlush()
         nSwapBuffers(handle)
     }
 
+    override fun setColoredStyle(title: MColor?, text: MColor?, border: MColor?) = windowManager.setColoredStyle(title, text, border)
     override fun setBorderlessStyle() = windowManager.setBorderlessStyle()
     override fun setTitlessStyle() = windowManager.setTitlessStyle()
     override fun setDefaultStyle() = windowManager.setDefaultStyle()

@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <windows.h>
+#include <dwmapi.h>
 #include <iostream>
 #include <map>
 #include "Callbacks.h"
@@ -23,9 +24,12 @@ void destroyWindow(jlong);
 void nUpdateExStyle(jlong, jboolean, jboolean);
 void nSetResizable(jlong, jboolean);
 jboolean nIsResizable(jlong);
+void nSetWindowColors(jlong, jint, jint, jint, jboolean, jboolean, jboolean);
 void nSetWindowStyleId(jlong, jint);
 void nSetMinimumSize(jlong, jint, jint);
 void nSetMaximumSize(jlong, jint, jint);
+jint nGetClientWidth(jlong);
+jint nGetClientHeight(jlong);
 
 extern "C" {
 
@@ -239,6 +243,18 @@ extern "C" {
 	}
 
 	/*=========================
+	*	nSetWindowColors
+	* =========================
+	*/
+	JNIEXPORT void JNICALL Java_com_husker_minuicore_platform_win_WinWindowManager_nSetWindowColors(JNIEnv* env, jobject, jlong hwnd, jint title, jint text, jint border, jboolean defTitle, jboolean defText, jboolean defBorder) {
+		nSetWindowColors(hwnd, title, text, border, defTitle, defText, defBorder);
+	}
+
+	JNIEXPORT void JNICALL JavaCritical_com_husker_minuicore_platform_win_WinWindowManager_nSetWindowColors(jlong hwnd, jint title, jint text, jint border, jboolean defTitle, jboolean defText, jboolean defBorder) {
+		nSetWindowColors(hwnd, title, text, border, defTitle, defText, defBorder);
+	}
+
+	/*=========================
 	*	nSetWindowStyleId
 	* =========================
 	*/
@@ -272,5 +288,29 @@ extern "C" {
 
 	JNIEXPORT void JNICALL JavaCritical_com_husker_minuicore_platform_win_WinWindowManager_nSetMaximumSize(jlong hwnd, jint width, jint height) {
 		nSetMaximumSize(hwnd, width, height);
+	}
+
+	/*=========================
+	*	nGetClientWidth
+	* =========================
+	*/
+	JNIEXPORT jint JNICALL Java_com_husker_minuicore_platform_win_WinWindowManager_nGetClientWidth(JNIEnv* env, jobject, jlong hwnd) {
+		return nGetClientWidth(hwnd);
+	}
+
+	JNIEXPORT jint JNICALL JavaCritical_com_husker_minuicore_platform_win_WinWindowManager_nGetClientWidth(jlong hwnd) {
+		return nGetClientWidth(hwnd);
+	}
+
+	/*=========================
+	*	nGetClientHeight
+	* =========================
+	*/
+	JNIEXPORT jint JNICALL Java_com_husker_minuicore_platform_win_WinWindowManager_nGetClientHeight(JNIEnv* env, jobject, jlong hwnd) {
+		return nGetClientHeight(hwnd);
+	}
+
+	JNIEXPORT jint JNICALL JavaCritical_com_husker_minuicore_platform_win_WinWindowManager_nGetClientHeight(jlong hwnd) {
+		return nGetClientHeight(hwnd);
 	}
 }
