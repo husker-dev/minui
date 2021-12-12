@@ -155,7 +155,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;src/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;include</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>_GLFW_COCOA;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -174,7 +174,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;src/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;include</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>_GLFW_COCOA;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -193,7 +193,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;src/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;include</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>_GLFW_COCOA;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -210,7 +210,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;src/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;include</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>_GLFW_COCOA;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -227,7 +227,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;src/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;include</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>_GLFW_COCOA;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -246,7 +246,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;src/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;include</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>_GLFW_COCOA;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -267,7 +267,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;src/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;include</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>_GLFW_COCOA;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -288,7 +288,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;src/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;include</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>_GLFW_COCOA;%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -302,18 +302,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\gl.h" />
-    <ClInclude Include="src\glad\glad\glad.h" />
-    <ClInclude Include="src\glad\KHR\khrplatform.h" />
-    <ClInclude Include="src\glad\wgl\glad_wgl.h" />
-    <ClInclude Include="src\glad\wgl\khrplatform.h" />
     <ClInclude Include="src\glPipeline.h" />
     <ClInclude Include="src\glPipelineWin.h" />
     <ClInclude Include="src\wglext.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl.cpp" />
-    <ClCompile Include="src\glad\glad.c" />
-    <ClCompile Include="src\glad\wgl\glad_wgl.c" />
+    <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\glad_wgl.c" />
     <ClCompile Include="src\glPipeline.cpp" />
     <ClCompile Include="src\glPipelineWin.cpp" />
   </ItemGroup>

@@ -33,8 +33,13 @@ abstract class MWindow {
     }
 
     fun render(){
-        graphics.reset()
         preRender()
+        val size = contentSize
+        graphics.reset(size.first, size.second)
+
+        graphics.color = background
+        graphics.fillRect(0.0, 0.0, size.first.toDouble(), size.second.toDouble())
+
         onRender.invoke(graphics)
         postRender()
     }

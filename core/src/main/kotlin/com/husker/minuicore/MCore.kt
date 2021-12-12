@@ -12,16 +12,19 @@ import com.husker.minuicore.utils.Trigger
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.Buffer
+import java.nio.ByteBuffer
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
-external fun nGetBufferAddress(buffer: Buffer): Long
+
 
 @Suppress("JAVA_CLASS_ON_COMPANION")
 class MCore {
 
     companion object {
+        @JvmStatic external fun nLoadImageFromFile(path: String): LongArray
+        @JvmStatic external fun nLoadImageFromBytes(bytes: ByteArray): LongArray
 
         const val version = "0.1"
 

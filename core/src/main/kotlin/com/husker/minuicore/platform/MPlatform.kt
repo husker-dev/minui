@@ -1,5 +1,6 @@
 package com.husker.minuicore.platform
 
+import com.husker.minuicore.utils.concurrentArrayList
 import java.nio.charset.StandardCharsets
 
 const val x64 = "x64"
@@ -24,7 +25,9 @@ abstract class MLPlatform(val name: String) {
 
     }
 
+    private val themeListeners = concurrentArrayList<(Boolean) -> Unit>()
     abstract val architecture: String
+    abstract val isDarkTheme: Boolean
 
     abstract fun createWindowManager(): MWindowManager
 
@@ -32,5 +35,17 @@ abstract class MLPlatform(val name: String) {
         val manager = createWindowManager()
         manager.bindHandle(handle)
         return manager
+    }
+
+    protected fun fireThemeChangedEvent(isDark: Boolean){
+        themeListeners.iterate { it.invoke(isDark) }
+    }
+
+    fun removeThemeChangedListener(listener: (isDark: Boolean) -> Unit){
+        themeListeners.remove(listener)
+    }
+
+    fun onThemeChanged(listener: (isDark: Boolean) -> Unit){
+        themeListeners.add(listener)
     }
 }

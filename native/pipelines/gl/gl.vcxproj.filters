@@ -13,18 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\glad">
-      <UniqueIdentifier>{d49f248a-2cd9-4fdb-8c8b-4da1a063f25a}</UniqueIdentifier>
+    <Filter Include="Source Files\win">
+      <UniqueIdentifier>{9d5a1c76-6f8c-4fa8-900d-c8e688cb5d67}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\glad\wgl">
-      <UniqueIdentifier>{d53d999c-4891-40e0-b0a9-941e43474c7e}</UniqueIdentifier>
+    <Filter Include="Header Files\win">
+      <UniqueIdentifier>{381a0eb6-f41b-4985-84f1-07f039fbb83b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\glPipeline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glPipelineWin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\gl.h">
@@ -33,34 +30,25 @@
     <ClInclude Include="src\wglext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\glad\glad\glad.h">
-      <Filter>Source Files\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glad\KHR\khrplatform.h">
-      <Filter>Source Files\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glad\wgl\glad_wgl.h">
-      <Filter>Source Files\glad\wgl</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glad\wgl\khrplatform.h">
-      <Filter>Source Files\glad\wgl</Filter>
+    <ClInclude Include="src\glPipelineWin.h">
+      <Filter>Header Files\win</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\glPipelineWin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\glPipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glad\glad.c">
-      <Filter>Source Files\glad</Filter>
+    <ClCompile Include="src\glad.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\glad\wgl\glad_wgl.c">
-      <Filter>Source Files\glad\wgl</Filter>
+    <ClCompile Include="src\glPipelineWin.cpp">
+      <Filter>Source Files\win</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glad_wgl.c">
+      <Filter>Source Files\win</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

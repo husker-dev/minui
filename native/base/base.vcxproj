@@ -106,9 +106,6 @@
     <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\AppData\Local\Temp\Rar$DRa1524.14385\stb-master\stb_image.h" />
-    <ClInclude Include="..\..\..\..\..\AppData\Local\Temp\Rar$DRa1524.14385\stb-master\stb_image_resize.h" />
-    <ClInclude Include="..\..\..\..\..\AppData\Local\Temp\Rar$DRa1524.14385\stb-master\stb_image_write.h" />
     <ClInclude Include="src\freetype.h" />
     <ClInclude Include="src\freetype\dlg\dlg.h" />
     <ClInclude Include="src\freetype\dlg\output.h" />
@@ -516,7 +513,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include;include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -543,7 +540,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include;include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -570,7 +567,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include;include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -595,7 +592,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include;include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -620,7 +617,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include;include</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -647,7 +644,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include;include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -676,7 +673,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include;include</AdditionalIncludeDirectories>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>
@@ -705,7 +702,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%java_home%/include;%java_home%/include/win32;libs/freetype/include;include</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ModuleOutputFile>$(IntDir)</ModuleOutputFile>
       <ModuleDependenciesFile>$(IntDir)</ModuleDependenciesFile>

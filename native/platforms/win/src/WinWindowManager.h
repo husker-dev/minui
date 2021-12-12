@@ -37,7 +37,7 @@ extern "C" {
 	*	nInstall
 	* =========================
 	*/
-	JNIEXPORT void JNICALL Java_com_husker_minuicore_platform_win_WinWindowManagerKt_nInstall(JNIEnv* env, jobject, jlong hwnd, jobject callback) {
+	JNIEXPORT void JNICALL Java_com_husker_minuicore_platform_win_WinWindowManagerKt_nInstall(JNIEnv* env, jobject) {
 		env->GetJavaVM(&jvm);
 	}
 

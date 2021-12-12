@@ -311,6 +311,7 @@ void applyWindowSetting(HWND hwnd, int darkMode, boolean mica) {
 	if (darkMode == 1) darkModeValue = &trueValue;
 	if (darkMode == 0) darkModeValue = &falseValue;
 
+
 	DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, darkModeValue, sizeof(int));
 	if (IsWindows11OrGreater()) {
 		DwmSetWindowAttribute(hwnd, DWMWA_MICA_EFFECT, mica ? &trueValue : &falseValue, sizeof(int));

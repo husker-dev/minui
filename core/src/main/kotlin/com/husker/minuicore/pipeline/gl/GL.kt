@@ -1,9 +1,24 @@
 package com.husker.minuicore.pipeline.gl
 
-import com.husker.minuicore.nGetBufferAddress
-import java.nio.Buffer
+const val VERTICES_ATTRIBUTE = 0
+const val TEXTCOORD_ATTRIBUTE = 1
 
+const val GL_POINTS = 0x0
+const val GL_LINES = 0x1
+const val GL_LINE_LOOP = 0x2
+const val GL_LINE_STRIP = 0x3
+const val GL_TRIANGLES = 0x4
+const val GL_TRIANGLE_STRIP = 0x5
+const val GL_TRIANGLE_FAN = 0x6
 
+const val GL_BYTE           = 0x1400
+const val GL_UNSIGNED_BYTE  = 0x1401
+const val GL_SHORT          = 0x1402
+const val GL_UNSIGNED_SHORT = 0x1403
+const val GL_INT            = 0x1404
+const val GL_UNSIGNED_INT   = 0x1405
+const val GL_FLOAT          = 0x1406
+const val GL_DOUBLE         = 0x140A
 
 const val GL_COLOR_BUFFER_BIT = 0x4000
 const val GL_DEPTH_BUFFER_BIT = 0x100
@@ -18,7 +33,6 @@ const val GL_LINEAR = 0x2601
 const val GL_RGB = 0x1907
 const val GL_RGBA = 0x1908
 const val GL_RED = 0x1903
-const val GL_UNSIGNED_BYTE = 0x1401
 const val GL_TEXTURE_WIDTH = 0x1000
 const val GL_TEXTURE_HEIGHT = 0x1001
 const val GL_VERTEX_SHADER = 0x8B31
@@ -30,33 +44,29 @@ const val GL_ALPHA_TEST = 0xBC0
 const val GL_BLEND = 0xBE2
 const val GL_SRC_ALPHA = 0x302
 const val GL_ONE_MINUS_SRC_ALPHA = 0x303
-const val GL_PROJECTION = 0x1701
-const val GL_QUADS = 0x7
+const val GL_DEPTH_TEST = 0xB71
+const val GL_UNPACK_ALIGNMENT = 0xCF5
 
-// deprecated \/
-external fun glMatrixMode(mode: Int)
-external fun glOrtho(l: Double, r: Double, b: Double, t: Double, n: Double, f: Double)
+// New
+external fun applyMatrix(matrixElements: FloatArray)
+external fun setAttribute(index: Int, length: Int, array: DoubleArray)
+
+external fun glDrawArrays(mode: Int, first: Int, last: Int)
 external fun glViewport(x: Int, y: Int, width: Int, height: Int)
-external fun glBegin(a: Int)
-external fun glEnd()
-external fun glVertex2d(x: Double, y: Double)
-external fun glColor3d(r: Double, g: Double, b: Double)
-external fun glLoadIdentity()
 external fun glBlendFunc(sfactor: Int, dfactor: Int)
-// deprecated /\
-
 external fun glClear(mask: Int)
 external fun glClearColor(r: Float, g: Float, b: Float, a: Float)
-
 external fun glEnable(target: Int)
 external fun glFlush()
-
 external fun glGenTextures(): Int
 external fun glBindTexture(target: Int, texture: Int)
 external fun glTexParameteri(target: Int, pname: Int, param: Int)
 external fun glTexImage2D(target: Int, level: Int, internalformat: Int, width: Int, height: Int, border: Int, format: Int, type: Int, address: Long)
 external fun glGetTexLevelParameteri(target: Int, level: Int, pname: Int): Int
+external fun glPixelStorei(pname: Int, param: Int)
+external fun glUniformMatrix4f(location: Int, matrix: FloatArray)
 
+// Shader-related
 external fun glUseProgram(program: Int)
 external fun glCreateShader(type: Int): Int
 external fun glShaderSource(shader: Int, source: ByteArray)
@@ -76,6 +86,5 @@ external fun glCreateProgram(): Int
 external fun glGetShaderInfoLog(shader: Int): String
 external fun glGetProgramInfoLog(shader: Int): String
 
-fun glTexImage2D(target: Int, level: Int, internalformat: Int, width: Int, height: Int, border: Int, format: Int, type: Int, buffer: Buffer){
-    glTexImage2D(target, level, internalformat, width, height, border, format, type, nGetBufferAddress(buffer))
-}
+
+

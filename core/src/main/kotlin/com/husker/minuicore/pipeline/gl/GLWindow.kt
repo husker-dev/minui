@@ -4,12 +4,12 @@ import com.husker.minuicore.MColor
 import com.husker.minuicore.MCore
 import com.husker.minuicore.pipeline.MWindow
 import com.husker.minuicore.window.WindowStyle
-
+import org.lwjgl.opengl.GL11.*
 
 
 open class GLWindow: MWindow() {
 
-    override var windowManager = MCore.platform.createWindowManager()
+    final override var windowManager = MCore.platform.createWindowManager()
     private val resourceFactory = MCore.pipeline.resourceFactory as GLResourceFactory
     var initialized = false
     var handle = 0L
@@ -43,6 +43,9 @@ open class GLWindow: MWindow() {
             it.clearContext()
             MCore.invokeOnMainThreadSync {
                 handle = nCreateWindow(resourceFactory.handle)
+                nMakeCurrent(handle)
+                initGL()
+
                 windowManager.bindHandle(handle)
             }
         }
@@ -58,12 +61,24 @@ open class GLWindow: MWindow() {
         initialized = true
     }
 
-    override fun preRender() {
+    private fun initGL(){
+        glEnable(GL_TEXTURE_2D)
+        glEnable(GL_TEXTURE)
+
         glEnable(GL_ALPHA_TEST)
         glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        //glBlendFunc(GL_ONE, GL_ONE_MINUS_DST_ALPHA)
+    }
+
+    override fun preRender() {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-        glClearColor(0f, 0f, 0f, 0.0f)
+        glClearColor(0f, 0f, 0f, 0f)
+
+        val size = contentSize
+        glViewport(0, 0, size.first, size.second)
+        //glLoadIdentity()
+        //glOrtho(0.0, size.first.toDouble(), size.second.toDouble(), 0.0, -1.0, 100.0)
     }
 
     override fun postRender() {

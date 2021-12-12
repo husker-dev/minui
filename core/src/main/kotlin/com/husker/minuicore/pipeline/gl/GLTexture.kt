@@ -3,14 +3,13 @@ package com.husker.minuicore.pipeline.gl
 import com.husker.minuicore.MCore
 import com.husker.minuicore.pipeline.MTexture
 
-import java.nio.ByteBuffer
-
 class GLTexture(): MTexture() {
 
     override var width = 0
     override var height = 0
-    var data: ByteBuffer? = null
+    var dataPointer: Long = 0
     var id = 0
+    override var components = 3
 
     override var linear: Boolean
         get() {
@@ -29,10 +28,12 @@ class GLTexture(): MTexture() {
             }
         }
 
-    constructor(width: Int, height: Int, data: ByteBuffer?): this(){
+    constructor(width: Int, height: Int, components: Int, dataPointer: Long): this(){
         this.width = width
         this.height = height
-        this.data = data
+        this.dataPointer = dataPointer
+        this.components = components
+        init()
     }
 
     constructor(id: Int): this(){
@@ -43,7 +44,7 @@ class GLTexture(): MTexture() {
         }
     }
 
-    init{
+    private fun init(){
         resourceThread {
             if(id == 0)
                 id = glGenTextures()
@@ -53,11 +54,9 @@ class GLTexture(): MTexture() {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-
-            if(data != null)
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data!!)
-            else
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0)
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+            glTexImage2D(GL_TEXTURE_2D, 0, if(components == 3) GL_RGB else GL_RGBA, width, height, 0, if(components == 3) GL_RGB else GL_RGBA, GL_UNSIGNED_BYTE, dataPointer)
+            glFlush()
         }
     }
 

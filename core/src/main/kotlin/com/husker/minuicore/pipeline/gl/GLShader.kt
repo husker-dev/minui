@@ -1,8 +1,8 @@
 package com.husker.minuicore.pipeline.gl
 
-import com.husker.minuicore.platform.bytes
+import com.husker.minuicore.MCore
+import com.husker.minuicore.transform.Matrix
 import com.husker.minuicore.platform.c_str
-import com.husker.minuicore.platform.c_type
 import java.nio.charset.StandardCharsets
 
 
@@ -31,38 +31,45 @@ class GLShader(vertex: String = "", fragment: String = "") {
     var program = 0
 
     init{
-        program = glCreateProgram()
-        var vx = 0
-        var fs = 0
+        (MCore.pipeline.resourceFactory as GLResourceFactory).invokeSync {
+            program = glCreateProgram()
+            var vx = 0
+            var fs = 0
 
-        if(vertex.isNotEmpty()){
-            vx = glCreateShader(GL_VERTEX_SHADER)
-            glShaderSource(vx, vertex.c_str)
-            glCompileShader(vx)
-            if(glGetShaderi(vx, GL_COMPILE_STATUS) != 1)
-                throw ShaderException("Vertex shader compilation error", glGetShaderInfoLog(vx))
-            glAttachShader(program, vx)
+            if(vertex.isNotEmpty()){
+                vx = glCreateShader(GL_VERTEX_SHADER)
+                glShaderSource(vx, vertex.c_str)
+                glCompileShader(vx)
+                if(glGetShaderi(vx, GL_COMPILE_STATUS) != 1)
+                    throw ShaderException("Vertex shader compilation error", glGetShaderInfoLog(vx))
+                glAttachShader(program, vx)
+            }
+            if(fragment.isNotEmpty()){
+                fs = glCreateShader(GL_FRAGMENT_SHADER)
+                glShaderSource(fs, fragment.c_str)
+                glCompileShader(fs)
+                if(glGetShaderi(fs, GL_COMPILE_STATUS) != 1)
+                    throw ShaderException("Fragment shader compilation error", glGetShaderInfoLog(fs))
+                glAttachShader(program, fs)
+            }
+
+            glLinkProgram(program)
+            if(glGetProgrami(program, GL_LINK_STATUS) != 1)
+                throw ShaderException("Shader linking error", glGetProgramInfoLog(program))
+            glValidateProgram(program)
+            if(glGetProgrami(program, GL_VALIDATE_STATUS) != 1)
+                throw ShaderException("Shader validation error", glGetProgramInfoLog(program))
+
+            if(vertex.isNotEmpty())
+                glDeleteShader(vx)
+            if(fragment.isNotEmpty())
+                glDeleteShader(fs)
         }
-        if(fragment.isNotEmpty()){
-            fs = glCreateShader(GL_FRAGMENT_SHADER)
-            glShaderSource(fs, fragment.c_str)
-            glCompileShader(fs)
-            if(glGetShaderi(fs, GL_COMPILE_STATUS) != 1)
-                throw ShaderException("Fragment shader compilation error", glGetShaderInfoLog(fs))
-            glAttachShader(program, fs)
-        }
+    }
 
-        glLinkProgram(program)
-        if(glGetProgrami(program, GL_LINK_STATUS) != 1)
-            throw ShaderException("Shader linking error", glGetProgramInfoLog(program))
-        glValidateProgram(program)
-        if(glGetProgrami(program, GL_VALIDATE_STATUS) != 1)
-            throw ShaderException("Shader validation error", glGetProgramInfoLog(program))
-
-        if(vertex.isNotEmpty())
-            glDeleteShader(vx)
-        if(fragment.isNotEmpty())
-            glDeleteShader(fs)
+    fun setMatrixVariable(name: String, matrix: Matrix){
+        val location = glGetUniformLocation(program, name)
+        glUniformMatrix4f(location, matrix.elements)
     }
 
     fun setVariable(name: String, vararg values: Float){

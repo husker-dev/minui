@@ -1,6 +1,6 @@
 #include <jni.h>
 
-#include "glad/glad.h"
+#include <glad/glad.h>
 #ifdef _WIN32
 #include <windows.h>
 #elif __linux__
@@ -9,10 +9,25 @@
 
 #endif
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
 
 extern "C" {
+
+	/*=========================
+	*	glDrawArrays
+	* =========================
+	*/
+	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glDrawArrays(JNIEnv* env, jobject, jint mode, jint first, jint last) {
+		glDrawArrays(mode, first, last);
+	}
+
+	JNIEXPORT void JNICALL JavaCritical_com_husker_minuicore_pipeline_gl_GLKt_glDrawArrays(jint mode, jint first, jint last) {
+		glDrawArrays(mode, first, last);
+	}
 
 	/*=========================
 	*	glBlendFunc
@@ -26,29 +41,6 @@ extern "C" {
 		glBlendFunc(sfactor, dfactor);
 	}
 
-	/*=========================
-	*	glMatrixMode
-	* =========================
-	*/
-	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glMatrixMode(JNIEnv* env, jobject, jint mode) {
-		glMatrixMode(mode);
-	}
-
-	JNIEXPORT void JNICALL JavaCritical_com_husker_minuicore_pipeline_gl_GLKt_glMatrixMode(jint mode) {
-		glMatrixMode(mode);
-	}
-
-	/*=========================
-	*	glOrtho
-	* =========================
-	*/
-	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glOrtho(JNIEnv* env, jobject, jdouble l, jdouble r, jdouble b, jdouble t, jdouble n, jdouble f) {
-		glOrtho(l, r, b, t, n, f);
-	}
-
-	JNIEXPORT void JNICALL JavaCritical_com_husker_minuicore_pipeline_gl_GLKt_glOrtho(jdouble l, jdouble r, jdouble b, jdouble t, jdouble n, jdouble f) {
-		glOrtho(l, r, b, t, n, f);
-	}
 
 	/*=========================
 	*	glViewport
@@ -58,44 +50,8 @@ extern "C" {
 		glViewport(x, y, w, h);
 	}
 
-	/*=========================
-	*	glBegin
-	* =========================
-	*/
-	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glBegin(JNIEnv* env, jobject, jint a) {
-		glBegin(a);
-	}
-
-	/*=========================
-	*	glEnd
-	* =========================
-	*/
-	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glEnd(JNIEnv* env, jobject) {
-		glEnd();
-	}
-
-	/*=========================
-	*	glVertex2d
-	* =========================
-	*/
-	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glVertex2d(JNIEnv* env, jobject, jdouble x, jdouble y) {
-		glVertex2d(x, y);
-	}
-
-	/*=========================
-	*	glColor3d
-	* =========================
-	*/
-	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glColor3d(JNIEnv* env, jobject, jdouble r, jdouble g, jdouble b) {
-		glColor3d(r, g, b);
-	}
-
-	/*=========================
-	*	glLoadIdentity
-	* =========================
-	*/
-	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glLoadIdentity(JNIEnv* env, jobject) {
-		glLoadIdentity();
+	JNIEXPORT void JNICALL JavaCritical_com_husker_minuicore_pipeline_gl_GLKt_glViewport(jint x, jint y, jint w, jint h) {
+		glViewport(x, y, w, h);
 	}
 
 	/*=========================
@@ -191,11 +147,11 @@ extern "C" {
 	* =========================
 	*/
 	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glTexImage2D(JNIEnv* env, jobject, jint target, jint level, jint internalformat, jint width, jint height, jint border, jint format, jint type, jlong address) {
-		glTexImage2D(target, level, internalformat, width, height, border, format, type, (GLvoid*)address);
+		glTexImage2D(target, level, internalformat, width, height, border, format, type, (char*)address);
 	}
 
 	JNIEXPORT void JNICALL JavaCritical_com_husker_minuicore_pipeline_gl_GLKt_glTexImage2D(jint target, jint level, jint internalformat, jint width, jint height, jint border, jint format, jint type, jlong address) {
-		glTexImage2D(target, level, internalformat, width, height, border, format, type, (GLvoid*)address);
+		glTexImage2D(target, level, internalformat, width, height, border, format, type, (char*)address);
 	}
 
 	/*=========================
@@ -245,6 +201,7 @@ extern "C" {
 	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glShaderSource(JNIEnv* env, jobject, jint shader, jbyteArray source) {
 		char* text = (char*)env->GetByteArrayElements(source, nullptr);
 		glShaderSource(shader, 1, &text, NULL);
+		env->ReleaseByteArrayElements(source, (jbyte*)text, 0);
 	}
 
 	/*=========================
@@ -344,7 +301,10 @@ extern "C" {
 	* =========================
 	*/
 	JNIEXPORT jint JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glGetUniformLocation(JNIEnv* env, jobject, jint program, jstring name) {
-		return glGetUniformLocation(program, (GLchar*)env->GetStringUTFChars(name, nullptr));
+		const char* data = env->GetStringUTFChars(name, nullptr);
+		jint result = glGetUniformLocation(program, (GLchar*)data);
+		env->ReleaseStringUTFChars(name, data);
+		return result;
 	}
 
 	/*=========================
@@ -415,7 +375,7 @@ extern "C" {
 		GLsizei logLength;
 		GLchar  log[1024];
 		glGetShaderInfoLog(shader, sizeof(log), &logLength, log);
-		return env->NewString((jchar*)log, logLength);
+		return env->NewStringUTF(log);
 	}
 
 	/*=========================
@@ -426,6 +386,71 @@ extern "C" {
 		GLsizei logLength;
 		GLchar  log[1024];
 		glGetProgramInfoLog(shader, sizeof(log), &logLength, log);
-		return env->NewString((jchar*)log, logLength);
+		return env->NewStringUTF(log);
+	}
+
+	/*=========================
+	*	glUniformMatrix4f
+	* =========================
+	*/
+	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glUniformMatrix4f(JNIEnv* env, jobject, jint location, jfloatArray matrix) {
+		jfloat* data = env->GetFloatArrayElements(matrix, nullptr);
+		glUniformMatrix4fv(location, 1, GL_FALSE, data);
+		env->ReleaseFloatArrayElements(matrix, data, 0);
+	}
+
+	JNIEXPORT void JNICALL JavaCritical_com_husker_minuicore_pipeline_gl_GLKt_glUniformMatrix4f(jint location, jfloat* matrix, jint size) {
+		glUniformMatrix4fv(location, 1, GL_FALSE, matrix);
+	}
+
+	/*=========================
+	*	glPixelStorei
+	* =========================
+	*/
+	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_glPixelStorei(JNIEnv* env, jobject, jint pname, jint param) {
+		glPixelStorei(pname, param);
+	}
+
+	JNIEXPORT void JNICALL JavaCritical_com_husker_minuicore_pipeline_gl_GLKt_glPixelStorei(jint pname, jint param) {
+		glPixelStorei(pname, param);
+	}
+
+	// ============================================================================================================================================================================
+	//		Custom
+	// ============================================================================================================================================================================
+
+	/*=========================
+	*	applyMatrix
+	* =========================
+	*/
+	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_applyMatrix(JNIEnv* env, jobject, jfloatArray matrix) {
+		jfloat* data = env->GetFloatArrayElements(matrix, nullptr);
+		GLint id;
+		glGetIntegerv(GL_CURRENT_PROGRAM, &id);
+		auto transformLoc = glGetUniformLocation(id, "a_Matrix");
+		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, data);
+		env->ReleaseFloatArrayElements(matrix, data, 0);
+	}
+
+	JNIEXPORT void JNICALL JavaCritical_com_husker_minuicore_pipeline_gl_GLKt_applyMatrix(jfloat* matrix, jint size) {
+		GLint id;
+		glGetIntegerv(GL_CURRENT_PROGRAM, &id);
+		auto transformLoc = glGetUniformLocation(id, "a_Matrix");
+		glUniformMatrix4fv(transformLoc, 1, GL_TRUE, matrix);
+	}
+
+	/*=========================
+	*	setAttribute
+	* =========================
+	*/
+	JNIEXPORT void JNICALL Java_com_husker_minuicore_pipeline_gl_GLKt_setAttribute(JNIEnv* env, jobject, jint index, jint length, jdoubleArray array) {
+		jdouble* data = env->GetDoubleArrayElements(array, nullptr);
+		glVertexAttribPointer(index, length, GL_DOUBLE, GL_FALSE, 0, data);
+		glEnableVertexAttribArray(index);
+	}
+
+	JNIEXPORT void JNICALL JavaCritical_com_husker_minuicore_pipeline_gl_GLKt_setAttribute(jint index, jint length, jdouble* array, jint size) {
+		glVertexAttribPointer(index, length, GL_DOUBLE, GL_FALSE, 0, array);
+		glEnableVertexAttribArray(index);
 	}
 }

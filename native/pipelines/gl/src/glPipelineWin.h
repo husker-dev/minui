@@ -1,6 +1,6 @@
 #include <jni.h>
-#include "glad/glad.h"
-#include "glad/wgl/glad_wgl.h"
+#include <glad/glad.h>
+#include <glad/glad_wgl.h>
 #include <windows.h>
 #include <dwmapi.h>
 #include <map>

@@ -17,15 +17,6 @@ repositories {
     maven { url = URI("https://oss.sonatype.org/content/repositories/snapshots/") }
 }
 
-val fatJar = task("fatJar", type = Jar::class) {
-    baseName = "${project.name}-fat"
-    manifest {
-        attributes["Main-Class"] = "com.husker.MainKt"
-    }
-    from(configurations.runtimeClasspath.get().map({ if (it.isDirectory) it else zipTree(it) }))
-    with(tasks.jar.get() as CopySpec)
-}
-
 sourceSets {
     main {
         resources { srcDirs += File("src/main/resources") }
@@ -45,10 +36,23 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:${versions["jupiter"]}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${versions["jupiter"]}")
 
-    // For debug
-    // compileOnly
+    implementation(platform("org.lwjgl:lwjgl-bom:3.3.0-SNAPSHOT"))
+    implementation("org.lwjgl:lwjgl")
+    implementation("org.lwjgl:lwjgl-opengl")
+    runtimeOnly("org.lwjgl:lwjgl::natives-windows")
+    runtimeOnly("org.lwjgl:lwjgl-opengl::natives-windows")
 
-    compileOnly("org.lwjgl:lwjgl-opengl:3.3.0-SNAPSHOT")
+    // For debug
+    //compileOnly("org.lwjgl:lwjgl-opengl:3.3.0-SNAPSHOT")
+}
+
+val fatJar = task("fatJar", type = Jar::class) {
+    baseName = "${project.name}-fat"
+    manifest {
+        attributes["Main-Class"] = "com.husker.MainKt"
+    }
+    from(configurations.runtimeClasspath.get().map({ if (it.isDirectory) it else zipTree(it) }))
+    with(tasks.jar.get() as CopySpec)
 }
 
 tasks.test {

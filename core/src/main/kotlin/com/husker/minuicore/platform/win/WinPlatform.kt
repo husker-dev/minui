@@ -5,6 +5,7 @@ import com.husker.minuicore.MCore
 import com.husker.minuicore.platform.MLPlatform
 import com.husker.minuicore.platform.*
 import java.nio.charset.StandardCharsets
+import kotlin.concurrent.thread
 
 val String.wideBytes: ByteArray
     get() = bytes.wideBytes
@@ -21,11 +22,27 @@ val ByteArray.c_wtype: ByteArray
         return cBytes
     }
 
+external fun nIsDarkTheme(): Boolean
+
 class WinPlatform: MLPlatform("Windows") {
 
     companion object {
         init{
             MCore.loadLibrary("minui_natives/windows/${MCore.platform.architecture}/win.dll")
+        }
+    }
+
+    init {
+        var isLastDark = false
+        thread(isDaemon = true) {
+            while(!MCore.disposed) {
+                Thread.sleep(1500)
+                val isDark = isDarkTheme
+                if (isLastDark != isDark){
+                    isLastDark = isDark
+                    fireThemeChangedEvent(isDark)
+                }
+            }
         }
     }
 
@@ -50,6 +67,8 @@ class WinPlatform: MLPlatform("Windows") {
                 }
             }
         }
+    override val isDarkTheme: Boolean
+        get() = nIsDarkTheme()
 
     override fun createWindowManager() = WinWindowManager()
 

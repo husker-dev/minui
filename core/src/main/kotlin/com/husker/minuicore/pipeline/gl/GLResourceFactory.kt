@@ -20,8 +20,6 @@ class GLResourceFactory: MResourceFactory() {
     lateinit var resourceThread: Thread
     private var contextBound = false
 
-    lateinit var colorShader: GLShader
-
     init{
         MCore.invokeOnMainThreadSync {
             handle = nCreateWindow(0)
@@ -29,8 +27,6 @@ class GLResourceFactory: MResourceFactory() {
             resourceThread = thread(name = "MinUI OpenGL Resources", isDaemon = true){
                 requestContext()
                 nInit()
-
-                colorShader = GLShader.fromResource(fragmentPath = "com/husker/minuicore/pipeline/gl/shaders/color/shader.fs")
 
                 /*
                 glMatrixMode(GL_PROJECTION)
@@ -86,6 +82,6 @@ class GLResourceFactory: MResourceFactory() {
         }
     }
 
-    override fun createEmptyTexture(width: Int, height: Int) = GLTexture(width, height, null)
-    override fun createTexture(width: Int, height: Int, data: ByteBuffer) = GLTexture(width, height, data)
+    override fun createEmptyTexture(width: Int, height: Int, components: Int) = GLTexture(width, height, components, 0)
+    override fun createTexture(width: Int, height: Int, components: Int, pointer: Long) = GLTexture(width, height, components, pointer)
 }
