@@ -1,3 +1,5 @@
+> DEPRECATED! See AlterUI instead
+
 # minui
 Lightweight UI library for Kotlin/Java.
 
